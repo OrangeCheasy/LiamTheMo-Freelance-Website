@@ -104,7 +104,7 @@ const unsure = {
 } as const;
 
 const cardBase =
-  "group flex h-full items-start gap-4 rounded-xl border p-5 transition-colors";
+  "group flex h-full items-center gap-4 rounded-xl border p-5 transition-colors";
 
 const chipBase =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg";
