@@ -6,22 +6,22 @@ How-to lives in [`DEPLOYMENT.md`](./DEPLOYMENT.md) — this file tracks *what* i
 
 ---
 
-## Do now — regenerate the lockfile
+## Do now — step 1, the layout shell
 
-**This blocks the first deploy.** `package.json` gained `@opennextjs/cloudflare` and `wrangler`,
-but `package-lock.json` was not regenerated — there is no Node on the Windows machine where those
-edits were made. CI runs `npm ci`, which refuses to run against an out-of-sync lockfile and fails
-with `EUSAGE`.
+See the build order below.
 
-In the Codespace:
+## Done — first deploy
 
-- [ ] `node --version` — must be 22+ (`wrangler@4` requires it; `nvm install 22` if not)
-- [ ] `npm install` — regenerates `package-lock.json`
-- [ ] `npm run cf-typegen` — generates `cloudflare-env.d.ts`
-- [ ] `npm run build` and `npx tsc --noEmit` — first real verification of the config
-- [ ] `npm run preview` — first run of the actual Worker
-- [ ] Commit `package-lock.json` and `cloudflare-env.d.ts`
-- [ ] Commit the pending `CLAUDE.md` changes (the Vercel → Cloudflare rewrite is still uncommitted)
+The lockfile is regenerated and committed, and the placeholder is live. The Windows dev machine does
+have Node (v24) — an earlier note here claiming otherwise was wrong.
+
+Two gotchas fixed along the way, both worth remembering:
+
+- **CI must build before it typechecks.** Next 16 generates `LayoutProps` / `PageProps` into
+  `.next/types/` during `next build`, and `tsconfig.json` includes that directory. Typechecking a
+  fresh checkout first fails with `Cannot find name 'LayoutProps'`.
+- **PowerShell blocks `npm.ps1`** under the default execution policy. Use `npm.cmd`, or set
+  `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
 
 ## Done — Cloudflare account setup
 
@@ -57,7 +57,7 @@ Instructions kept in [`DEPLOYMENT.md` §2](./DEPLOYMENT.md#2-one-time-cloudflare
 
 From CLAUDE.md §14. Ship 0–5 before polishing anything.
 
-- [ ] **0. Deploy pipeline** — placeholder page live on `workers.dev` via GitHub Actions
+- [x] **0. Deploy pipeline** — placeholder page live on `workers.dev` via GitHub Actions
   - [x] Next.js 16 + TypeScript strict + Tailwind v4 + App Router scaffolded
   - [x] `@opennextjs/cloudflare` and `wrangler` added to `package.json`
   - [x] `wrangler.jsonc`, `open-next.config.ts`, `initOpenNextCloudflareForDev()` in `next.config.ts`
@@ -66,9 +66,10 @@ From CLAUDE.md §14. Ship 0–5 before polishing anything.
   - [x] `public/_headers` for immutable static asset caching
   - [x] GitHub Actions workflow — lint/typecheck/build on PR, build + deploy on merge to `main`
   - [x] Under-construction page at `/`, `noindex` while it is a placeholder
-  - [ ] **`npm install` to regenerate the lockfile** — see the top of this file
-  - [ ] Verified locally: `npm run build`, `npx tsc --noEmit`, `npm run preview`
-  - [ ] First green deploy verified at `https://liamthemo.orangecheasy.workers.dev`
+  - [x] **`npm install` to regenerate the lockfile**
+  - [x] Verified locally: `npm run build`, `npx tsc --noEmit`, `opennextjs-cloudflare build`
+  - [x] First green deploy verified at `https://liamthemo.orangecheasy.workers.dev`
+        (`200`, `x-opennext: 1`, `x-nextjs-prerender: 1`, `noindex` intact)
 - [ ] **1. Layout shell** — Navbar, Footer, typography scale, Tailwind theme tokens
 - [ ] **2. Home** — hero, triage widget, social proof strip
 - [ ] **3. `services.ts`** + dynamic service page template

@@ -37,20 +37,12 @@ Four steps, roughly ten minutes. Nothing deploys until all four are done. Tracke
 
 Cloudflare dashboard: **Workers & Pages → Subdomain**.
 
-This is set **once per account** and is not easily changed afterward. It is the account's namespace,
-not this site's name — every Worker in the account is served at
-`<worker-name>.<account-subdomain>.workers.dev`.
-
-This account's subdomain is **`orangecheasy`**, and the Worker is named `liamthemo`
-(`wrangler.jsonc`), so the site's temporary URL is:
+This is set **once per account** and is not easily changed afterward. The site's temporary URL will
+be:
 
 ```
-https://liamthemo.orangecheasy.workers.dev
+liamthemo.<your-subdomain>.workers.dev
 ```
-
-This has nothing to do with `liamthemo.com`, which is attached separately in §6. Renaming the
-subdomain is not worth doing — §6 turns the `workers.dev` URL off entirely once the custom domain
-is live.
 
 Only needed if you have never used Workers on this account.
 
@@ -221,7 +213,7 @@ propagation wait, and the zone is already active.
 5. **Turn off the `workers.dev` URL.** Set `"workers_dev": false` in `wrangler.jsonc` and redeploy.
 
    Otherwise the identical site is live at both `liamthemo.com` and
-   `liamthemo.orangecheasy.workers.dev`. That is duplicate content, and search engines may pick
+   `liamthemo.<subdomain>.workers.dev`. That is duplicate content, and search engines may pick
    the `workers.dev` URL as canonical — the real domain then loses the ranking to a URL you do not
    control. Note that `preview_urls` defaults to whatever `workers_dev` is set to.
 

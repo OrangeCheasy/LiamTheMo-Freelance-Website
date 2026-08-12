@@ -1,26 +1,217 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Design tokens. Everything visual should come from here rather than from
+  one-off hex values in components — see CLAUDE.md §9.
+
+  THEMES
+  ------
+  This block defines the LIGHT theme. Dark overrides the same variable names
+  further down, which is why no component in this codebase uses a `dark:`
+  variant: components reference roles (`bg-surface`, `text-ink`), and the theme
+  decides what those resolve to. Changing the palette should never mean touching
+  a component.
+
+  The dark theme is dark grey (#1a1d21), not black — 1.24:1 off pure black. That
+  plus a soft coral accent is what keeps it clear of §9's "near-black background
+  with one acid-green accent" anti-goal.
+*/
+@theme {
+  /* --- Colour: light theme --------------------------------------------- */
+  /*
+    Cool-neutral greys, not cream. A warm off-white base under a coral accent is
+    the "cream + terracotta" anti-goal (§9); the cool greys are what keep this
+    palette clear of it.
+  */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f6f8;
+  --color-ink: #14181d;
+  --color-ink-muted: #55606b;
+  --color-line: #e3e7eb;
+
+  /*
+    Coral splits into a PASTEL and a DUSTY tone, and the split is a contrast
+    requirement rather than a stylistic one (CLAUDE.md §9.2).
+
+    A pastel measures 1.5–1.8:1 on white. It can therefore never be text, a
+    hairline, an icon stroke or a focus ring in the light theme — it fails both
+    the 4.5:1 text bar and the 3:1 non-text bar. It is only ever a FILL, with ink
+    on top. The dusty tone does everything that needs contrast.
+
+    `accent`       dusty. Link text, focus rings, thin rules.       5.91:1
+    `accent-fill`  pastel. Button and block backgrounds.
+    `accent-fill-ink`  the label on a pastel fill.                 11.70:1
+    `accent-tint`  softest wash, for callouts. Text on it is ink.  16.19:1
+
+    A pastel fill on white is only 1.52:1 against the page, so the block's own
+    edge is invisible and it stops reading as a control. Every pastel fill
+    therefore carries `border-accent`. In the dark theme that border matches the
+    fill and does nothing — harmless, because there the fill already has 11.10:1
+    against the background.
+  */
+  --color-accent: #ad3f3c;
+  --color-accent-hover: #8f3230;
+  --color-accent-fill: #fcc4bf;
+  --color-accent-fill-hover: #f8ada6;
+  --color-accent-fill-ink: #14181d;
+  --color-accent-tint: #fff1ee;
+
+  /*
+    Service identity hues (CLAUDE.md §1's five service lines). One OKLCH family:
+    L=0.87, C=0.065, hue varies — identical tone, so they read as a set rather
+    than five unrelated colours.
+
+    These are IDENTITY ONLY. Never a button, never a link, never a focus ring —
+    coral above stays the single action colour. They are theme-independent by
+    design: light fills with ink labels work on white and on dark grey alike,
+    and every one measures better than 11.7:1.
+
+    Unused until build order step 3; Tailwind drops unused theme variables from
+    the output, so they cost nothing until a component references them.
+  */
+  --color-service-automation: #fcc4bf;
+  --color-service-excel: #e1d4a4;
+  --color-service-websites: #ade2ca;
+  --color-service-local: #b8d7ff;
+  --color-service-roblox: #ebc6ec;
+
+  /* --- Type ------------------------------------------------------------ */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+
+  /*
+    A real scale, fluid via clamp() so there is one class per level instead of
+    a breakpoint ladder. The lower bound is what renders at 320px.
+  */
+  --text-display: clamp(2.5rem, 1.9rem + 3vw, 3.75rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.02em;
+
+  --text-h1: clamp(2rem, 1.6rem + 2vw, 2.75rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.015em;
+
+  --text-h2: clamp(1.5rem, 1.35rem + 0.75vw, 1.875rem);
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.01em;
+
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.35;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
+
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+
+  --text-eyebrow: 0.8125rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.08em;
+  --text-eyebrow--font-weight: 600;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/*
+  Dark theme. Same variable names, different values — see the note at the top.
 
+  Three states are supported, and the two selectors below cover all of them:
+
+    no data-theme attribute  -> follow the operating system
+    data-theme="dark"        -> forced dark, regardless of the OS
+    data-theme="light"       -> forced light, regardless of the OS
+
+  The `:not([data-theme="light"])` guard is what makes an explicit light choice
+  survive an OS set to dark. Both selectors have equal specificity, but they can
+  never both apply with conflicting values, so source order does not matter.
+
+  `color-scheme` is not decoration: it tells the browser to render scrollbars,
+  form controls and the canvas in the matching theme. Without it those stay
+  light against a dark page.
+*/
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --color-surface: #1a1d21;
+    --color-surface-muted: #23272c;
+    --color-ink: #e8eaed;
+    --color-ink-muted: #a0a7b0;
+    --color-line: #31363d;
+
+    /*
+      The pastel is 11.10:1 on #1a1d21, so on dark it needs no dusty counterpart
+      — accent and accent-fill collapse to the same colour. The service hues are
+      not repeated here; they are theme-independent.
+    */
+    --color-accent: #fcc4bf;
+    --color-accent-hover: #ffdad6;
+    --color-accent-fill: #fcc4bf;
+    --color-accent-fill-hover: #ffdad6;
+    --color-accent-fill-ink: #14181d;
+    --color-accent-tint: #2d2320;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-surface: #1a1d21;
+  --color-surface-muted: #23272c;
+  --color-ink: #e8eaed;
+  --color-ink-muted: #a0a7b0;
+  --color-line: #31363d;
+
+  --color-accent: #fcc4bf;
+  --color-accent-hover: #ffdad6;
+  --color-accent-fill: #fcc4bf;
+  --color-accent-fill-hover: #ffdad6;
+  --color-accent-fill-ink: #14181d;
+  --color-accent-tint: #2d2320;
+}
+
+@layer base {
+  html {
+    /* Default; the unlayered dark blocks above override it, since unlayered
+       CSS outranks anything in @layer base. */
+    color-scheme: light;
+    /* Stops iOS Safari inflating text in landscape. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.65;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  /*
+    One global focus ring (CLAUDE.md §11). :focus-visible rather than :focus so
+    mouse users do not see it on click. The 2px offset is what keeps it visible
+    on accent-filled buttons, where a ring drawn inside would vanish.
+  */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
