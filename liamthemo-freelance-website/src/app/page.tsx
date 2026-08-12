@@ -10,16 +10,15 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-24">
+    // The layout now owns <main>, so this only supplies the content inside it.
+    <div className="flex items-center justify-center px-5 py-24 sm:px-8">
       <div className="max-w-md text-center">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Site under construction
-        </h1>
-        <p className="mt-4 text-base leading-7 opacity-70">
+        <h1 className="text-h1">Site under construction</h1>
+        <p className="mt-4 text-body text-ink-muted">
           Automation, spreadsheets, websites, and tech help for individuals and
           small businesses. The full site is on its way.
         </p>
       </div>
-    </main>
+    </div>
   );
 }
