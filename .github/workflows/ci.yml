@@ -1,0 +1,94 @@
+name: CI
+
+# The Next.js app lives in liamthemo-freelance-website/, not at the repo root,
+# so every job sets working-directory. GitHub only reads workflows from the root
+# .github/workflows/, so this file cannot move next to the app.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Cancel superseded PR runs, but never cancel a deploy midway.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: liamthemo-freelance-website
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          # wrangler@4 requires Node >= 22.
+          node-version: 22
+          cache: npm
+          cache-dependency-path: liamthemo-freelance-website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # Generates cloudflare-env.d.ts from wrangler.jsonc. Runs before the
+      # typecheck so binding types are never stale.
+      - name: Generate Cloudflare types
+        run: npm run cf-typegen
+
+      - name: Build
+        run: npm run build
+        # Build-time environment variables go here (CLAUDE.md §4.3). Anything
+        # NEXT_PUBLIC_* or read during `next build` must be declared in this env
+        # block — Worker runtime secrets are NOT visible to this step.
+        # env:
+        #   NEXT_PUBLIC_EXAMPLE: ${{ vars.NEXT_PUBLIC_EXAMPLE }}
+
+      # Must run AFTER the build. Next 16 generates the typed-routes helpers
+      # (LayoutProps, PageProps) into .next/types/ during `next build`, and
+      # tsconfig includes them. On a fresh checkout .next/ does not exist, so
+      # running this first fails with "Cannot find name 'LayoutProps'".
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+  deploy:
+    name: Deploy to Cloudflare Workers
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: liamthemo-freelance-website
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: liamthemo-freelance-website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Runs `opennextjs-cloudflare build && opennextjs-cloudflare deploy`.
+      # This rebuilds rather than reusing the verify job's output — the two jobs
+      # run on separate machines, and the OpenNext build produces a different
+      # artifact (.open-next/) than `next build` does. Costs about a minute.
+      - name: Build and deploy
+        run: npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Build-time variables must be repeated here — this job runs its own
+          # build and does not inherit anything from the verify job.
