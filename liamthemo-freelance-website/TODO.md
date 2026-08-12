@@ -6,9 +6,38 @@ How-to lives in [`DEPLOYMENT.md`](./DEPLOYMENT.md) — this file tracks *what* i
 
 ---
 
-## Do now — step 1, the layout shell
+## Do now — step 3, `services.ts` and the service page template
 
-See the build order below.
+See the build order below. Step 3 is now the blocker for everything: the five triage
+destinations 404 until it lands, which is also why `/` is still `noindex`.
+
+### Palette gotcha found in step 2 — applies to every future component
+
+**A pastel fill can never sit behind text that is not ink.** The keyword mark on the home
+page was first built as a highlighter crossing the lower third of the letterforms. That is
+11.7:1 in the light theme (ink on pastel) and **1.26:1 in the dark theme**, because the
+heading colour flips to `#e8eaed` while `--color-accent-fill` stays `#fcc4bf`. The word
+vanished where the band crossed it. No `dark:` variant is allowed and no single band colour
+clears 4.5:1 against near-white text while staying visible on `#1a1d21`, so the geometry had
+to change: the band now sits below the baseline and touches no glyph.
+
+The general rule: a pastel fill is only safe under text whose colour is theme-independent.
+`accent-fill-ink` is fixed across both themes, which is exactly why buttons and the CTA band
+work. `text-ink` is not. Check which one is in play before putting anything on a pastel.
+
+### Carry-forward from step 2 — read before building step 5
+
+- **`/contact` must read `?topic=` on the client, not the server.** Reading `searchParams`
+  in `contact/page.tsx` makes that page dynamically rendered, so every visit invokes the
+  Worker (CLAUDE.md §4.1). Reading it with `useSearchParams()` inside `QuoteForm` keeps the
+  page static; Next 16 requires the calling client component to sit inside a `<Suspense>`
+  boundary or the build fails outright.
+- **The topic values are already fixed** by `ServiceTriage.tsx` — `automation`, `excel-data`,
+  `local-tech-help`, `websites`, `roblox`, `unsure`. The form's service field must accept
+  exactly these, and `unsure` must resolve to a real, friendly option rather than an
+  unmatched value that silently falls back to blank.
+- **Each service page's CTA carries `?topic=<slug>`** — that is the second half of the §7
+  passthrough. The triage widget only carries it directly for `unsure`.
 
 ## Done — first deploy
 
@@ -70,8 +99,21 @@ From CLAUDE.md §14. Ship 0–5 before polishing anything.
   - [x] Verified locally: `npm run build`, `npx tsc --noEmit`, `opennextjs-cloudflare build`
   - [x] First green deploy verified at `https://liamthemo.orangecheasy.workers.dev`
         (`200`, `x-opennext: 1`, `x-nextjs-prerender: 1`, `noindex` intact)
-- [ ] **1. Layout shell** — Navbar, Footer, typography scale, Tailwind theme tokens
+- [x] **1. Layout shell** — Navbar, Footer, typography scale, Tailwind theme tokens
 - [ ] **2. Home** — hero, triage widget, social proof strip
+  - [x] Hero — positioning line, quote CTA, secondary link to `/services`
+  - [x] `ServiceTriage.tsx` — six real `<Link>`s per §7, server component, zero client JS
+  - [x] `CTASection.tsx` — reusable closing conversion block, used by steps 3/4/6 too
+  - [x] Verified `/` still prerenders as `○ (Static)` in the build output
+  - [x] `Mark.tsx` — keyword emphasis on "time"; `ProcessDiagram.tsx` — hero schematic;
+        dot-grid hero texture. All static, all from tokens, no new dependencies.
+  - [ ] **Mobile not visually verified.** Chrome refused to resize below the maximized
+        window and blocked the popup fallback, so the 320px layout was checked by class
+        inspection only, not by eye. Worth one manual pass in devtools before merging.
+  - [ ] **Social proof strip — blocked on the owner.** Not built rather than faked (§10).
+        Needs any one of: a real Restaurant Sales Parser metric (hours saved per week and
+        the manual step removed), permission to name Fuse Factory publicly, or a screenshot
+        of real work that can be shown.
 - [ ] **3. `services.ts`** + dynamic service page template
 - [ ] **4. `projects.ts`** + portfolio index and case study template (Restaurant Sales Parser first)
 - [ ] **5. Quote form** with working delivery to the owner's inbox
@@ -104,4 +146,9 @@ From CLAUDE.md §15. These are the owner's calls, not Claude's.
 
 - [ ] `public/` still contains the create-next-app default SVGs (`next.svg`, `vercel.svg`,
       `file.svg`, `globe.svg`, `window.svg`) — remove once real assets exist
-- [ ] `src/app/page.tsx` is still the create-next-app default, including Vercel deploy links
+- [x] ~~`src/app/page.tsx` is still the create-next-app default~~ — real home page as of step 2
+- [ ] **`/` is still `noindex`**, now for a different reason than the placeholder was: the five
+      triage links 404 until step 3. Indexing a homepage whose main links are dead is worse
+      than waiting. Remove the `robots` key in `src/app/page.tsx` at step 7.
+- [ ] `layout.tsx` metadata still defaults to "Under construction" — it is the fallback title
+      for every page that does not set its own. Fix alongside the business/display name.
