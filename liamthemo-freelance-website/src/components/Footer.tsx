@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Eyebrow from "@/components/Eyebrow";
 import { CTA, mainNav, serviceNav, SITE_NAME } from "@/lib/nav";
 
 /*
@@ -12,7 +13,9 @@ import { CTA, mainNav, serviceNav, SITE_NAME } from "@/lib/nav";
 */
 
 const linkClasses = "text-small text-ink-muted transition-colors hover:text-ink";
-const headingClasses = "text-eyebrow uppercase text-ink";
+// The hairline between columns is part of the grid this direction is built on.
+// Only at lg, where the columns actually sit side by side.
+const columnClasses = "lg:border-l lg:border-line lg:pl-8";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -41,10 +44,10 @@ export default function Footer() {
             </Link>
           </div>
 
-          <nav aria-labelledby="footer-services">
-            <h2 id="footer-services" className={headingClasses}>
+          <nav aria-labelledby="footer-services" className={columnClasses}>
+            <Eyebrow as="h2" id="footer-services">
               Services
-            </h2>
+            </Eyebrow>
             <ul className="mt-4 flex flex-col gap-2.5">
               {serviceNav.map((link) => (
                 <li key={link.href}>
@@ -56,10 +59,10 @@ export default function Footer() {
             </ul>
           </nav>
 
-          <nav aria-labelledby="footer-site">
-            <h2 id="footer-site" className={headingClasses}>
+          <nav aria-labelledby="footer-site" className={columnClasses}>
+            <Eyebrow as="h2" id="footer-site">
               Site
-            </h2>
+            </Eyebrow>
             <ul className="mt-4 flex flex-col gap-2.5">
               {mainNav.map((link) => (
                 <li key={link.href}>

@@ -4,14 +4,25 @@
   Design tokens. Everything visual should come from here rather than from
   one-off hex values in components — see CLAUDE.md §9.
 
-  Deliberately light-only. There is no `prefers-color-scheme: dark` block, and
-  adding one is a real design decision rather than a default: an unconsidered
-  dark mode is how this drifts into the "near-black background with one acid
-  accent" anti-goal.
+  THEMES
+  ------
+  This block defines the LIGHT theme. Dark overrides the same variable names
+  further down, which is why no component in this codebase uses a `dark:`
+  variant: components reference roles (`bg-surface`, `text-ink`), and the theme
+  decides what those resolve to. Changing the palette should never mean touching
+  a component.
+
+  The dark theme is dark grey (#1a1d21), not black — 1.24:1 off pure black. That
+  plus a soft coral accent is what keeps it clear of §9's "near-black background
+  with one acid-green accent" anti-goal.
 */
 @theme {
-  /* --- Colour ---------------------------------------------------------- */
-  /* Cool-neutral, not cream. Warm off-whites are an explicit anti-goal. */
+  /* --- Colour: light theme --------------------------------------------- */
+  /*
+    Cool-neutral greys, not cream. A warm off-white base under a coral accent is
+    the "cream + terracotta" anti-goal (§9); the cool greys are what keep this
+    palette clear of it.
+  */
   --color-surface: #ffffff;
   --color-surface-muted: #f4f6f8;
   --color-ink: #14181d;
@@ -19,14 +30,22 @@
   --color-line: #e3e7eb;
 
   /*
-    One accent, used for actions only: links, buttons, focus rings. If it
-    appears on something you cannot click, that is a bug.
-    #0d6b64 on white is 6.35:1 — passes AA for body text, AAA for large text,
-    and clears the 3:1 floor for the focus ring as a non-text indicator.
+    Coral has three roles, and the split is a contrast requirement rather than a
+    stylistic one. A pastel is too light to carry text on white — #ffb4a2 is
+    about 1.9:1 there — so in the light theme the pastel becomes a surface tint
+    and a deepened coral does the interactive work. The dark theme inverts this:
+    the pastel has plenty of contrast on dark grey, so it becomes the accent.
+
+    `accent`         actions only — links, buttons, focus rings.  5.52:1
+    `accent-ink`     the label colour on an accent fill.          5.52:1
+    `accent-graphic` rules, ticks, marks. NEVER text.             3.78:1
+    `accent-tint`    soft fill; text on it must be ink.          16.18:1
   */
-  --color-accent: #0d6b64;
-  --color-accent-hover: #0a544e;
+  --color-accent: #b8402a;
+  --color-accent-hover: #96331f;
   --color-accent-ink: #ffffff;
+  --color-accent-graphic: #e0563a;
+  --color-accent-tint: #fff1ed;
 
   /* --- Type ------------------------------------------------------------ */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -63,8 +82,63 @@
   --text-eyebrow--font-weight: 600;
 }
 
+/*
+  Dark theme. Same variable names, different values — see the note at the top.
+
+  Three states are supported, and the two selectors below cover all of them:
+
+    no data-theme attribute  -> follow the operating system
+    data-theme="dark"        -> forced dark, regardless of the OS
+    data-theme="light"       -> forced light, regardless of the OS
+
+  The `:not([data-theme="light"])` guard is what makes an explicit light choice
+  survive an OS set to dark. Both selectors have equal specificity, but they can
+  never both apply with conflicting values, so source order does not matter.
+
+  `color-scheme` is not decoration: it tells the browser to render scrollbars,
+  form controls and the canvas in the matching theme. Without it those stay
+  light against a dark page.
+*/
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --color-surface: #1a1d21;
+    --color-surface-muted: #23272c;
+    --color-ink: #e8eaed;
+    --color-ink-muted: #a0a7b0;
+    --color-line: #31363d;
+
+    /* The pastel is 9.91:1 on #1a1d21, so here it can carry text and actions. */
+    --color-accent: #ffb4a2;
+    --color-accent-hover: #ffcabd;
+    --color-accent-ink: #14181d;
+    --color-accent-graphic: #ffb4a2;
+    --color-accent-tint: #2d2320;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-surface: #1a1d21;
+  --color-surface-muted: #23272c;
+  --color-ink: #e8eaed;
+  --color-ink-muted: #a0a7b0;
+  --color-line: #31363d;
+
+  --color-accent: #ffb4a2;
+  --color-accent-hover: #ffcabd;
+  --color-accent-ink: #14181d;
+  --color-accent-graphic: #ffb4a2;
+  --color-accent-tint: #2d2320;
+}
+
 @layer base {
   html {
+    /* Default; the unlayered dark blocks above override it, since unlayered
+       CSS outranks anything in @layer base. */
+    color-scheme: light;
     /* Stops iOS Safari inflating text in landscape. */
     -webkit-text-size-adjust: 100%;
   }

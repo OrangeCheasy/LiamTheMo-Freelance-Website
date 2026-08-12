@@ -15,6 +15,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import ThemeToggle from "@/components/ThemeToggle";
 import { CTA, mainNav, SITE_NAME } from "@/lib/nav";
 
 const FOCUSABLE = "a[href], button:not([disabled])";
@@ -119,15 +120,20 @@ export default function Navbar() {
           {SITE_NAME}
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-6 md:flex">
           <ul className="flex items-center gap-6">
             {mainNav.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
-                  className={`text-small transition-colors hover:text-ink ${
-                    isActive(link.href) ? "font-medium text-ink" : "text-ink-muted"
+                  // Active gets the orange rule. Graphic orange is legal here
+                  // because the rule is a non-text element — the label itself
+                  // stays ink (see the contrast note in globals.css).
+                  className={`relative text-small transition-colors hover:text-ink ${
+                    isActive(link.href)
+                      ? "font-medium text-ink after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-accent-graphic after:content-['']"
+                      : "text-ink-muted"
                   }`}
                 >
                   {link.label}
@@ -135,36 +141,45 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <Link href={CTA.href} className={ctaClasses}>
-            {CTA.label}
-          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Link href={CTA.href} className={ctaClasses}>
+              {CTA.label}
+            </Link>
+          </div>
         </nav>
 
-        <button
-          ref={toggleRef}
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          className="-mr-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink md:hidden"
-        >
-          <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            className="h-6 w-6"
+        {/* Mobile controls, grouped so justify-between still splits the bar into
+            two ends. The theme toggle sits outside the panel so it is reachable
+            without opening the menu. */}
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle />
+          <button
+            ref={toggleRef}
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="-mr-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink"
           >
-            {open ? (
-              <path d="M6 6l12 12M18 6L6 18" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            )}
-          </svg>
-        </button>
+            <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              className="h-6 w-6"
+            >
+              {open ? (
+                <path d="M6 6l12 12M18 6L6 18" />
+              ) : (
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -179,8 +194,12 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     aria-current={isActive(link.href) ? "page" : undefined}
-                    className={`block border-b border-line py-3 ${
-                      isActive(link.href) ? "font-medium text-ink" : "text-ink-muted"
+                    // Same marker rotated: an orange bar down the left edge.
+                    // Inactive items keep a transparent one so nothing shifts.
+                    className={`block border-b border-l-2 border-line py-3 pl-3 ${
+                      isActive(link.href)
+                        ? "border-l-accent-graphic font-medium text-ink"
+                        : "border-l-transparent text-ink-muted"
                     }`}
                   >
                     {link.label}
