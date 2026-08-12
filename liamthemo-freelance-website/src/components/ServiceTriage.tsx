@@ -49,7 +49,7 @@ interface TriageOption {
 const options: readonly TriageOption[] = [
   {
     label: "I have a repetitive task",
-    hint: "Reports, file processing, data entry",
+    hint: "Reports, File processing, Data entry",
     href: "/services/automation",
     emoji: "🔄",
     topic: "automation",
@@ -57,7 +57,7 @@ const options: readonly TriageOption[] = [
   },
   {
     label: "I need help with data or Excel",
-    hint: "Spreadsheets, dashboards, trackers",
+    hint: "Spreadsheets, Dashboards, Trackers",
     href: "/services/excel-data",
     emoji: "📊",
     topic: "excel-data",
@@ -65,7 +65,7 @@ const options: readonly TriageOption[] = [
   },
   {
     label: "My computer or technology isn't working",
-    hint: "Setup, printers, Wi-Fi, backups",
+    hint: "Setups, Repairs, Printers, Wi-Fi, Network, Backups, Hardware, Software",
     href: "/services/local-tech-help",
     emoji: "🖥️",
     topic: "local-tech-help",
@@ -73,7 +73,7 @@ const options: readonly TriageOption[] = [
   },
   {
     label: "I need a website",
-    hint: "Small-business sites, landing pages, menus",
+    hint: "Small-business sites, Landing pages, Menus",
     href: "/services/websites",
     emoji: "🌐",
     topic: "websites",
@@ -81,7 +81,7 @@ const options: readonly TriageOption[] = [
   },
   {
     label: "I need Roblox development",
-    hint: "Luau scripting, gameplay and UI systems",
+    hint: "Luau scripting, Gameplay and UI systems",
     href: "/services/roblox",
     emoji: "🎮",
     topic: "roblox",
