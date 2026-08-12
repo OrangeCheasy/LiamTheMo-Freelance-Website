@@ -153,6 +153,16 @@ Still not set, and correctly absent from the data: per-service pricing (`startin
 delivery times (`turnaround`). Both fields are optional in the type for this reason. Do not add
 "contact for pricing" as a placeholder value.
 
+### New question raised by widening local tech help
+
+Local tech help now advertises new PC builds and hardware repair, which introduces a policy
+none of the other services need:
+
+- **Who buys the parts?** Does the client purchase from a list, or are parts bought on their
+  behalf and billed on? This also decides **who holds the manufacturer warranty**, which is the
+  part clients actually care about when a drive dies in ten months. Deliberately not answered
+  in the FAQs — it is a money-and-liability question, not a wording choice.
+
 ## Open decisions
 
 From CLAUDE.md §15. These are the owner's calls, not Claude's.

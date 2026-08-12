@@ -167,26 +167,42 @@ export const services: readonly Service[] = [
       special case in the JSX for one slug, is exactly what this phase exists
       to avoid.
     */
-    tagline: "Get it working again, in person around Calgary or remotely.",
+    tagline: "Get it fixed, upgraded, or built properly, in person around Calgary or remotely.",
     icon: "🖥️",
+    /*
+      This service covers more ground than the others — diagnosis, hardware
+      repair, new builds, software faults, networking, migrations and backups —
+      so its `problems` list is longer than the six the other four carry. That is
+      the list earning its length, not padding. If it grows much past this,
+      splitting the heavier work into its own service line is the better move.
+    */
     problems: [
+      "I want a computer built for what I actually do, not whatever the shop is selling",
+      "It was working fine, then it made a noise and now it will not turn on",
+      "It crashes at random and I have been given three different explanations",
+      "The program we run the business on stopped working after an update",
       "My computer has got slower every month and I do not know why",
+      "It is four years old and I cannot tell whether it is worth fixing or replacing",
       "The printer worked yesterday and today it does not",
       "The Wi-Fi drops out in half the building",
       "I bought a new laptop and everything is still on the old one",
       "I have never backed anything up and I know I should have",
-      "Something asked me to update and now a program will not open",
     ],
     deliverables: [
-      "The problem fixed, and an explanation of what caused it",
+      "A straight answer on what is wrong and what caused it",
+      "The repair done, or an honest reason why replacing is the better spend",
+      "A computer built and tested to a parts list chosen for your budget and the work you actually do",
       "Your files moved across with nothing left behind",
       "A backup that runs on its own instead of when you remember",
       "Notes on what was changed, so the next person is not guessing",
     ],
+    // Worded to cover a build as well as a fault. "Describe what is happening"
+    // only makes sense when something is already broken, which is no longer the
+    // whole of this service.
     process: [
-      "You describe what is happening and when it started",
-      "I confirm what I think it is and what looking at it costs",
-      "I fix it and show you that it is working",
+      "You tell me what is going wrong, or what you want the machine to do",
+      "I confirm what I think it is and what it would cost to sort out",
+      "I fix it or build it, and show you it working",
       "You get a short note of what was changed and why",
     ],
     faqs: [
