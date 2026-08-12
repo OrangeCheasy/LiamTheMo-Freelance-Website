@@ -37,8 +37,9 @@ Instructions kept in [`DEPLOYMENT.md` §2](./DEPLOYMENT.md#2-one-time-cloudflare
 
 ## Decisions blocking step 0
 
-- [x] ~~**Worker name**~~ — **`liamthemo`**. Serves at `liamthemo.<subdomain>.workers.dev` until the
-      custom domain is attached. Staging, if ever needed, would be `liamthemo-staging`.
+- [x] ~~**Worker name**~~ — **`liamthemo`**. Serves at `https://liamthemo.orangecheasy.workers.dev`
+      until the custom domain is attached (`orangecheasy` is the *account* subdomain and is unrelated
+      to `liamthemo.com`). Staging, if ever needed, would be `liamthemo-staging`.
 
 - [x] ~~**What ships on the placeholder deploy**~~ — only `/`. The `about/`, `services/`, and
       `portfolio/` pages turned out to be byte-identical copies of the create-next-app default page,
@@ -67,7 +68,7 @@ From CLAUDE.md §14. Ship 0–5 before polishing anything.
   - [x] Under-construction page at `/`, `noindex` while it is a placeholder
   - [ ] **`npm install` to regenerate the lockfile** — see the top of this file
   - [ ] Verified locally: `npm run build`, `npx tsc --noEmit`, `npm run preview`
-  - [ ] First green deploy verified at `liamthemo.<subdomain>.workers.dev`
+  - [ ] First green deploy verified at `https://liamthemo.orangecheasy.workers.dev`
 - [ ] **1. Layout shell** — Navbar, Footer, typography scale, Tailwind theme tokens
 - [ ] **2. Home** — hero, triage widget, social proof strip
 - [ ] **3. `services.ts`** + dynamic service page template
