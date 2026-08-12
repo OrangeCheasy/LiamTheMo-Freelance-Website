@@ -20,9 +20,11 @@ import { CTA, mainNav, SITE_NAME } from "@/lib/nav";
 
 const FOCUSABLE = "a[href], button:not([disabled])";
 
+// Pastel fill, ink label, dusty border. The border is not decoration: without
+// it a pastel block is 1.52:1 against a white page and stops looking clickable.
 const ctaClasses =
-  "inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 " +
-  "text-small font-semibold text-accent-ink transition-colors hover:bg-accent-hover";
+  "inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-4 py-2 " +
+  "text-small font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -127,12 +129,11 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
-                  // Active gets the orange rule. Graphic orange is legal here
-                  // because the rule is a non-text element — the label itself
-                  // stays ink (see the contrast note in globals.css).
+                  // The active rule uses the dusty tone, not the pastel — a
+                  // pastel hairline on white is invisible (see globals.css).
                   className={`relative text-small transition-colors hover:text-ink ${
                     isActive(link.href)
-                      ? "font-medium text-ink after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-accent-graphic after:content-['']"
+                      ? "font-medium text-ink after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-accent after:content-['']"
                       : "text-ink-muted"
                   }`}
                 >
@@ -198,7 +199,7 @@ export default function Navbar() {
                     // Inactive items keep a transparent one so nothing shifts.
                     className={`block border-b border-l-2 border-line py-3 pl-3 ${
                       isActive(link.href)
-                        ? "border-l-accent-graphic font-medium text-ink"
+                        ? "border-l-accent font-medium text-ink"
                         : "border-l-transparent text-ink-muted"
                     }`}
                   >

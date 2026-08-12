@@ -38,7 +38,7 @@ export default function Footer() {
             </p>
             <Link
               href={CTA.href}
-              className="mt-6 inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-small font-semibold text-accent-ink transition-colors hover:bg-accent-hover"
+              className="mt-6 inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-4 py-2 text-small font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover"
             >
               {CTA.label}
             </Link>

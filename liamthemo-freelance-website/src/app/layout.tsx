@@ -54,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-5 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-small focus:font-semibold focus:text-accent-ink"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-5 focus:z-[60] focus:rounded-lg focus:border focus:border-accent focus:bg-accent-fill focus:px-4 focus:py-2 focus:text-small focus:font-semibold focus:text-accent-fill-ink"
         >
           Skip to content
         </a>

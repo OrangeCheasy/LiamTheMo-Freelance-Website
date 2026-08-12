@@ -30,22 +30,50 @@
   --color-line: #e3e7eb;
 
   /*
-    Coral has three roles, and the split is a contrast requirement rather than a
-    stylistic one. A pastel is too light to carry text on white — #ffb4a2 is
-    about 1.9:1 there — so in the light theme the pastel becomes a surface tint
-    and a deepened coral does the interactive work. The dark theme inverts this:
-    the pastel has plenty of contrast on dark grey, so it becomes the accent.
+    Coral splits into a PASTEL and a DUSTY tone, and the split is a contrast
+    requirement rather than a stylistic one (CLAUDE.md §9.2).
 
-    `accent`         actions only — links, buttons, focus rings.  5.52:1
-    `accent-ink`     the label colour on an accent fill.          5.52:1
-    `accent-graphic` rules, ticks, marks. NEVER text.             3.78:1
-    `accent-tint`    soft fill; text on it must be ink.          16.18:1
+    A pastel measures 1.5–1.8:1 on white. It can therefore never be text, a
+    hairline, an icon stroke or a focus ring in the light theme — it fails both
+    the 4.5:1 text bar and the 3:1 non-text bar. It is only ever a FILL, with ink
+    on top. The dusty tone does everything that needs contrast.
+
+    `accent`       dusty. Link text, focus rings, thin rules.       5.91:1
+    `accent-fill`  pastel. Button and block backgrounds.
+    `accent-fill-ink`  the label on a pastel fill.                 11.70:1
+    `accent-tint`  softest wash, for callouts. Text on it is ink.  16.19:1
+
+    A pastel fill on white is only 1.52:1 against the page, so the block's own
+    edge is invisible and it stops reading as a control. Every pastel fill
+    therefore carries `border-accent`. In the dark theme that border matches the
+    fill and does nothing — harmless, because there the fill already has 11.10:1
+    against the background.
   */
-  --color-accent: #b8402a;
-  --color-accent-hover: #96331f;
-  --color-accent-ink: #ffffff;
-  --color-accent-graphic: #e0563a;
-  --color-accent-tint: #fff1ed;
+  --color-accent: #ad3f3c;
+  --color-accent-hover: #8f3230;
+  --color-accent-fill: #fcc4bf;
+  --color-accent-fill-hover: #f8ada6;
+  --color-accent-fill-ink: #14181d;
+  --color-accent-tint: #fff1ee;
+
+  /*
+    Service identity hues (CLAUDE.md §1's five service lines). One OKLCH family:
+    L=0.87, C=0.065, hue varies — identical tone, so they read as a set rather
+    than five unrelated colours.
+
+    These are IDENTITY ONLY. Never a button, never a link, never a focus ring —
+    coral above stays the single action colour. They are theme-independent by
+    design: light fills with ink labels work on white and on dark grey alike,
+    and every one measures better than 11.7:1.
+
+    Unused until build order step 3; Tailwind drops unused theme variables from
+    the output, so they cost nothing until a component references them.
+  */
+  --color-service-automation: #fcc4bf;
+  --color-service-excel: #e1d4a4;
+  --color-service-websites: #ade2ca;
+  --color-service-local: #b8d7ff;
+  --color-service-roblox: #ebc6ec;
 
   /* --- Type ------------------------------------------------------------ */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -109,11 +137,16 @@
     --color-ink-muted: #a0a7b0;
     --color-line: #31363d;
 
-    /* The pastel is 9.91:1 on #1a1d21, so here it can carry text and actions. */
-    --color-accent: #ffb4a2;
-    --color-accent-hover: #ffcabd;
-    --color-accent-ink: #14181d;
-    --color-accent-graphic: #ffb4a2;
+    /*
+      The pastel is 11.10:1 on #1a1d21, so on dark it needs no dusty counterpart
+      — accent and accent-fill collapse to the same colour. The service hues are
+      not repeated here; they are theme-independent.
+    */
+    --color-accent: #fcc4bf;
+    --color-accent-hover: #ffdad6;
+    --color-accent-fill: #fcc4bf;
+    --color-accent-fill-hover: #ffdad6;
+    --color-accent-fill-ink: #14181d;
     --color-accent-tint: #2d2320;
   }
 }
@@ -127,10 +160,11 @@
   --color-ink-muted: #a0a7b0;
   --color-line: #31363d;
 
-  --color-accent: #ffb4a2;
-  --color-accent-hover: #ffcabd;
-  --color-accent-ink: #14181d;
-  --color-accent-graphic: #ffb4a2;
+  --color-accent: #fcc4bf;
+  --color-accent-hover: #ffdad6;
+  --color-accent-fill: #fcc4bf;
+  --color-accent-fill-hover: #ffdad6;
+  --color-accent-fill-ink: #14181d;
   --color-accent-tint: #2d2320;
 }
 

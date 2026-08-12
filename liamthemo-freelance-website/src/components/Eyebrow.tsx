@@ -1,12 +1,12 @@
 import type { ElementType, ReactNode } from "react";
 
 /*
-  The signature element of the "marked up" direction: a short orange rule above
-  a small tracked label. Used to title sections and footer columns.
+  The signature element of the "marked up" direction: a short coral rule above a
+  small tracked label. Used to title sections and footer columns.
 
-  The rule is graphic orange (#ff481f), which is legal only because it is a
-  non-text element — the label below it is ink. See the contrast note in
-  globals.css before using that colour anywhere else.
+  The rule uses the dusty accent, not the pastel. A pastel hairline on a light
+  surface measures about 1.5:1 and is effectively invisible — see the contrast
+  note in globals.css.
 */
 
 interface EyebrowProps {
@@ -25,7 +25,7 @@ export default function Eyebrow({
 }: EyebrowProps) {
   return (
     <div className={className}>
-      <span aria-hidden="true" className="block h-0.5 w-8 bg-accent-graphic" />
+      <span aria-hidden="true" className="block h-0.5 w-8 bg-accent" />
       <Label id={id} className="mt-3 text-eyebrow uppercase text-ink">
         {children}
       </Label>

@@ -65,7 +65,7 @@ Vercel's free Hobby tier prohibits commercial use, and Vercel defines "commercia
 **Rules:**
 - No new dependencies without justification. State the tradeoff before adding one. A 40 KB animation library for one fade is a bad trade.
 - No CSS-in-JS, no styled-components, no UI kit. Tailwind only.
-- Server Components by default. Add `"use client"` only where interactivity actually requires it (forms, the triage widget, mobile nav).
+- Server Components by default. Add `"use client"` only where interactivity actually requires it (forms, the triage widget, mobile nav, the theme toggle).
 - **Node.js runtime only.** Never set `export const runtime = "edge"`. The OpenNext adapter targets the Node.js runtime; the Edge runtime is the older `next-on-pages` path and is not what this project uses.
 - No database until there's a reason for one. Content lives in typed files under `src/data/`.
 - Prefer static rendering. Every page that can be prerendered should be. See §4.1 for why this is a cost and reliability decision, not just a performance one.
@@ -290,13 +290,31 @@ This is the signature element of the home page and the main conversion mechanic.
 - Stock photos of people in offices pointing at laptops
 
 **Direction to work within, unless the owner overrides it:**
-- Light, high-legibility base. One confident accent color used for actions and nothing else. If a color appears on a non-clickable element, it should not be the accent.
-- Type: one characterful display face for headings used with restraint, one highly legible body face. Set a real type scale. Avoid the default Next.js font stack.
+- High-legibility base in both themes. One accent hue used for actions and nothing else. If a color appears on a non-clickable element, it should not be the accent.
+- Type: one characterful display face for headings used with restraint, one highly legible body face. Set a real type scale. Avoid the default Next.js font stack. Currently Bricolage Grotesque for headings, Inter for body.
 - Generous whitespace, restrained borders, no heavy shadows. Precision over decoration.
 - Motion: subtle and purposeful only — hover states, one scroll reveal at most per page. Respect `prefers-reduced-motion`.
 - Real screenshots of actual work beat any illustration. Show the dashboard. Show the parser output. Show the game.
 
 Before building a new page section, propose the layout in one or two sentences and get a yes. Do not silently redesign existing pages.
+
+### 9.1 Themes — owner override to "light base"
+
+The site ships **two themes with a visitor-facing toggle**, overriding the light-only line above.
+
+- Dark is **dark grey (`#1a1d21`), never black.** Black plus a saturated accent is the anti-goal above; dark grey plus a pastel is not.
+- Three states: no stored preference follows the OS, an explicit choice wins over it. A blocking inline script in the root layout applies the stored choice before first paint — without it, returning visitors see a flash of the wrong theme.
+- Both themes are **pastel**, not just the dark one.
+
+### 9.2 The colour rules — do not break these
+
+**Never write a `dark:` variant.** Both themes define the same custom-property names with different values in `globals.css`. Components reference roles — `bg-surface`, `text-ink`, `bg-accent` — and the theme decides what they resolve to. A palette change must never require touching a component. If you find yourself adding `dark:`, the token is missing; add the token.
+
+**Pastels fill; ink labels.** A pastel is 1.3:1–1.8:1 against a light surface. It therefore may *never* carry text, a hairline, an icon stroke, or a focus ring on a light background — it fails both the 4.5:1 text bar and the 3:1 non-text bar. Pastel is legal as a **filled area** (buttons, cards, bands, chips) with ink text on top, which measures 10:1 or better.
+
+**Every colour pair is measured before it ships**, in both themes: body text ≥ 4.5:1, large text and non-text indicators ≥ 3:1. Do not eyeball a pastel — they are exactly the case where intuition is wrong.
+
+The palette itself lives in `src/app/globals.css` and is documented there. Do not copy hex values into this file; they will go stale.
 
 ---
 
