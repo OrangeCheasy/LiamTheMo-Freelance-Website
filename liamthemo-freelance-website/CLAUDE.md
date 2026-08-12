@@ -52,27 +52,100 @@ If a proposed feature does not serve one of those, say so plainly and recommend 
 | Styling | Tailwind CSS |
 | Source control | GitHub |
 | Dev environment | GitHub Codespaces |
-| Hosting | Vercel |
-| Domain | Custom `.ca` / `.com` (pending) |
+| Hosting | **Cloudflare Workers** via `@opennextjs/cloudflare` |
+| Deploy tooling | Wrangler + GitHub Actions |
+| DNS + domain | Cloudflare (custom `.ca` / `.com`, pending) |
+
+### Why Cloudflare and not Vercel
+
+Vercel's free Hobby tier prohibits commercial use, and Vercel defines "commercial" to include any site built or hosted for financial gain — a freelancer's own lead-generation site qualifies. Staying on Vercel legitimately would mean $20/month from day one. Cloudflare Workers has no such restriction and the free tier comfortably covers a marketing site.
+
+**The tradeoff, stated plainly:** Vercel's developer experience for Next.js is better. Cloudflare requires an adapter, a `wrangler.jsonc`, a deploy workflow, and more care around environment variables. That setup cost is paid once. Do not reintroduce Vercel-specific APIs or assume Vercel behaviour anywhere in this codebase.
 
 **Rules:**
 - No new dependencies without justification. State the tradeoff before adding one. A 40 KB animation library for one fade is a bad trade.
 - No CSS-in-JS, no styled-components, no UI kit. Tailwind only.
 - Server Components by default. Add `"use client"` only where interactivity actually requires it (forms, the triage widget, mobile nav).
+- **Node.js runtime only.** Never set `export const runtime = "edge"`. The OpenNext adapter targets the Node.js runtime; the Edge runtime is the older `next-on-pages` path and is not what this project uses.
 - No database until there's a reason for one. Content lives in typed files under `src/data/`.
+- Prefer static rendering. Every page that can be prerendered should be. See §4.1 for why this is a cost and reliability decision, not just a performance one.
 
 ---
 
 ## 4. Commands
 
 ```bash
-npm run dev      # local dev server
-npm run build    # production build — must pass before any PR
-npm run lint     # eslint
-npx tsc --noEmit # typecheck
+npm run dev       # next dev — normal Next.js dev loop, use this for everyday work
+npm run build     # next build — must pass before any PR
+npm run lint      # eslint
+npx tsc --noEmit  # typecheck
+
+npm run preview   # opennextjs-cloudflare build && ... preview — runs the real Worker locally
+npm run deploy    # opennextjs-cloudflare build && ... deploy — production deploy
+npm run cf-typegen # regenerate types for Cloudflare bindings
 ```
 
 `npm run build` and `npx tsc --noEmit` must both pass before opening a PR. No exceptions.
+
+**Additionally:** anything touching a route handler, server action, middleware, or environment variable must be verified with `npm run preview` before the PR opens. `next dev` runs in Node; production runs in workerd. They are not the same runtime, and this is where surprises appear.
+
+Use one package manager for the whole project and commit only that lockfile. Mixing npm and pnpm breaks OpenNext builds in confusing ways.
+
+### 4.1 The free-tier budget
+
+| Limit | Free plan |
+|---|---|
+| Worker requests | 100,000/day, resets 00:00 UTC |
+| CPU time | 10ms per invocation |
+| Static asset requests | Free and unlimited — they never invoke the Worker |
+| Worker bundle size | 3 MB |
+| Subrequests per invocation | 50 |
+
+**What this means for architecture:** a statically prerendered page is served from the assets binding and costs nothing. A dynamically rendered page invokes the Worker and burns request quota and CPU. For a five-service marketing site, essentially everything should be static, with the quote-form handler as the only routine dynamic path.
+
+Practical consequences:
+- Do not add `force-dynamic`, uncached `fetch`, `cookies()`, or `headers()` to a page that has no reason to be dynamic. Each one silently converts a free static page into a metered one.
+- 10ms CPU is generous for a form handler and tight for heavy SSR. If a route needs real computation, that is a signal the work belongs at build time.
+- Exceeding the daily request cap returns Cloudflare error 1027 — the site goes down rather than generating a surprise bill. Predictable, but a real failure mode worth knowing.
+- Upgrading later is $5/month and requires no code changes. Do not contort the architecture to stay free; just do not waste the free tier carelessly.
+
+### 4.2 Required config
+
+`wrangler.jsonc` at the repo root:
+
+```jsonc
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "<site-name>",
+  "compatibility_date": "2026-08-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "images": {
+    "binding": "IMAGES"
+  }
+}
+```
+
+Also required:
+- `open-next.config.ts` at the repo root
+- `.open-next/` and `.wrangler/` added to `.gitignore`
+- `initOpenNextCloudflareForDev()` called in `next.config.ts` so bindings work in `next dev`
+
+Do not hand-edit generated output in `.open-next/`. If something is wrong there, fix the source or the config.
+
+### 4.3 Environment variables — read this before adding one
+
+Cloudflare separates build-time and runtime variables, and getting this wrong is the single most common OpenNext deployment failure.
+
+- **Build-time** (anything `NEXT_PUBLIC_*`, or anything read during `next build`) must be available to the build step — in CI, that means GitHub Actions secrets/vars, not the Worker's runtime settings.
+- **Runtime** (form delivery keys, API tokens) belongs in Wrangler secrets via `wrangler secret put NAME`, read server-side only.
+- `NEXT_PUBLIC_*` values are compiled into the client bundle and are public. Never put a key there.
+
+If a build fails with an undefined variable that "definitely exists in Cloudflare," it was set as a runtime variable and needed to be a build-time one. Check that first.
 
 ---
 
@@ -198,8 +271,10 @@ This is the signature element of the home page and the main conversion mechanic.
 - The submit button says "Send request" and the success state says "Request sent." Same verb throughout.
 - On success, show what happens next and when: "I'll reply within one business day." Do not just show a checkmark.
 - Errors state what went wrong and how to fix it. No apologies, no vagueness.
-- Handle submission through a Next.js Route Handler or Server Action. **Never put an API key, form endpoint secret, or email credential in client-side code.** All secrets go in Vercel environment variables and are read server-side only.
+- Handle submission through a Next.js Route Handler or Server Action. **Never put an API key, form endpoint secret, or email credential in client-side code.** Secrets go in Wrangler secrets (`wrangler secret put`) and are read server-side only. See §4.3.
 - Add a honeypot field and basic rate limiting. This form will get spam.
+- This handler is the site's main dynamic path and the only routine consumer of the Worker request budget. Keep it lean: one outbound call to the delivery provider, no heavy parsing, no image work. Stay well under 10ms CPU.
+- Rate limiting: use Cloudflare's own WAF rate-limiting rules on the `/api/quote` path rather than building an in-Worker counter. Blocked requests are stopped at the edge and never invoke the Worker, which protects both the inbox and the daily request cap. Workers KV free tier allows only 1,000 writes/day, so KV-backed counters are a poor fit here.
 
 ---
 
@@ -244,18 +319,20 @@ Every page ships with:
 - Alt text on every image
 - Responsive from 320px up
 - Lighthouse performance ≥ 90 on mobile
-- `next/image` for all images; no raw `<img>`
+- `next/image` for all images; no raw `<img>`. Image optimization on Workers requires the `images` binding in `wrangler.jsonc` (§4.2) — it does not work by default the way it does on Vercel. Verify optimized images render correctly in `npm run preview`, not just `next dev`.
 - Per-page `metadata` export: title, description, Open Graph tags
 
 **SEO:** each service page targets a plain-language phrase a real person would search, not a job title. Include location terms on the Local Tech Help page since that service is geographically bound. Ship `sitemap.ts` and `robots.ts`. Add LocalBusiness structured data once the domain and business details are settled.
 
 ---
 
-## 12. Git workflow
+## 12. Git workflow and deployment
 
 ```
-feature branch → build → test in Codespace → commit + push
-              → GitHub PR → merge to main → Vercel auto-deploys
+feature branch → npm run dev → npm run preview (real Worker runtime)
+              → commit + push → GitHub PR (CI: lint, typecheck, build)
+              → merge to main → GitHub Actions runs opennextjs-cloudflare build
+              → wrangler deploy → live
 ```
 
 - Branch names: `feat/quote-form`, `fix/mobile-nav`, `content/restaurant-parser-case-study`
@@ -263,7 +340,14 @@ feature branch → build → test in Codespace → commit + push
 - Commit messages: imperative and specific. `Add triage widget to home page`, not `updates`.
 - One concern per PR. A PR that adds a feature and restyles the footer is two PRs.
 - PR description states what changed and how to verify it.
-- `.env.local` is gitignored and stays that way. If a secret is ever committed, rotate it — do not just delete the line.
+- `.env.local`, `.open-next/`, and `.wrangler/` are gitignored and stay that way. If a secret is ever committed, rotate it — do not just delete the line.
+
+**Deploy workflow requirements:**
+- Deployment runs from GitHub Actions on merge to `main`, on Linux. `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` live in repository secrets.
+- The API token should be scoped to Workers deploy permissions only, not an account-wide key.
+- Build-time environment variables must be declared in the Actions workflow (§4.3). A deploy that succeeds locally and fails in CI is almost always this.
+- There is no automatic preview-URL-per-PR the way Vercel provides. If preview deploys become worth it, use a separate named Worker for staging and gate it behind Cloudflare Access rather than leaving a staging URL public. Do not build this until it is actually needed.
+- If a deploy breaks production, roll back with `wrangler rollback` first and diagnose afterward.
 
 ---
 
@@ -275,9 +359,12 @@ feature branch → build → test in Codespace → commit + push
 - Push back on ideas that are overbuilt, hard to maintain solo, or unlikely to convert. Honest feedback is more useful than agreement.
 - Build reusable pieces. This site is a template for future client sites — anything hardcoded here is work repeated later.
 - Ask before making decisions the owner hasn't made: pricing, real client names, business address, phone number, legal/business-name details.
+- Call out when a change would convert a static page into a dynamically rendered one, and say why it is or isn't worth it.
 
 **Don't:**
 - Add a CMS, auth, analytics dashboard, blog engine, or database unless explicitly asked.
+- Assume Vercel. No `@vercel/*` packages, no Vercel-specific env var names, no `runtime = "edge"`, no assuming image optimization or ISR "just works" without the corresponding Cloudflare binding.
+- Reach for Workers KV, D1, R2, or Durable Objects for this site. A brochure site with a contact form needs none of them, and each one adds free-tier limits to track.
 - Refactor unrelated files while implementing a feature.
 - Invent content, credentials, or results.
 - Ship a component without a mobile layout.
@@ -287,6 +374,7 @@ feature branch → build → test in Codespace → commit + push
 
 ## 14. Build order
 
+0. **Deploy pipeline first** — scaffold, add the OpenNext adapter, get a placeholder page live on a `workers.dev` URL via GitHub Actions. Prove the whole chain works while there is nothing to debug.
 1. Layout shell — Navbar, Footer, typography scale, Tailwind theme tokens
 2. Home — hero + triage widget + brief social proof strip
 3. `services.ts` + the dynamic service page template
@@ -294,9 +382,11 @@ feature branch → build → test in Codespace → commit + push
 5. Quote form with working delivery to the owner's inbox
 6. About
 7. SEO pass — metadata, sitemap, OG images
-8. Domain + analytics
+8. Custom domain + WAF rate-limiting rule on the form endpoint + analytics
 
-Ship 1–5 before polishing anything. A live site with a working form beats a beautiful unfinished one.
+Step 0 is not optional and is not busywork. Debugging a runtime mismatch or an environment-variable split against a finished site is far worse than doing it against a page that says "hello."
+
+Ship 0–5 before polishing anything. A live site with a working form beats a beautiful unfinished one.
 
 ---
 
@@ -305,9 +395,10 @@ Ship 1–5 before polishing anything. A live site with a working form beats a be
 Flag these to the owner rather than deciding unilaterally:
 
 - [ ] Business/display name and logo
-- [ ] Domain (`.ca` vs `.com`)
+- [ ] Domain (`.ca` vs `.com`) — register through Cloudflare or transfer DNS to Cloudflare so the Worker route attaches cleanly
+- [ ] Worker name (becomes the `workers.dev` subdomain before the custom domain is live)
 - [ ] Contact email and whether a phone number is published
-- [ ] Form delivery method (email service vs form backend)
+- [ ] Form delivery method (email service vs form backend) — must be callable via a single `fetch` from a Worker; anything requiring a long-lived Node process or an SMTP socket will not work
 - [ ] Service area for Local Tech Help — remote, local, or both
 - [ ] Whether starting prices are published or quote-only
 - [ ] Real metrics for the Restaurant Sales Parser case study
