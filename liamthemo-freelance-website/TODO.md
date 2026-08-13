@@ -125,6 +125,44 @@ From CLAUDE.md §14. Ship 0–5 before polishing anything.
 
 ---
 
+## Settled business policy (step 3)
+
+These are published on the service pages. Four of them are in `commonFaqs` in
+`src/data/services.ts` rather than copied into each service, so changing one is a single edit.
+
+- **Ownership** — the client receives the source files and owns them outright, including the
+  right to take the work to another developer. The only reservation is being credited as the
+  author of the original work. An earlier draft added "and no one else may modify it"; that
+  was dropped because it contradicts giving ownership, and because it confirms the exact
+  lock-in fear the websites service names as a client problem.
+- **Revisions** — unlimited until the client is happy. If the scope grows well past what was
+  agreed, that is raised before the work continues, never as a surprise on the invoice.
+- **Support window** — one week from delivery for the client to report anything broken, fixed
+  free. The week is a deadline for *getting in touch*, not for the fix to be finished.
+  Anything after that is quoted as new work.
+- **Deposit** — a reservation fee of $10–25 depending on service, to hold the time.
+  **Confirm the exact figures.** These were given as an approximation, and §10 allows
+  publishing only confirmed prices.
+- **Service area (local tech help)** — Calgary and nearby towns such as Airdrie in person,
+  further afield with travel added to the quote, plus remote where the problem allows. This
+  also supplies the location terms §11 requires on that page; the location lives in that
+  service's `tagline`, which the detail template uses as its meta description.
+- **Roblox tooling** — Rojo or directly in Studio, whichever the client's team already uses.
+
+Still not set, and correctly absent from the data: per-service pricing (`startingPrice`) and
+delivery times (`turnaround`). Both fields are optional in the type for this reason. Do not add
+"contact for pricing" as a placeholder value.
+
+### New question raised by widening local tech help
+
+Local tech help now advertises new PC builds and hardware repair, which introduces a policy
+none of the other services need:
+
+- **Who buys the parts?** Does the client purchase from a list, or are parts bought on their
+  behalf and billed on? This also decides **who holds the manufacturer warranty**, which is the
+  part clients actually care about when a drive dies in ten months. Deliberately not answered
+  in the FAQs — it is a money-and-liability question, not a wording choice.
+
 ## Open decisions
 
 From CLAUDE.md §15. These are the owner's calls, not Claude's.
@@ -132,7 +170,11 @@ From CLAUDE.md §15. These are the owner's calls, not Claude's.
 - [x] ~~Domain~~ — `liamthemo.com`, already on Cloudflare DNS
 - [x] ~~Worker name~~ — `liamthemo`
 - [ ] Business / display name and logo
-- [ ] Contact email, and whether a phone number is published
+- [x] ~~Contact email~~ — **`contact@liamthemo.com`**, already working via Cloudflare Email
+      Routing. All form submissions and inquiries go here. Note that Email Routing *receives*
+      only; step 5 still needs a delivery provider that can be called with a single `fetch`
+      from the Worker, because Cloudflare does not provide outbound SMTP.
+- [ ] Whether a phone number is published
 - [ ] Form delivery method — must be callable via a single `fetch` from a Worker; anything needing a
       long-lived Node process or an SMTP socket will not work
 - [ ] Service area for Local Tech Help — remote, local, or both
