@@ -61,6 +61,12 @@ export interface Project {
  * from globals.css (§9.2: identity only, never a link, button or focus ring;
  * legal here because it is a filled area with an ink label on top).
  *
+ * `chipHex` is the same colour as `chipClass`, copied by hand as a literal hex
+ * value. That duplication is required, not accidental: generated OG images
+ * (`src/lib/og.tsx`) render through satori, which has no access to Tailwind's
+ * CSS custom properties and needs a literal value. Keep it in sync with the
+ * `--color-service-*` tokens in globals.css if either changes.
+ *
  * TODO: this duplicates data that now exists elsewhere. `services.ts` holds the
  * same five titles and `ServiceCard.tsx` holds the same five chip classes, so
  * there are three places a service's display name can drift. They agree today.
@@ -71,17 +77,31 @@ export interface Project {
  */
 export const SERVICE_META: Record<
   ServiceSlug,
-  { title: string; chipClass: string }
+  { title: string; chipClass: string; chipHex: string }
 > = {
   automation: {
     title: "Automation & Python",
     chipClass: "bg-service-automation",
+    chipHex: "#fcc4bf",
   },
-  "excel-data": { title: "Excel & data", chipClass: "bg-service-excel" },
-  websites: { title: "Websites", chipClass: "bg-service-websites" },
+  "excel-data": {
+    title: "Excel & data",
+    chipClass: "bg-service-excel",
+    chipHex: "#e1d4a4",
+  },
+  websites: {
+    title: "Websites",
+    chipClass: "bg-service-websites",
+    chipHex: "#ade2ca",
+  },
   "local-tech-help": {
     title: "Local tech help",
     chipClass: "bg-service-local",
+    chipHex: "#b8d7ff",
   },
-  roblox: { title: "Roblox development", chipClass: "bg-service-roblox" },
+  roblox: {
+    title: "Roblox development",
+    chipClass: "bg-service-roblox",
+    chipHex: "#ebc6ec",
+  },
 };

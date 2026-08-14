@@ -21,6 +21,11 @@ const bricolage = Bricolage_Grotesque({
 // Fallback for any page without its own metadata export — every real page in
 // the site sets one (CLAUDE.md §11), so this rarely surfaces in practice.
 export const metadata: Metadata = {
+  // Required for Next.js to resolve the auto-generated opengraph-image.tsx
+  // routes (and any other relative metadata URL) into absolute ones. Without
+  // it, Next falls back to localhost, which is what every og:image URL would
+  // read at build time. Same domain used in sitemap.ts and robots.ts.
+  metadataBase: new URL("https://liamthemo.com"),
   title: "LiamTheMo",
   description:
     "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses.",
