@@ -212,6 +212,7 @@ export default async function ServiceDetailPage({
       <CTASection
         title={`Tell me about your ${service.title.toLowerCase()} problem`}
         secondary={{ href: "/services", label: "See other services" }}
+        topic={service.slug}
       />
     </>
   );

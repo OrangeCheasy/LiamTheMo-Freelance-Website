@@ -57,6 +57,16 @@
   --color-accent-tint: #fff1ee;
 
   /*
+    Danger — form validation only (QuoteForm, §8). A distinct semantic colour
+    from the coral accent above, not a second action colour: it never sits on a
+    link, a button or a focus ring, only on inline error text, an invalid
+    field's border, and the error-summary band. 6.54:1 on white, well past the
+    4.5:1 text bar.
+  */
+  --color-danger: #b3261e;
+  --color-danger-tint: #fdecea;
+
+  /*
     Service identity hues (CLAUDE.md §1's five service lines). One OKLCH family:
     L=0.87, C=0.065, hue varies — identical tone, so they read as a set rather
     than five unrelated colours.
@@ -148,6 +158,10 @@
     --color-accent-fill-hover: #ffdad6;
     --color-accent-fill-ink: #14181d;
     --color-accent-tint: #2d2320;
+
+    /* 7.41:1 on #1a1d21. */
+    --color-danger: #ff8a80;
+    --color-danger-tint: #3a211f;
   }
 }
 
@@ -166,6 +180,9 @@
   --color-accent-fill-hover: #ffdad6;
   --color-accent-fill-ink: #14181d;
   --color-accent-tint: #2d2320;
+
+  --color-danger: #ff8a80;
+  --color-danger-tint: #3a211f;
 }
 
 /*

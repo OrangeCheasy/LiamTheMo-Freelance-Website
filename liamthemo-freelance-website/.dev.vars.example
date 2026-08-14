@@ -1,7 +1,2 @@
-# Copy to .dev.vars (gitignored) for local `npm run preview`.
-# Runtime secrets go here locally; in production they go in `wrangler secret put NAME`.
-# See DEPLOYMENT.md §4.
-
-# Without this, `npm run preview` runs the local Worker in production mode and
-# ignores .env.development.
-NEXTJS_ENV=development
+DISCORD_WEBHOOK_URL=
+RESEND_API_KEY=

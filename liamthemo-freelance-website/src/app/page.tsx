@@ -13,8 +13,12 @@ import { CTA } from "@/lib/nav";
 
   The `?topic=unsure` on the triage widget's last option does NOT change that.
   A query string in an href is inert markup; it only costs anything if the page
-  receiving it reads searchParams on the server. See the note in ServiceTriage
-  and the flag in TODO.md for how /contact should read it at step 5.
+  receiving it reads searchParams on the server.
+
+  It does cost something one hop over: /contact reads `?topic=` server-side to
+  prefill the form (§7), which makes that one page dynamically rendered rather
+  than static. That was a deliberate call, not an oversight — see the note at
+  the top of src/app/contact/page.tsx for why.
 */
 
 export const metadata: Metadata = {
@@ -27,13 +31,18 @@ export const metadata: Metadata = {
     description:
       "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses.",
   },
-  // Still noindex, but for a NEW reason — the placeholder is gone, and the
-  // reason in the previous version of this file no longer applies.
+  // Still noindex, but for a THIRD reason now — the previous two (placeholder
+  // content, then 404ing triage destinations) are both resolved: services,
+  // portfolio and about all have real content.
   //
-  // Every triage destination except /contact 404s until build order step 3.
-  // Letting a crawler index a homepage whose main links are all dead is worse
-  // than being invisible for another week. Remove this at step 7 (the SEO pass),
-  // once the service pages exist. Owner's call if they want it sooner.
+  // What is not yet true: the quote form (§8) is built and validated, but not
+  // operationally live — it needs a Discord webhook, a verified Resend sending
+  // domain, two Wrangler secrets and a WAF rate-limiting rule before a real
+  // submission actually reaches anyone (see TODO.md). Indexing a homepage
+  // whose entire funnel dead-ends is worse than staying invisible a bit
+  // longer. Remove this once the form is confirmed working in production —
+  // that naturally lines up with step 8's custom domain attach, so search
+  // engines index the real domain rather than the workers.dev one.
   robots: { index: false, follow: false },
 };
 
