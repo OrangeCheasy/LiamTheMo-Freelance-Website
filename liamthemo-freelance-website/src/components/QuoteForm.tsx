@@ -299,6 +299,52 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
 
         {serviceCategory ? (
           <>
+            <Field
+              id={`${formId}-contactMethod`}
+              label="Preferred contact method"
+              error={fieldErrors.contactMethod}
+            >
+              <select
+                id={`${formId}-contactMethod`}
+                name="contactMethod"
+                required
+                value={contactMethod}
+                onChange={(e) => setContactMethod(e.target.value)}
+                className={`${fieldClasses} ${fieldErrors.contactMethod ? invalidFieldClasses : ""}`}
+                aria-invalid={Boolean(fieldErrors.contactMethod)}
+                aria-describedby={describedBy(
+                  `${formId}-contactMethod`,
+                  "contactMethod",
+                )}
+              >
+                {CONTACT_METHOD_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            {showPhone ? (
+              <Field
+                id={`${formId}-phone`}
+                label="Phone number"
+                error={fieldErrors.phone}
+              >
+                <input
+                  id={`${formId}-phone`}
+                  name="phone"
+                  type="tel"
+                  required
+                  maxLength={30}
+                  autoComplete="tel"
+                  className={`${fieldClasses} ${fieldErrors.phone ? invalidFieldClasses : ""}`}
+                  aria-invalid={Boolean(fieldErrors.phone)}
+                  aria-describedby={describedBy(`${formId}-phone`, "phone")}
+                />
+              </Field>
+            ) : null}
+
             <div className="grid gap-5 sm:grid-cols-2">
               <Field id={`${formId}-name`} label="Name" error={fieldErrors.name}>
                 <input
@@ -402,52 +448,6 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                   </select>
                 </Field>
               </div>
-            ) : null}
-
-            <Field
-              id={`${formId}-contactMethod`}
-              label="Preferred contact method"
-              error={fieldErrors.contactMethod}
-            >
-              <select
-                id={`${formId}-contactMethod`}
-                name="contactMethod"
-                required
-                value={contactMethod}
-                onChange={(e) => setContactMethod(e.target.value)}
-                className={`${fieldClasses} ${fieldErrors.contactMethod ? invalidFieldClasses : ""}`}
-                aria-invalid={Boolean(fieldErrors.contactMethod)}
-                aria-describedby={describedBy(
-                  `${formId}-contactMethod`,
-                  "contactMethod",
-                )}
-              >
-                {CONTACT_METHOD_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-
-            {showPhone ? (
-              <Field
-                id={`${formId}-phone`}
-                label="Phone number"
-                hint="Optional"
-                error={fieldErrors.phone}
-              >
-                <input
-                  id={`${formId}-phone`}
-                  name="phone"
-                  type="tel"
-                  maxLength={30}
-                  autoComplete="tel"
-                  className={`${fieldClasses} ${fieldErrors.phone ? invalidFieldClasses : ""}`}
-                  aria-invalid={Boolean(fieldErrors.phone)}
-                  aria-describedby={describedBy(`${formId}-phone`, "phone")}
-                />
-              </Field>
             ) : null}
 
             <button

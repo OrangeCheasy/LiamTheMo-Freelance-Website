@@ -83,13 +83,22 @@ canonical list.
       **Two fields go beyond the literal seven in §8**, both deliberate, both narrow:
         - `service` includes an "Other" option; picking it reveals a required `otherTitle` field,
           since "Other" with no way to say what it is is useless to read in Discord.
-        - `contactMethod` of "phone"/"text" reveals a `phone` input — but per the owner, it is
-          **optional even then**, not required. A visitor who wants a call back but would rather
-          type the number into the description isn't blocked from sending.
+        - `contactMethod` of "phone"/"text" reveals a required `phone` input — picking one of
+          those without a number to use it on would be pointless. (Briefly built as optional at
+          the owner's request, then reverted to required in the same session.)
 
       Budget ranges are **not** the ones drafted mid-session — the owner corrected them to
       `$0–$10 / $10–$25 / $25–$100 / $100–$250 / $250+`, and the "prefer not to say" default is
       labelled **"None"**.
+
+      The form went through several rounds of restructuring after the initial build: "What's this
+      about?" became a two-tier question (Services / Other, with the five real lines and a
+      "Not sure yet" behind "Services"), the whole form past that question is now progressively
+      revealed rather than shown all at once, Timeline dropped for the "Other" path, "Preferred
+      contact method" moved above Name/Email, and `contactMethod` now defaults to "Email" instead
+      of forcing an explicit choice. `src/lib/quote.ts` is the one place all of this is defined —
+      read it before touching the form again rather than re-deriving the current shape from the
+      component.
 - [ ] **7. SEO pass** — metadata, sitemap, OG images. Per-page `metadata` exports already exist
       (every page has one), but there is no `sitemap.ts` or `robots.ts` yet, and no OG image
       generation.
@@ -119,7 +128,7 @@ From CLAUDE.md §15. These are the owner's calls, not Claude's.
 - [ ] Business / display name and logo — still blocks the `layout.tsx` fallback title
       ("Under construction" — see "Known cleanup")
 - [ ] Whether a phone number is published anywhere on the site itself (separate from the quote
-      form's optional phone field, which is visitor-supplied, not the owner's)
+      form's phone field, which is visitor-supplied, not the owner's)
 - [ ] Service area for Local Tech Help — remote, local, or both
 - [ ] Whether starting prices are published or quote-only
 - [ ] Real metrics for the Restaurant Sales Parser case study (blocks the home page's social proof

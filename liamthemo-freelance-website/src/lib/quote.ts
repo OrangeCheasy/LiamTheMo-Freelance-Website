@@ -85,11 +85,8 @@ export interface QuoteFormPayload {
   timeline: string;
   contactMethod: string;
   /**
-   * Shown only when contactMethod is "phone" or "text" — asking for a
-   * preferred method without a number to use it on would be pointless. Kept
-   * optional even then, at the owner's request: a visitor who wants a call
-   * back but would rather type it into the description than a dedicated
-   * field is not blocked from sending.
+   * Shown, and required, only when contactMethod is "phone" or "text" —
+   * picking one of those without a number to use it on would be pointless.
    */
   phone: string;
   /** Honeypot (§8). Real visitors never see or fill this field. */
@@ -194,6 +191,11 @@ export function validateQuotePayload(
     !contactMethodValues.includes(contactMethod as (typeof contactMethodValues)[number])
   ) {
     errors.push({ field: "contactMethod", message: "Choose how to reach you." });
+  } else if ((contactMethod === "phone" || contactMethod === "text") && !phone) {
+    errors.push({
+      field: "phone",
+      message: "Enter a number so I can reach you.",
+    });
   } else if (phone && phone.length > 30) {
     errors.push({ field: "phone", message: "That number looks too long." });
   }
