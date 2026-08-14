@@ -6,20 +6,35 @@ import { SERVICE_META, type ServiceSlug } from "@/lib/types";
  * §8: "Validate client-side and on the server. Never trust the client."). One
  * definition of what a valid submission looks like, imported on both sides,
  * so the two validators cannot drift apart.
+ *
+ * "What's this about?" is a two-tier question, at the owner's request:
+ *   1. serviceCategory — "Services" or "Other". Nothing else on the form is
+ *      shown until this is answered.
+ *   2. Only if "Services": serviceType — which of the five lines (or "not
+ *      sure yet"). Only if "Other": otherTitle, a free-text title, since
+ *      "Other" alone gives nothing to read in a Discord notification.
+ * Budget only makes sense against a real service line, so it is gated on
+ * serviceCategory === "services" too — see QuoteForm.tsx's render logic.
  */
 
-export type ServiceFieldValue = ServiceSlug | "unsure" | "other";
+export type ServiceCategory = "services" | "other";
+export type ServiceType = ServiceSlug | "unsure";
 
-export const SERVICE_FIELD_OPTIONS: { value: ServiceFieldValue; label: string }[] = [
+export const SERVICE_CATEGORY_OPTIONS: { value: ServiceCategory; label: string }[] = [
+  { value: "services", label: "Services" },
+  { value: "other", label: "Other" },
+];
+
+export const SERVICE_TYPE_OPTIONS: { value: ServiceType; label: string }[] = [
   ...(Object.keys(SERVICE_META) as ServiceSlug[]).map((slug) => ({
     value: slug,
     label: SERVICE_META[slug].title,
   })),
   { value: "unsure", label: "Not sure yet" },
-  { value: "other", label: "Other" },
 ];
 
-const serviceValues = SERVICE_FIELD_OPTIONS.map((o) => o.value);
+const serviceCategoryValues = SERVICE_CATEGORY_OPTIONS.map((o) => o.value);
+const serviceTypeValues = SERVICE_TYPE_OPTIONS.map((o) => o.value);
 
 // Budget is a select of ranges, never free text (§8) — this is what the visitor
 // is willing to spend, not a published price list, so it does not fall under
@@ -41,8 +56,10 @@ export const TIMELINE_OPTIONS = [
   { value: "flexible", label: "No rush, I'm flexible" },
 ] as const;
 
+// No blank placeholder here on purpose — contactMethod defaults to "email" in
+// the form (owner's request: skip the "select a method" step) rather than
+// forcing an explicit choice the way serviceCategory does.
 export const CONTACT_METHOD_OPTIONS = [
-  { value: "", label: "Select a method" },
   { value: "email", label: "Email" },
   { value: "phone", label: "Phone call" },
   { value: "text", label: "Text message" },
@@ -52,20 +69,18 @@ const budgetValues = BUDGET_OPTIONS.map((o) => o.value);
 const timelineValues: string[] = TIMELINE_OPTIONS.map((o) => o.value).filter(
   Boolean,
 );
-const contactMethodValues: string[] = CONTACT_METHOD_OPTIONS.map(
-  (o) => o.value,
-).filter(Boolean);
+const contactMethodValues = CONTACT_METHOD_OPTIONS.map((o) => o.value);
 
 export interface QuoteFormPayload {
   name: string;
   email: string;
-  service: ServiceFieldValue | "";
-  /**
-   * Required only when service is "other" — there is no service-list label to
-   * fall back on, so the visitor has to name it themselves.
-   */
+  serviceCategory: ServiceCategory | "";
+  /** Required, and only meaningful, when serviceCategory is "services". */
+  serviceType: ServiceType | "";
+  /** Required, and only meaningful, when serviceCategory is "other". */
   otherTitle: string;
   description: string;
+  /** Only meaningful when serviceCategory is "services" — see the module doc. */
   budget: (typeof BUDGET_OPTIONS)[number]["value"];
   timeline: string;
   contactMethod: string;
@@ -102,7 +117,8 @@ export function validateQuotePayload(
 
   const name = str(input.name);
   const email = str(input.email);
-  const service = str(input.service);
+  const serviceCategory = str(input.serviceCategory);
+  const serviceType = str(input.serviceType);
   const otherTitle = str(input.otherTitle);
   const description = str(input.description);
   const budget = str(input.budget);
@@ -119,9 +135,19 @@ export function validateQuotePayload(
   else if (!EMAIL_RE.test(email) || email.length > 254)
     errors.push({ field: "email", message: "Enter a valid email address." });
 
-  if (!service || !serviceValues.includes(service as ServiceFieldValue)) {
-    errors.push({ field: "service", message: "Choose what this is about." });
-  } else if (service === "other") {
+  if (
+    !serviceCategory ||
+    !serviceCategoryValues.includes(serviceCategory as ServiceCategory)
+  ) {
+    errors.push({
+      field: "serviceCategory",
+      message: "Choose what this is about.",
+    });
+  } else if (serviceCategory === "services") {
+    if (!serviceType || !serviceTypeValues.includes(serviceType as ServiceType)) {
+      errors.push({ field: "serviceType", message: "Choose a service." });
+    }
+  } else if (serviceCategory === "other") {
     if (!otherTitle) {
       errors.push({ field: "otherTitle", message: "Give it a short title." });
     } else if (otherTitle.length > 100) {
@@ -146,15 +172,27 @@ export function validateQuotePayload(
     });
   }
 
-  if (budget && !budgetValues.includes(budget as (typeof budgetValues)[number])) {
+  if (
+    serviceCategory === "services" &&
+    budget &&
+    !budgetValues.includes(budget as (typeof budgetValues)[number])
+  ) {
     errors.push({ field: "budget", message: "Choose a valid budget range." });
   }
 
-  if (!timeline || !timelineValues.includes(timeline)) {
-    errors.push({ field: "timeline", message: "Choose a timeline." });
+  // Timeline only applies to a real service line — "Other" doesn't ask for it.
+  if (serviceCategory === "services") {
+    if (!timeline || !timelineValues.includes(timeline)) {
+      errors.push({ field: "timeline", message: "Choose a timeline." });
+    }
+  } else if (timeline && !timelineValues.includes(timeline)) {
+    errors.push({ field: "timeline", message: "Choose a valid timeline." });
   }
 
-  if (!contactMethod || !contactMethodValues.includes(contactMethod)) {
+  if (
+    !contactMethod ||
+    !contactMethodValues.includes(contactMethod as (typeof contactMethodValues)[number])
+  ) {
     errors.push({ field: "contactMethod", message: "Choose how to reach you." });
   } else if (phone && phone.length > 30) {
     errors.push({ field: "phone", message: "That number looks too long." });
@@ -167,10 +205,14 @@ export function validateQuotePayload(
     value: {
       name,
       email,
-      service: service as ServiceFieldValue,
+      serviceCategory: serviceCategory as ServiceCategory,
+      serviceType: serviceType as ServiceType | "",
       otherTitle,
       description,
-      budget: budget as (typeof BUDGET_OPTIONS)[number]["value"],
+      budget:
+        serviceCategory === "services"
+          ? (budget as (typeof BUDGET_OPTIONS)[number]["value"])
+          : "",
       timeline,
       contactMethod,
       phone,
@@ -179,9 +221,14 @@ export function validateQuotePayload(
   };
 }
 
-export function serviceLabel(service: QuoteFormPayload["service"]): string {
+/** Human-readable "what this is about", for Discord and nowhere else. */
+export function describeService(payload: QuoteFormPayload): string {
+  if (payload.serviceCategory === "other") {
+    return payload.otherTitle ? `Other — ${payload.otherTitle}` : "Other";
+  }
   return (
-    SERVICE_FIELD_OPTIONS.find((o) => o.value === service)?.label ?? service
+    SERVICE_TYPE_OPTIONS.find((o) => o.value === payload.serviceType)?.label ??
+    "Not given"
   );
 }
 

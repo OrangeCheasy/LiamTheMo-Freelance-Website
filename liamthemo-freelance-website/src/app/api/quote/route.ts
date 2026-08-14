@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import {
   budgetLabel,
   contactMethodLabel,
-  serviceLabel,
+  describeService,
   timelineLabel,
   validateQuotePayload,
   type QuoteFormPayload,
@@ -52,11 +52,6 @@ async function sendDiscordNotification(
     ? `${contactMethodLabel(data.contactMethod)} — ${data.phone}`
     : contactMethodLabel(data.contactMethod);
 
-  const serviceValue =
-    data.service === "other" && data.otherTitle
-      ? `Other — ${data.otherTitle}`
-      : serviceLabel(data.service);
-
   const res = await fetch(webhookUrl, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -68,7 +63,7 @@ async function sendDiscordNotification(
           fields: [
             { name: "Name", value: data.name, inline: true },
             { name: "Email", value: data.email, inline: true },
-            { name: "Service", value: serviceValue, inline: true },
+            { name: "Service", value: describeService(data), inline: true },
             { name: "Budget", value: budgetLabel(data.budget), inline: true },
             {
               name: "Timeline",
@@ -105,7 +100,7 @@ async function sendAutoReply(
       from: "Liam <contact@liamthemo.com>",
       to: [data.email],
       subject: "Got your message",
-      text: `Hi ${data.name},\n\nThanks for reaching out — this confirms I received your message about ${serviceLabel(data.service).toLowerCase()}. I'll reply within one business day with what it would take.\n\nIf anything above needs correcting in the meantime, just reply to this email.\n\nLiam`,
+      text: `Hi ${data.name},\n\nThanks for reaching out — this confirms I received your message about ${describeService(data).toLowerCase()}. I'll reply within one business day with what it would take.\n\nIf anything above needs correcting in the meantime, just reply to this email.\n\nLiam`,
     }),
   });
 

@@ -4,11 +4,14 @@ import { useId, useRef, useState } from "react";
 import {
   BUDGET_OPTIONS,
   CONTACT_METHOD_OPTIONS,
-  SERVICE_FIELD_OPTIONS,
+  SERVICE_CATEGORY_OPTIONS,
+  SERVICE_TYPE_OPTIONS,
   TIMELINE_OPTIONS,
   validateQuotePayload,
   type QuoteFormPayload,
   type QuoteValidationError,
+  type ServiceCategory,
+  type ServiceType,
 } from "@/lib/quote";
 
 /*
@@ -17,6 +20,16 @@ import {
   CLIENT COMPONENT, per §3's own list of exceptions — a form is exactly the
   interactivity that justifies it: field state, a fetch to /api/quote, and
   success/error UI that native HTML alone cannot provide.
+
+  PROGRESSIVE DISCLOSURE, at the owner's request. Nothing past "What's this
+  about?" renders until that question is answered — not a visual nicety, an
+  actual mount/unmount, so a visitor skimming never sees seven fields at once
+  and a screen reader never announces controls that don't apply yet. The two
+  fields that follow depend on which of the two answers was picked:
+  "Services" reveals a service-type dropdown and (only then) the budget field;
+  "Other" reveals a required title input and no budget at all, since a budget
+  range framed around the five service lines doesn't mean anything for a
+  request that isn't one of them.
 
   `noValidate` is on the <form> deliberately. Native browser validation bubbles
   are inconsistent across browsers and cannot be styled to match the rest of
@@ -35,8 +48,11 @@ type FieldErrors = Partial<Record<keyof QuoteFormPayload, string>>;
 
 interface QuoteFormProps {
   /** From /contact's `?topic=` (triage widget or a service page CTA) — the
-      visitor already told us this once and must not be asked again (§7). */
-  initialService?: QuoteFormPayload["service"];
+      visitor already told us this once and must not be asked again (§7).
+      A non-empty value implies "Services" and pre-answers the gate, so the
+      rest of the form is visible immediately rather than behind one more
+      click the visitor shouldn't need to make. */
+  initialService?: ServiceType | "";
 }
 
 const fieldClasses =
@@ -46,10 +62,13 @@ const labelClasses = "block text-small font-medium text-ink";
 
 export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
   const formId = useId();
-  const [service, setService] = useState<QuoteFormPayload["service"]>(
+  const [serviceCategory, setServiceCategory] = useState<ServiceCategory | "">(
+    initialService ? "services" : "",
+  );
+  const [serviceType, setServiceType] = useState<ServiceType | "">(
     initialService,
   );
-  const [contactMethod, setContactMethod] = useState("");
+  const [contactMethod, setContactMethod] = useState("email");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "submitting" | "success">(
@@ -81,7 +100,8 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
     const payload: Partial<Record<keyof QuoteFormPayload, unknown>> = {
       name: form.get("name"),
       email: form.get("email"),
-      service: form.get("service"),
+      serviceCategory: form.get("serviceCategory"),
+      serviceType: form.get("serviceType"),
       otherTitle: form.get("otherTitle"),
       description: form.get("description"),
       budget: form.get("budget"),
@@ -177,7 +197,9 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
       ) : null}
 
       {/* Honeypot. Visually and semantically hidden from real visitors — a
-          human never sees this field, so a filled-in value means a bot. */}
+          human never sees this field, so a filled-in value means a bot.
+          Rendered unconditionally, independent of the progressive reveal
+          below, so it is in the submitted data no matter how far a bot gets. */}
       <div
         aria-hidden="true"
         className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden"
@@ -194,26 +216,29 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
 
       <div className="grid gap-5">
         <Field
-          id={`${formId}-service`}
+          id={`${formId}-serviceCategory`}
           label="What's this about?"
-          error={fieldErrors.service}
+          error={fieldErrors.serviceCategory}
         >
           <select
-            id={`${formId}-service`}
-            name="service"
+            id={`${formId}-serviceCategory`}
+            name="serviceCategory"
             required
-            value={service}
+            value={serviceCategory}
             onChange={(e) =>
-              setService(e.target.value as QuoteFormPayload["service"])
+              setServiceCategory(e.target.value as ServiceCategory)
             }
-            className={`${fieldClasses} ${fieldErrors.service ? invalidFieldClasses : ""}`}
-            aria-invalid={Boolean(fieldErrors.service)}
-            aria-describedby={describedBy(`${formId}-service`, "service")}
+            className={`${fieldClasses} ${fieldErrors.serviceCategory ? invalidFieldClasses : ""}`}
+            aria-invalid={Boolean(fieldErrors.serviceCategory)}
+            aria-describedby={describedBy(
+              `${formId}-serviceCategory`,
+              "serviceCategory",
+            )}
           >
             <option value="" disabled>
-              Select what fits best
+              Select one
             </option>
-            {SERVICE_FIELD_OPTIONS.map((opt) => (
+            {SERVICE_CATEGORY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
@@ -221,7 +246,38 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
           </select>
         </Field>
 
-        {service === "other" ? (
+        {serviceCategory === "services" ? (
+          <Field
+            id={`${formId}-serviceType`}
+            label="Which service?"
+            error={fieldErrors.serviceType}
+          >
+            <select
+              id={`${formId}-serviceType`}
+              name="serviceType"
+              required
+              value={serviceType}
+              onChange={(e) => setServiceType(e.target.value as ServiceType)}
+              className={`${fieldClasses} ${fieldErrors.serviceType ? invalidFieldClasses : ""}`}
+              aria-invalid={Boolean(fieldErrors.serviceType)}
+              aria-describedby={describedBy(
+                `${formId}-serviceType`,
+                "serviceType",
+              )}
+            >
+              <option value="" disabled>
+                Select what fits best
+              </option>
+              {SERVICE_TYPE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        ) : null}
+
+        {serviceCategory === "other" ? (
           <Field
             id={`${formId}-otherTitle`}
             label="Give it a title"
@@ -241,150 +297,169 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
           </Field>
         ) : null}
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field id={`${formId}-name`} label="Name" error={fieldErrors.name}>
-            <input
-              id={`${formId}-name`}
-              name="name"
-              type="text"
-              required
-              maxLength={100}
-              autoComplete="name"
-              className={`${fieldClasses} ${fieldErrors.name ? invalidFieldClasses : ""}`}
-              aria-invalid={Boolean(fieldErrors.name)}
-              aria-describedby={describedBy(`${formId}-name`, "name")}
-            />
-          </Field>
+        {serviceCategory ? (
+          <>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field id={`${formId}-name`} label="Name" error={fieldErrors.name}>
+                <input
+                  id={`${formId}-name`}
+                  name="name"
+                  type="text"
+                  required
+                  maxLength={100}
+                  autoComplete="name"
+                  className={`${fieldClasses} ${fieldErrors.name ? invalidFieldClasses : ""}`}
+                  aria-invalid={Boolean(fieldErrors.name)}
+                  aria-describedby={describedBy(`${formId}-name`, "name")}
+                />
+              </Field>
 
-          <Field id={`${formId}-email`} label="Email" error={fieldErrors.email}>
-            <input
-              id={`${formId}-email`}
-              name="email"
-              type="email"
-              required
-              maxLength={254}
-              autoComplete="email"
-              className={`${fieldClasses} ${fieldErrors.email ? invalidFieldClasses : ""}`}
-              aria-invalid={Boolean(fieldErrors.email)}
-              aria-describedby={describedBy(`${formId}-email`, "email")}
-            />
-          </Field>
-        </div>
+              <Field id={`${formId}-email`} label="Email" error={fieldErrors.email}>
+                <input
+                  id={`${formId}-email`}
+                  name="email"
+                  type="email"
+                  required
+                  maxLength={254}
+                  autoComplete="email"
+                  className={`${fieldClasses} ${fieldErrors.email ? invalidFieldClasses : ""}`}
+                  aria-invalid={Boolean(fieldErrors.email)}
+                  aria-describedby={describedBy(`${formId}-email`, "email")}
+                />
+              </Field>
+            </div>
 
-        <Field
-          id={`${formId}-description`}
-          label="Describe the problem"
-          error={fieldErrors.description}
-        >
-          <textarea
-            id={`${formId}-description`}
-            name="description"
-            required
-            rows={5}
-            maxLength={2000}
-            className={`${fieldClasses} ${fieldErrors.description ? invalidFieldClasses : ""}`}
-            aria-invalid={Boolean(fieldErrors.description)}
-            aria-describedby={describedBy(`${formId}-description`, "description")}
-          />
-        </Field>
-
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field
-            id={`${formId}-budget`}
-            label="Budget range"
-            hint="Optional"
-            error={fieldErrors.budget}
-          >
-            <select
-              id={`${formId}-budget`}
-              name="budget"
-              defaultValue=""
-              className={`${fieldClasses} ${fieldErrors.budget ? invalidFieldClasses : ""}`}
-              aria-invalid={Boolean(fieldErrors.budget)}
-              aria-describedby={describedBy(`${formId}-budget`, "budget")}
+            <Field
+              id={`${formId}-description`}
+              label="Describe your needs"
+              error={fieldErrors.description}
             >
-              {BUDGET_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </Field>
+              <textarea
+                id={`${formId}-description`}
+                name="description"
+                required
+                rows={5}
+                maxLength={2000}
+                className={`${fieldClasses} ${fieldErrors.description ? invalidFieldClasses : ""}`}
+                aria-invalid={Boolean(fieldErrors.description)}
+                aria-describedby={describedBy(
+                  `${formId}-description`,
+                  "description",
+                )}
+              />
+            </Field>
 
-          <Field
-            id={`${formId}-timeline`}
-            label="Timeline"
-            error={fieldErrors.timeline}
-          >
-            <select
-              id={`${formId}-timeline`}
-              name="timeline"
-              required
-              defaultValue=""
-              className={`${fieldClasses} ${fieldErrors.timeline ? invalidFieldClasses : ""}`}
-              aria-invalid={Boolean(fieldErrors.timeline)}
-              aria-describedby={describedBy(`${formId}-timeline`, "timeline")}
+            {serviceCategory === "services" ? (
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field
+                  id={`${formId}-budget`}
+                  label="Budget range"
+                  hint="Optional"
+                  error={fieldErrors.budget}
+                >
+                  <select
+                    id={`${formId}-budget`}
+                    name="budget"
+                    defaultValue=""
+                    className={`${fieldClasses} ${fieldErrors.budget ? invalidFieldClasses : ""}`}
+                    aria-invalid={Boolean(fieldErrors.budget)}
+                    aria-describedby={describedBy(`${formId}-budget`, "budget")}
+                  >
+                    {BUDGET_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+
+                <Field
+                  id={`${formId}-timeline`}
+                  label="Timeline"
+                  error={fieldErrors.timeline}
+                >
+                  <select
+                    id={`${formId}-timeline`}
+                    name="timeline"
+                    required
+                    defaultValue=""
+                    className={`${fieldClasses} ${fieldErrors.timeline ? invalidFieldClasses : ""}`}
+                    aria-invalid={Boolean(fieldErrors.timeline)}
+                    aria-describedby={describedBy(
+                      `${formId}-timeline`,
+                      "timeline",
+                    )}
+                  >
+                    {TIMELINE_OPTIONS.map((opt) => (
+                      <option
+                        key={opt.value}
+                        value={opt.value}
+                        disabled={!opt.value}
+                      >
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
+            ) : null}
+
+            <Field
+              id={`${formId}-contactMethod`}
+              label="Preferred contact method"
+              error={fieldErrors.contactMethod}
             >
-              {TIMELINE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} disabled={!opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </Field>
-        </div>
+              <select
+                id={`${formId}-contactMethod`}
+                name="contactMethod"
+                required
+                value={contactMethod}
+                onChange={(e) => setContactMethod(e.target.value)}
+                className={`${fieldClasses} ${fieldErrors.contactMethod ? invalidFieldClasses : ""}`}
+                aria-invalid={Boolean(fieldErrors.contactMethod)}
+                aria-describedby={describedBy(
+                  `${formId}-contactMethod`,
+                  "contactMethod",
+                )}
+              >
+                {CONTACT_METHOD_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
 
-        <Field
-          id={`${formId}-contactMethod`}
-          label="Preferred contact method"
-          error={fieldErrors.contactMethod}
-        >
-          <select
-            id={`${formId}-contactMethod`}
-            name="contactMethod"
-            required
-            value={contactMethod}
-            onChange={(e) => setContactMethod(e.target.value)}
-            className={`${fieldClasses} ${fieldErrors.contactMethod ? invalidFieldClasses : ""}`}
-            aria-invalid={Boolean(fieldErrors.contactMethod)}
-            aria-describedby={describedBy(`${formId}-contactMethod`, "contactMethod")}
-          >
-            {CONTACT_METHOD_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value} disabled={!opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </Field>
+            {showPhone ? (
+              <Field
+                id={`${formId}-phone`}
+                label="Phone number"
+                hint="Optional"
+                error={fieldErrors.phone}
+              >
+                <input
+                  id={`${formId}-phone`}
+                  name="phone"
+                  type="tel"
+                  maxLength={30}
+                  autoComplete="tel"
+                  className={`${fieldClasses} ${fieldErrors.phone ? invalidFieldClasses : ""}`}
+                  aria-invalid={Boolean(fieldErrors.phone)}
+                  aria-describedby={describedBy(`${formId}-phone`, "phone")}
+                />
+              </Field>
+            ) : null}
 
-        {showPhone ? (
-          <Field
-            id={`${formId}-phone`}
-            label="Phone number"
-            hint="Optional"
-            error={fieldErrors.phone}
-          >
-            <input
-              id={`${formId}-phone`}
-              name="phone"
-              type="tel"
-              maxLength={30}
-              autoComplete="tel"
-              className={`${fieldClasses} ${fieldErrors.phone ? invalidFieldClasses : ""}`}
-              aria-invalid={Boolean(fieldErrors.phone)}
-              aria-describedby={describedBy(`${formId}-phone`, "phone")}
-            />
-          </Field>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-3 inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-6 py-2.5 font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {submitting ? "Sending…" : "Send request"}
+            </button>
+          </>
         ) : null}
       </div>
-
-      <button
-        type="submit"
-        disabled={submitting}
-        className="mt-8 inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-6 py-2.5 font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        {submitting ? "Sending…" : "Send request"}
-      </button>
     </form>
   );
 }
