@@ -18,10 +18,12 @@ const bricolage = Bricolage_Grotesque({
   display: "swap",
 });
 
-// TODO: set a real title once the business/display name is decided (CLAUDE.md §15).
+// Fallback for any page without its own metadata export — every real page in
+// the site sets one (CLAUDE.md §11), so this rarely surfaces in practice.
 export const metadata: Metadata = {
-  title: "Under construction",
-  description: "This site is being built. Check back soon.",
+  title: "LiamTheMo",
+  description:
+    "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses.",
 };
 
 /*

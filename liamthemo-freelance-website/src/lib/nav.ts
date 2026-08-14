@@ -5,6 +5,8 @@
  * one-line change in one file (CLAUDE.md §13, "build reusable pieces").
  */
 
+import { services } from "@/data/services";
+
 export interface NavLink {
   href: string;
   label: string;
@@ -17,22 +19,14 @@ export const mainNav: readonly NavLink[] = [
   { href: "/about", label: "About" },
 ];
 
-/**
- * The five service lines (CLAUDE.md §1), listed in the footer.
- *
- * TODO: replace with a map over `src/data/services.ts` at build order step 3.
- * Until that file exists this is the single source of truth for service links.
- */
-export const serviceNav: readonly NavLink[] = [
-  { href: "/services/automation", label: "Automation & Python" },
-  { href: "/services/excel-data", label: "Excel & data" },
-  { href: "/services/websites", label: "Websites" },
-  { href: "/services/local-tech-help", label: "Local tech help" },
-  { href: "/services/roblox", label: "Roblox development" },
-];
+/** The five service lines (CLAUDE.md §1), listed in the footer. Derived from
+ * `src/data/services.ts` so the two can't drift. */
+export const serviceNav: readonly NavLink[] = services.map((service) => ({
+  href: `/services/${service.slug}`,
+  label: service.title,
+}));
 
 /** Where every call to action points. */
 export const CTA = { href: "/contact", label: "Contact now" } as const;
 
-/** TODO: business/display name is still an open decision (CLAUDE.md §15). */
 export const SITE_NAME = "LiamTheMo";

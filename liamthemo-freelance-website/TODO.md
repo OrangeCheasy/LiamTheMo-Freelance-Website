@@ -99,9 +99,9 @@ canonical list.
       of forcing an explicit choice. `src/lib/quote.ts` is the one place all of this is defined —
       read it before touching the form again rather than re-deriving the current shape from the
       component.
-- [ ] **7. SEO pass** — metadata, sitemap, OG images. Per-page `metadata` exports already exist
-      (every page has one), but there is no `sitemap.ts` or `robots.ts` yet, and no OG image
-      generation.
+- [~] **7. SEO pass** — metadata, sitemap, OG images. Per-page `metadata` exports already exist
+      (every page has one). `sitemap.ts` and `robots.ts` are now in (`/` deliberately excluded
+      from the sitemap while it's still `noindex`). OG image generation is still outstanding.
 - [ ] **8. Custom domain** + WAF rate-limiting rule + analytics
   - The WAF rule is now pulled forward into "Do now" above — it protects `/api/quote` and does
     not need to wait for the domain attach.
@@ -125,8 +125,8 @@ From CLAUDE.md §15. These are the owner's calls, not Claude's.
 - [x] ~~Form delivery method~~ — **Discord webhook** for lead notifications + **Resend** for the
       visitor auto-reply. Both callable with a single `fetch`, no SMTP, confirmed compatible with
       the Worker.
-- [ ] Business / display name and logo — still blocks the `layout.tsx` fallback title
-      ("Under construction" — see "Known cleanup")
+- [x] ~~Business / display name~~ — `LiamTheMo`, confirmed. `layout.tsx`'s fallback title now
+      uses it instead of "Under construction". Logo is still undecided.
 - [ ] Whether a phone number is published anywhere on the site itself (separate from the quote
       form's phone field, which is visitor-supplied, not the owner's)
 - [ ] Service area for Local Tech Help — remote, local, or both
@@ -146,14 +146,11 @@ From CLAUDE.md §15. These are the owner's calls, not Claude's.
 
 Small, non-blocking items — nothing here blocks a build order step.
 
-- [ ] `public/` still has the create-next-app default SVGs (`next.svg`, `vercel.svg`, `file.svg`,
-      `globe.svg`, `window.svg`) — unused, safe to delete
-- [ ] `src/lib/nav.ts`'s `serviceNav` is still a hand-written duplicate of the five titles in
-      `src/data/services.ts` — the TODO comment there says to derive it once step 3 lands. Step 3
-      landed; this cleanup didn't happen alongside it. Low priority, nothing depends on the two
-      staying in sync today since both are hand-edited together, but they *can* drift.
-- [ ] `layout.tsx` metadata still defaults to "Under construction" — the fallback `<title>` for
-      any page without its own. Fix alongside the business/display name decision above.
+- [x] ~~`public/` still has the create-next-app default SVGs~~ — deleted (`next.svg`,
+      `vercel.svg`, `file.svg`, `globe.svg`, `window.svg`; confirmed unreferenced).
+- [x] ~~`src/lib/nav.ts`'s `serviceNav` is a hand-written duplicate~~ — now derived from
+      `src/data/services.ts` via `.map()`, can't drift anymore.
+- [x] ~~`layout.tsx` metadata still defaults to "Under construction"~~ — fixed, now `"LiamTheMo"`.
 - [ ] `/` is still `noindex`, now specifically because the quote form isn't operationally live —
       see "Do now" at the top of this file for exactly what unblocks it.
 - [ ] `src/data/projects.ts` has three owner TODOs on the Restaurant Sales Parser entry: which
