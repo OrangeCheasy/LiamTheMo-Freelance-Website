@@ -62,12 +62,53 @@ export default async function ContactPage({
 
   return (
     <>
-      <section className="border-b border-line bg-surface-muted">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+      <section className="relative overflow-hidden border-b border-line bg-surface-muted">
+        {/*
+          Same dot-grid token as the home hero (§9: "precision, technical,
+          tidy", not a gradient blob) — this page had none of the home page's
+          texture and read flatter for it. Reused rather than reinvented, so
+          it costs nothing new and stays consistent with the one other place
+          it appears.
+        */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--color-line)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"
+        />
+
+        <div className="relative mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>Contact</Eyebrow>
           <h1 className="mt-3 max-w-[24ch] text-h1 text-ink">{heading}</h1>
           <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
             {description}
+          </p>
+
+          {/*
+            The direct-email escape hatch the owner asked for. Pastel fill
+            with an ink label — same treatment as every other button on the
+            site (§9.2), not a one-off style, so it reads as "another way to
+            do the same thing" rather than a competing action.
+          */}
+          <a
+            href="mailto:contact@liamthemo.com"
+            className="mt-7 inline-flex items-center gap-2.5 rounded-xl border border-accent bg-accent-fill px-5 py-3 font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-5 w-5 shrink-0"
+            >
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+            contact@liamthemo.com
+          </a>
+          <p className="mt-2.5 text-small text-ink-muted">
+            Prefer email? Skip the form and write to me directly.
           </p>
         </div>
       </section>
