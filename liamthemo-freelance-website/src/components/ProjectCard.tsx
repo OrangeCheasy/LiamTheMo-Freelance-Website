@@ -27,7 +27,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           {project.services.map((slug) => (
             <span
               key={slug}
-              className={`rounded-full px-2.5 py-1 text-small font-medium text-ink ${SERVICE_META[slug].chipClass}`}
+              className={`rounded-full px-2.5 py-1 text-small font-medium text-accent-fill-ink ${SERVICE_META[slug].chipClass}`}
             >
               {SERVICE_META[slug].title}
             </span>

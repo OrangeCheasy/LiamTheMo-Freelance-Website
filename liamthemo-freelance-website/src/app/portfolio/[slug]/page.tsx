@@ -71,7 +71,7 @@ export default async function ProjectPage({
             {project.services.map((serviceSlug) => (
               <span
                 key={serviceSlug}
-                className={`rounded-full px-2.5 py-1 text-small font-medium text-ink ${SERVICE_META[serviceSlug].chipClass}`}
+                className={`rounded-full px-2.5 py-1 text-small font-medium text-accent-fill-ink ${SERVICE_META[serviceSlug].chipClass}`}
               >
                 {SERVICE_META[serviceSlug].title}
               </span>
