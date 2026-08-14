@@ -99,9 +99,16 @@ canonical list.
       of forcing an explicit choice. `src/lib/quote.ts` is the one place all of this is defined —
       read it before touching the form again rather than re-deriving the current shape from the
       component.
-- [~] **7. SEO pass** — metadata, sitemap, OG images. Per-page `metadata` exports already exist
-      (every page has one). `sitemap.ts` and `robots.ts` are now in (`/` deliberately excluded
-      from the sitemap while it's still `noindex`). OG image generation is still outstanding.
+- [x] **7. SEO pass** — metadata, sitemap, OG images. Per-page `metadata` exports already exist
+      (every page has one). `sitemap.ts` and `robots.ts` are in (`/` deliberately excluded from
+      the sitemap while it's still `noindex`). OG image generation is done: every route has an
+      `opengraph-image.tsx` (`src/lib/og.tsx` is the shared renderer — one dark-surface template,
+      Bricolage Grotesque + Inter, rendered through `next/og`/satori with the two font files
+      vendored into `src/assets/fonts/`), all prerendered at build time (confirmed static output
+      in `next build`, and confirmed serving correctly with `x-nextjs-cache: HIT` through the real
+      Worker in `npm run preview` — none of them invoke the Worker per request). `layout.tsx` also
+      picked up `metadataBase` so the generated `og:image` URLs resolve to `liamthemo.com` instead
+      of defaulting to localhost.
 - [ ] **8. Custom domain** + WAF rate-limiting rule + analytics
   - The WAF rule is now pulled forward into "Do now" above — it protects `/api/quote` and does
     not need to wait for the domain attach.
