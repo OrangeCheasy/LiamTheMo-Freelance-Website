@@ -38,8 +38,8 @@ export const projects: Project[] = [
     // the final report).
     images: [
       {
-        src: "/portfolio/restaurant-sales-parser/light.png",
-        srcDark: "/portfolio/restaurant-sales-parser/dark.png",
+        src: "/portfolio/restaurant-sales-parser/light.webp",
+        srcDark: "/portfolio/restaurant-sales-parser/dark.webp",
         alt: "Diagram showing the parser turning 35 pages of unstructured raw server sales data into a clean weekly summary table with totals per server, broken out by special, food, and drink sales.",
       },
     ],
