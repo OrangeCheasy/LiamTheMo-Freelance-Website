@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import CTASection from "@/components/CTASection";
 import Eyebrow from "@/components/Eyebrow";
 
@@ -18,10 +19,14 @@ import Eyebrow from "@/components/Eyebrow";
   - No credentials beyond "studying computer science", which is current fact.
   - No origin story about a love of technology.
 
-  TODO(owner): photo. There is none yet, so the layout is built to read as
-  finished without one rather than leaving a gap where a face should go. If one
-  is added, it goes in the header band beside the h1 as a next/image with real
-  alt text (§11) — not a decorative circle.
+  PHOTOS. Three real, owner-supplied photos (public/about) replace what used to
+  be a TODO here. fish.webp is the identity shot — a real face is what "who you
+  would be hiring" (the h1) is actually asking for, so it sits in the header
+  band beside the h1, same placement the original TODO called for. gym.webp and
+  food.webp illustrate the closing line about life away from the computer and
+  sit beside it as a pair. Same three files in both themes (§9.2 covers colour
+  tokens, not photographs — there is no "dark version" of a photo to swap to),
+  so no theme-swap wiring like the portfolio screenshots.
 */
 
 export const metadata: Metadata = {
@@ -41,15 +46,33 @@ export default function AboutPage() {
     <>
       <section className="border-b border-line bg-surface-muted">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-          <Eyebrow>About</Eyebrow>
-          <h1 className="mt-3 max-w-[20ch] text-h1 text-ink">
-            Who you would be hiring
-          </h1>
-          <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
-            I am Liam. I am studying for a computer science degree in Calgary
-            and I take on paid technical work alongside it. Here is what I have
-            actually done, so you can decide for yourself.
-          </p>
+          <div className="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <Eyebrow>About</Eyebrow>
+              <h1 className="mt-3 max-w-[20ch] text-h1 text-ink">
+                Who you would be hiring
+              </h1>
+              <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
+                My name is Liam. I have been building and fixing computers in
+                person since I was a kid, and now I am also a computer science
+                student in Calgary getting paid to do more of the same —
+                scripts that kill repetitive work, spreadsheets that stop
+                needing to be babysat, sites, and hands-on repairs for people
+                who would rather not deal with it themselves. Here is what that
+                has actually looked like.
+              </p>
+            </div>
+            <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border border-line sm:w-56">
+              <Image
+                src="/about/fish.webp"
+                alt="Liam smiling and holding a small fish he caught, with grassy hills and a blue sky behind him."
+                fill
+                sizes="(min-width: 640px) 14rem, 10rem"
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -117,9 +140,30 @@ export default function AboutPage() {
           </ul>
 
           <p className="mt-12 text-body text-ink-muted">
-            When I am away from a computer I am powerlifting, or out fishing,
-            hiking or camping somewhere in Alberta.
+            When I am away from a computer I am powerlifting, out fishing,
+            hiking or camping somewhere in Alberta, or out chasing good food.
           </p>
+
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-line">
+              <Image
+                src="/about/gym.webp"
+                alt="Liam at the gym on a bench press with a training partner."
+                fill
+                sizes="(min-width: 640px) 29ch, 45vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-line">
+              <Image
+                src="/about/food.webp"
+                alt="Liam adding fresh herbs to a bowl of pho at a restaurant."
+                fill
+                sizes="(min-width: 640px) 29ch, 45vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
