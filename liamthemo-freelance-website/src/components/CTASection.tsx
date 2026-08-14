@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CTA } from "@/lib/nav";
+import type { ServiceSlug } from "@/lib/types";
 
 /*
   The reusable bottom-of-page conversion block (CLAUDE.md §5).
@@ -20,13 +21,23 @@ interface CTASectionProps {
   description?: string;
   /** Optional second, lower-commitment destination. */
   secondary?: { href: string; label: string };
+  /**
+   * When set, the primary link carries `?topic=<slug>` so /contact prefills
+   * the service field (§7: a visitor who already told us the category must
+   * not be asked again). Only the service-detail page has a single topic to
+   * pass — every other CTASection usage stays generic.
+   */
+  topic?: ServiceSlug;
 }
 
 export default function CTASection({
   title = "Tell me what you're trying to get done",
   description = "Describe the problem in plain words. I'll reply within one business day with what it would take.",
   secondary,
+  topic,
 }: CTASectionProps) {
+  const ctaHref = topic ? `${CTA.href}?topic=${topic}` : CTA.href;
+
   return (
     <section
       aria-labelledby="cta-heading"
@@ -57,7 +68,7 @@ export default function CTASection({
               band would have no edge at all.
             */}
             <Link
-              href={CTA.href}
+              href={ctaHref}
               className="inline-flex items-center justify-center rounded-lg border border-accent bg-surface px-5 py-2.5 font-semibold text-ink transition-colors hover:bg-surface-muted"
             >
               {CTA.label}

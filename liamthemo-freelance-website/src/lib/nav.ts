@@ -32,7 +32,7 @@ export const serviceNav: readonly NavLink[] = [
 ];
 
 /** Where every call to action points. */
-export const CTA = { href: "/contact", label: "Get a quote" } as const;
+export const CTA = { href: "/contact", label: "Contact now" } as const;
 
 /** TODO: business/display name is still an open decision (CLAUDE.md §15). */
 export const SITE_NAME = "LiamTheMo";
