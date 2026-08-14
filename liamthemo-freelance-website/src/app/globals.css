@@ -168,6 +168,34 @@
   --color-accent-tint: #2d2320;
 }
 
+/*
+  Theme-swapped images (Project.images[].srcDark, CLAUDE.md §9's "real
+  screenshots beat any illustration"). A screenshot can have its own baked-in
+  background, so unlike a colour it has no shared token to swap through — both
+  variants sit in the DOM and this shows the one matching the active theme,
+  using the identical three-state rule as the palette above.
+*/
+.theme-dark-only {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-light-only {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .theme-dark-only {
+    display: block;
+  }
+}
+
+:root[data-theme="dark"] .theme-light-only {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-dark-only {
+  display: block;
+}
+
 @layer base {
   html {
     /* Default; the unlayered dark blocks above override it, since unlayered

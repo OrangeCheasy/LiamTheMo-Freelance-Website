@@ -36,8 +36,13 @@ export const projects: Project[] = [
     // TODO(owner): confirm the rest of the stack (e.g. the library used to read
     // the export, the input file format — .csv vs .xlsx — and what generates
     // the final report).
-    // images: intentionally omitted — no screenshots yet. §9 prefers a real
-    // screenshot over any illustration; add here once available.
+    images: [
+      {
+        src: "/portfolio/restaurant-sales-parser/light.png",
+        srcDark: "/portfolio/restaurant-sales-parser/dark.png",
+        alt: "Diagram showing the parser turning 35 pages of unstructured raw server sales data into a clean weekly summary table with totals per server, broken out by special, food, and drink sales.",
+      },
+    ],
     featured: true,
   },
 ];

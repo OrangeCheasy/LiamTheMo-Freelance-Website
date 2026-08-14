@@ -147,13 +147,32 @@ export default async function ProjectPage({
                       key={image.src}
                       className="overflow-hidden rounded-xl border border-line"
                     >
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        width={960}
-                        height={640}
-                        className="h-auto w-full"
-                      />
+                      {image.srcDark ? (
+                        <>
+                          <Image
+                            src={image.src}
+                            alt={image.alt}
+                            width={960}
+                            height={640}
+                            className="theme-light-only h-auto w-full"
+                          />
+                          <Image
+                            src={image.srcDark}
+                            alt={image.alt}
+                            width={960}
+                            height={640}
+                            className="theme-dark-only h-auto w-full"
+                          />
+                        </>
+                      ) : (
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          width={960}
+                          height={640}
+                          className="h-auto w-full"
+                        />
+                      )}
                       {image.caption ? (
                         <figcaption className="border-t border-line bg-surface-muted px-4 py-2 text-small text-ink-muted">
                           {image.caption}
