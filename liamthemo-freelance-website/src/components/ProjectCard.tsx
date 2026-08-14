@@ -40,7 +40,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         </p>
 
         <span className="mt-4 inline-flex items-center text-small font-semibold text-accent">
-          View case study
+          View project
           <span
             aria-hidden="true"
             className="ml-1 transition-transform group-hover:translate-x-0.5"
