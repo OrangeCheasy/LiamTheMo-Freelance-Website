@@ -71,7 +71,7 @@ export default async function ProjectPage({
             {project.services.map((serviceSlug) => (
               <span
                 key={serviceSlug}
-                className={`rounded-full px-2.5 py-1 text-small font-medium text-ink ${SERVICE_META[serviceSlug].chipClass}`}
+                className={`rounded-full px-2.5 py-1 text-small font-medium text-accent-fill-ink ${SERVICE_META[serviceSlug].chipClass}`}
               >
                 {SERVICE_META[serviceSlug].title}
               </span>
@@ -141,19 +141,45 @@ export default async function ProjectPage({
             {project.images && project.images.length > 0 ? (
               <div>
                 <Eyebrow as="h2">See it in action</Eyebrow>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                {/*
+                  Single-column when there's just one image: a lone shot
+                  inside a 2-up gallery grid renders at half width for no
+                  reason. Multiple images still tile 2-up.
+                */}
+                <div
+                  className={`mt-4 grid gap-4 ${project.images.length > 1 ? "sm:grid-cols-2" : ""}`}
+                >
                   {project.images.map((image) => (
                     <figure
                       key={image.src}
                       className="overflow-hidden rounded-xl border border-line"
                     >
-                      <Image
-                        src={image.src}
-                        alt={image.alt}
-                        width={960}
-                        height={640}
-                        className="h-auto w-full"
-                      />
+                      {image.srcDark ? (
+                        <>
+                          <Image
+                            src={image.src}
+                            alt={image.alt}
+                            width={1536}
+                            height={1024}
+                            className="theme-light-only h-auto w-full"
+                          />
+                          <Image
+                            src={image.srcDark}
+                            alt={image.alt}
+                            width={1536}
+                            height={1024}
+                            className="theme-dark-only h-auto w-full"
+                          />
+                        </>
+                      ) : (
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          width={1536}
+                          height={1024}
+                          className="h-auto w-full"
+                        />
+                      )}
                       {image.caption ? (
                         <figcaption className="border-t border-line bg-surface-muted px-4 py-2 text-small text-ink-muted">
                           {image.caption}
