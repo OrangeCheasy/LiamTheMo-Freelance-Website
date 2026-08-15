@@ -52,16 +52,21 @@ canonical list.
 - [x] **0. Deploy pipeline** — placeholder page live on `workers.dev` via GitHub Actions
 - [x] **1. Layout shell** — Navbar, Footer, typography scale, Tailwind theme tokens
 - [x] **2. Home** — hero, triage widget, closing CTA
-  - [ ] **Social proof strip — still blocked on the owner.** Not built rather than faked (§10).
-        Needs a real Restaurant Sales Parser metric, permission to name Fuse Factory publicly, or
-        a real screenshot to show. Same blocker as the portfolio items below.
+  - [ ] **Social proof strip — one blocker cleared, not built yet.** Not built rather than faked
+        (§10). Needed any ONE of: a real Restaurant Sales Parser metric, permission to name Fuse
+        Factory publicly, or a real screenshot to show. Permission to name Fuse Factory is now
+        granted (§15) and it's live on the portfolio — this could unblock the strip, but it hasn't
+        been built. Still no Restaurant Sales Parser metric and no Fuse Factory screenshot yet.
 - [x] **3. `services.ts`** + dynamic service page template — all five services real, no
       placeholder content
-- [~] **4. `projects.ts`** + portfolio index and case study template — **flagship only.**
+- [~] **4. `projects.ts`** + portfolio index and case study template.
       Restaurant Sales Parser is live with real screenshots (light/dark) and a rewritten
-      problem/solution narrative. Excel Performance Dashboard and Fuse Factory are still absent
-      on purpose (§10 — no invented case studies); both need the same owner input as the social
-      proof strip above.
+      problem/solution narrative, but still no owner-confirmed `result`/metrics (§10, three TODOs
+      in the data file). Fuse Factory is now live too — cleared to be named publicly (§15), added
+      as a personal/passion project rather than a client case study (see CLAUDE.md §1, §6): no
+      `result` (no client outcome to report) and no `images` yet (still in development, no
+      screenshots exist — add them once there's something worth showing, §9). Excel Performance
+      Dashboard is still absent, no owner input yet.
 - [x] **5. About** — real photos (identity shot in the header band, a gym/food pair illustrating
       the closing line), copy rewritten twice at the owner's request to read less like a résumé
       summary and to lead with the in-person/childhood history before the remote work.
@@ -140,7 +145,9 @@ From CLAUDE.md §15. These are the owner's calls, not Claude's.
 - [ ] Whether starting prices are published or quote-only
 - [ ] Real metrics for the Restaurant Sales Parser case study (blocks the home page's social proof
       strip too)
-- [ ] Whether Fuse Factory can be named publicly (blocks adding it to the portfolio)
+- [x] ~~Whether Fuse Factory can be named publicly~~ — yes, confirmed. Added to
+      `src/data/projects.ts` as a personal/passion project, still in development. Screenshots to
+      follow once there's something to show.
 - [ ] Deposit figures — DEPLOYMENT.md and `services.ts`'s FAQ copy both say "$10–25 depending on
       service" as an approximation; §10 only allows publishing confirmed prices
 - [ ] Who buys parts for local tech help hardware work, and who holds the manufacturer warranty —
@@ -164,3 +171,6 @@ Small, non-blocking items — nothing here blocks a build order step.
       system the raw export actually comes from, what report(s) the parser produces by name, and
       the rest of the confirmed stack (file format read, report format written). None invented
       per §10 — fill in once known.
+- [ ] `src/data/projects.ts` has one owner TODO on the Fuse Factory entry: confirm the rest of the
+      stack (Roblox's `PathfindingService` vs. something custom, whether coins/progress persist
+      via DataStore) once settled. Add real screenshots once the game has something to show (§9).

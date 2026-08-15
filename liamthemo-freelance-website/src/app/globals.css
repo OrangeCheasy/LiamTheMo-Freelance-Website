@@ -213,6 +213,43 @@
   display: block;
 }
 
+/*
+  Same idea, for a `fill`-positioned pair stacked in one box (ProjectCard's
+  thumbnail) rather than sequential document flow. `display: none` is wrong
+  here: a browser never issues the network request for a `display: none`
+  <img>, and — confirmed by testing this against the real theme-toggle
+  button, not just a reload with a pre-set preference — it does not retroactively
+  fetch it once `display` flips to `block` later. The card was rendering
+  blank after a visitor toggled theme. `opacity: 0` keeps the element genuinely
+  laid out (same box as its visible sibling, so it reads as on-screen and
+  loads normally) while staying invisible and non-interactive.
+*/
+.theme-fill-dark {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-fill-light {
+    opacity: 0;
+    pointer-events: none;
+  }
+  :root:not([data-theme="light"]) .theme-fill-dark {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+:root[data-theme="dark"] .theme-fill-light {
+  opacity: 0;
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .theme-fill-dark {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 @layer base {
   html {
     /* Default; the unlayered dark blocks above override it, since unlayered

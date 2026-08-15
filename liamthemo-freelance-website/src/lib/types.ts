@@ -68,8 +68,9 @@ export interface Project {
  * `--color-service-*` tokens in globals.css if either changes.
  *
  * TODO: this duplicates data that now exists elsewhere. `services.ts` holds the
- * same five titles and `ServiceCard.tsx` holds the same five chip classes, so
- * there are three places a service's display name can drift. They agree today.
+ * same five titles and icons, and `ServiceCard.tsx` holds the same five chip
+ * classes, so there are several places this display metadata can drift. They
+ * agree today.
  * Reconciling means deriving this from `services.ts` — which cannot live in
  * this file, since `services.ts` imports from it and the cycle would be real.
  * The derived map belongs in `services.ts` itself, with the four consumers
@@ -77,31 +78,36 @@ export interface Project {
  */
 export const SERVICE_META: Record<
   ServiceSlug,
-  { title: string; chipClass: string; chipHex: string }
+  { title: string; chipClass: string; chipHex: string; icon: string }
 > = {
   automation: {
     title: "Automation & Python",
     chipClass: "bg-service-automation",
     chipHex: "#fcc4bf",
+    icon: "🔄",
   },
   "excel-data": {
     title: "Excel & data",
     chipClass: "bg-service-excel",
     chipHex: "#e1d4a4",
+    icon: "📊",
   },
   websites: {
     title: "Websites",
     chipClass: "bg-service-websites",
     chipHex: "#ade2ca",
+    icon: "🌐",
   },
   "local-tech-help": {
     title: "Local tech help",
     chipClass: "bg-service-local",
     chipHex: "#b8d7ff",
+    icon: "🖥️",
   },
   roblox: {
     title: "Roblox development",
     chipClass: "bg-service-roblox",
     chipHex: "#ebc6ec",
+    icon: "🎮",
   },
 };

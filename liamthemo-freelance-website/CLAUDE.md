@@ -7,9 +7,11 @@ Project instructions for Claude Code. Read this before touching anything in the 
 
 ## 1. What this project is
 
-A **freelance services website** — a lead-generation site, not a résumé and not a portfolio gallery.
+A **freelance services website** — primarily a lead-generation site, not a résumé.
 
-Every page exists to move a visitor toward one action: **submitting the quote form.**
+The portfolio section is the one deliberate exception: the owner uses it as a projects showcase seen by prospective clients *and* potential employers, so it can include personal/passion work — not just commissioned client case studies — as long as it's real and not invented (§6, §10).
+
+Every other page exists to move a visitor toward one action: **submitting the quote form.**
 
 The owner is a solo freelancer offering five service lines:
 
@@ -229,11 +231,13 @@ export interface Project {
 
 ### Known portfolio entries
 
-- **Restaurant Sales Parser** — flagship. Parses raw sales exports into reports automatically. Lead with the time saved per week and the manual step it eliminated. This is the single best proof for both Automation and Excel & Data.
-- **Excel Performance Dashboard** — proof for Excel & Data.
-- **Fuse Factory** — proof for Roblox Development.
+- **Restaurant Sales Parser** — flagship. Parses raw sales exports into reports automatically. Lead with the time saved per week and the manual step it eliminated. This is the single best proof for both Automation and Excel & Data. Still no owner-confirmed `result`/metrics — see the TODOs in `src/data/projects.ts`.
+- **Excel Performance Dashboard** — proof for Excel & Data. Not added yet, no owner input.
+- **Fuse Factory** — proof for Roblox Development. Added. A personal/passion project, not commissioned work, and still in active development (per §1, the portfolio doubles as a showcase for employers, not only clients). `problem`/`solution` describe the design goal and what's actually been built — a modular codebase (spawning, movement, UI, and drops as separate systems), UI built in code rather than laid out in Studio, an event-driven architecture on both server and client, a weighted item-drop system, and round/spawn-rate escalation — rather than a client engagement. Boomies currently move **randomly**, not toward the player; pattern-based movement AI is a planned feature, not a built one — do not write it up as already working. `result`, `metrics`, and `images` are intentionally omitted — no client outcome to report, and no screenshots yet since the game isn't finished. Add real screenshots once there's something worth showing (§9).
 
-Write case studies as **problem → solution → result**, not as feature lists. A small-business owner does not care that it uses `pandas`; they care that Monday morning went from two hours to five minutes. Put the stack in a sidebar for the technical readers.
+Write client case studies as **problem → solution → result**, not as feature lists. A small-business owner does not care that it uses `pandas`; they care that Monday morning went from two hours to five minutes. Put the stack in a sidebar for the technical readers.
+
+A personal/passion project like Fuse Factory doesn't have a client result to report, so it bends this template: `problem` becomes the design goal or gap being filled, `solution` becomes what's actually been built, and `result` stays omitted rather than forced. Do not invent a client-style outcome for a project that doesn't have one.
 
 ---
 
