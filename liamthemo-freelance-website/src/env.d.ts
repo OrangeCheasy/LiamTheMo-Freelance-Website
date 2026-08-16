@@ -12,8 +12,6 @@ declare global {
   interface CloudflareEnv {
     /** Discord webhook URL the quote handler posts new leads to. */
     DISCORD_WEBHOOK_URL: string;
-    /** Resend API key, used to send the visitor's auto-reply from contact@liamthemo.com. */
-    RESEND_API_KEY: string;
   }
 }
 

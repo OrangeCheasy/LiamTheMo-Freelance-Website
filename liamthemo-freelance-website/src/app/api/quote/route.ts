@@ -15,22 +15,14 @@ import {
   served from the assets binding for free (§4.1). No `runtime = "edge"`: the
   OpenNext adapter targets the Node.js runtime, per §3.
 
-  Two outbound calls, both to services chosen specifically because they are
-  reachable with a single fetch() — no SMTP, no long-lived connection, which
-  rules out most traditional email APIs on a Worker:
+  One outbound call: a Discord webhook that notifies the owner. This is the
+  call that matters — if it fails, the lead is lost, so it is awaited and a
+  failure surfaces to the visitor as an error.
 
-    1. Discord webhook — notifies the owner. This is the call that matters: if
-       it fails, the lead is lost, so it is awaited and a failure surfaces to
-       the visitor as an error.
-    2. Resend — sends the visitor an auto-reply from contact@liamthemo.com.
-       Best-effort: a visitor should never see an error because a courtesy
-       email didn't send when their actual message got through fine. Handed to
-       `ctx.waitUntil` rather than awaited, so it finishes after the response
-       goes out instead of adding its latency to the visitor's wait. Workers
-       CPU-time billing (§4.1) does not count time spent waiting on fetch, so
-       this and the Discord call together stay well under the 10ms budget —
-       the constraint that matters here is wall-clock latency for the visitor,
-       not CPU quota, hence waitUntil rather than a second await.
+  (A Resend-based visitor auto-reply used to sit alongside this, sent
+  best-effort via `ctx.waitUntil`. Cut per owner decision — not worth the
+  extra dependency and domain verification for a "got your message"
+  courtesy email.)
 
   Rate limiting is NOT implemented here on purpose. §8 is explicit: use
   Cloudflare's own WAF rate-limiting rules on this path rather than an
@@ -86,29 +78,6 @@ async function sendDiscordNotification(
   }
 }
 
-async function sendAutoReply(
-  apiKey: string,
-  data: QuoteFormPayload,
-): Promise<void> {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${apiKey}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "Liam <contact@liamthemo.com>",
-      to: [data.email],
-      subject: "Got your message",
-      text: `Hi ${data.name},\n\nThanks for reaching out — this confirms I received your message about ${describeService(data).toLowerCase()}. I'll reply within one business day with what it would take.\n\nIf anything above needs correcting in the meantime, just reply to this email.\n\nLiam`,
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Resend responded ${res.status}`);
-  }
-}
-
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -146,7 +115,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const { env, ctx } = await getCloudflareContext({ async: true });
+  const { env } = await getCloudflareContext({ async: true });
 
   try {
     await sendDiscordNotification(env.DISCORD_WEBHOOK_URL, data);
@@ -160,12 +129,6 @@ export async function POST(request: Request) {
       { status: 502 },
     );
   }
-
-  ctx.waitUntil(
-    sendAutoReply(env.RESEND_API_KEY, data).catch((err) => {
-      console.error("Quote form: auto-reply failed", err);
-    }),
-  );
 
   return NextResponse.json({ ok: true });
 }

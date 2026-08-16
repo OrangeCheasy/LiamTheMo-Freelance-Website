@@ -12,18 +12,16 @@ The form at `/contact` is built, validated, and tested end-to-end against the re
 runtime (`npm run preview`) — but it cannot deliver a single real lead yet. Nothing sends until
 these are done, in roughly this order:
 
-- [ ] **Create a Discord webhook** — the server for wherever you want new-lead notifications to
-      land, Server Settings → Integrations → Webhooks → New Webhook. Copy the URL.
-- [ ] **Sign up for Resend** and verify `liamthemo.com` as a sending domain (adds DKIM/SPF TXT
-      records in Cloudflare DNS — does not touch the existing MX record or the `contact@liamthemo.com`
-      inbound redirect, they coexist fine). This is what lets the auto-reply go out *from*
-      `contact@liamthemo.com` instead of some Resend-owned address.
-- [ ] **Set both secrets** against the Cloudflare account (never in `wrangler.jsonc`, never
+- [x] ~~Create a Discord webhook~~ — done. Server Settings → Integrations → Webhooks → New Webhook.
+- [x] ~~Set the secret~~ against the Cloudflare account (never in `wrangler.jsonc`, never
       committed):
       ```
       wrangler secret put DISCORD_WEBHOOK_URL
-      wrangler secret put RESEND_API_KEY
       ```
+      The Resend-based visitor auto-reply that used to sit alongside this was cut per owner
+      decision (not worth the extra dependency and sending-domain verification for a courtesy
+      email) — `RESEND_API_KEY` no longer exists anywhere in the code, so there is only the one
+      secret now.
 - [ ] **Add the WAF rate-limiting rule** — Cloudflare dashboard → Security → WAF → Rate limiting
       rules:
       - Expression: `(http.request.uri.path eq "/api/quote" and http.request.method eq "POST")`
@@ -32,11 +30,10 @@ these are done, in roughly this order:
 
       This is zone-level config, not something `wrangler.jsonc` can express — it has to be added
       in the dashboard (or via the Rulesets API) directly.
-- [ ] **Run one real end-to-end test** once the above are in place: `npm run preview`, submit the
-      form for real, confirm the Discord message and the auto-reply email both actually arrive.
-      Everything tested so far used a local mock listener standing in for Discord and a
-      deliberately-invalid Resend key — that proved the request shapes and the runtime plumbing
-      are correct, not that a real message has ever actually landed anywhere.
+- [ ] **Run one real end-to-end test** once the above is in place: `npm run preview`, submit the
+      form for real, confirm the Discord message actually arrives. Everything tested so far used a
+      local mock listener standing in for Discord — that proved the request shape and the runtime
+      plumbing are correct, not that a real message has ever actually landed anywhere.
 - [ ] Once the above is confirmed working, `/` can come out of `noindex` (see "Known cleanup"
       below) — ideally alongside step 8's custom domain attach, so search engines index
       `liamthemo.com` rather than the `workers.dev` URL.
@@ -71,9 +68,9 @@ canonical list.
       the closing line), copy rewritten twice at the owner's request to read less like a résumé
       summary and to lead with the in-person/childhood history before the remote work.
 - [x] **6. Quote form** — built this session. `/contact` + `QuoteForm.tsx` + `/api/quote`.
-      Delivery is Discord webhook (lead notification, awaited — its failure is the one thing that
-      actually loses a lead) + Resend (visitor auto-reply from `contact@liamthemo.com`, sent via
-      `ctx.waitUntil` so a courtesy email failing never blocks or errors out the visitor).
+      Delivery is a Discord webhook (lead notification, awaited — its failure is the one thing
+      that actually loses a lead). A Resend-based visitor auto-reply used to sit alongside this;
+      cut per owner decision, see "Do now" above.
       Validated client- and server-side from one shared definition (`src/lib/quote.ts`), honeypot
       field, 7 fields plus two small conditional additions (see below). Not yet operational — see
       "Do now" above.
@@ -131,12 +128,10 @@ From CLAUDE.md §15. These are the owner's calls, not Claude's.
 
 - [x] ~~Domain~~ — `liamthemo.com`, already on Cloudflare DNS
 - [x] ~~Worker name~~ — `liamthemo`
-- [x] ~~Contact email~~ — `contact@liamthemo.com`, inbound via Cloudflare Email Routing (unchanged)
-      **and now outbound too** — the quote form's auto-reply sends *from* this address via Resend,
-      once domain verification is done (see "Do now").
-- [x] ~~Form delivery method~~ — **Discord webhook** for lead notifications + **Resend** for the
-      visitor auto-reply. Both callable with a single `fetch`, no SMTP, confirmed compatible with
-      the Worker.
+- [x] ~~Contact email~~ — `contact@liamthemo.com`, inbound via Cloudflare Email Routing.
+- [x] ~~Form delivery method~~ — **Discord webhook** for lead notifications only. A Resend-based
+      visitor auto-reply was considered and built, then cut per owner decision — not worth the
+      extra dependency and sending-domain verification for a courtesy email.
 - [x] ~~Business / display name~~ — `LiamTheMo`, confirmed. `layout.tsx`'s fallback title now
       uses it instead of "Under construction". Logo is still undecided.
 - [ ] Whether a phone number is published anywhere on the site itself (separate from the quote

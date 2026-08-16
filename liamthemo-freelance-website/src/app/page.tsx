@@ -35,10 +35,10 @@ export const metadata: Metadata = {
   // content, then 404ing triage destinations) are both resolved: services,
   // portfolio and about all have real content.
   //
-  // What is not yet true: the quote form (§8) is built and validated, but not
-  // operationally live — it needs a Discord webhook, a verified Resend sending
-  // domain, two Wrangler secrets and a WAF rate-limiting rule before a real
-  // submission actually reaches anyone (see TODO.md). Indexing a homepage
+  // What is not yet true: the quote form (§8) is built, validated, and now
+  // has the Discord webhook secret set, but still needs a WAF rate-limiting
+  // rule and a real end-to-end test before it's operationally live (see
+  // TODO.md). Indexing a homepage
   // whose entire funnel dead-ends is worse than staying invisible a bit
   // longer. Remove this once the form is confirmed working in production —
   // that naturally lines up with step 8's custom domain attach, so search
