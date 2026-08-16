@@ -35,7 +35,8 @@ export default function ProjectCard({ project }: { project: Project }) {
         href={`/portfolio/${project.slug}`}
         className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-accent"
       >
-        <div className="relative aspect-video w-full overflow-hidden border-b border-line">
+        {/* 3:2 to match the 1440x960 thumbnail source size — full image, no crop. */}
+        <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-line">
           {thumb ? (
             thumb.srcDark ? (
               <>
