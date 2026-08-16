@@ -12,6 +12,7 @@
   architectural cost.
 */
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -117,8 +118,17 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link
           href="/"
-          className="font-display text-lg font-semibold tracking-tight text-ink"
+          className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink"
         >
+          {/* Placeholder mark (public/icon.svg) — swap once the real logo exists. */}
+          <Image
+            src="/icon.svg"
+            alt=""
+            width={28}
+            height={28}
+            unoptimized
+            className="rounded-md"
+          />
           {SITE_NAME}
         </Link>
 

@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   title: "LiamTheMo",
   description:
     "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses.",
+  // TODO: swap public/icon.svg for the real logo once it's designed, then
+  // remove this comment (CLAUDE.md-style placeholder note).
+  icons: { icon: "/icon.svg" },
 };
 
 /*
