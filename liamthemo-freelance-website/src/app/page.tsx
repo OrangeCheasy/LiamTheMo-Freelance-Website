@@ -66,7 +66,7 @@ export default function Home() {
         />
 
         <div className="relative mx-auto max-w-6xl px-5 pt-4 pb-6 sm:px-8 sm:pt-6 sm:pb-8">
-          <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+          <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
             {/*
               ml-5: measured in the mockup — the hero text block sits ~25px
               (native scale) further right than the logo/nav's left edge,
@@ -87,9 +87,8 @@ export default function Home() {
                 <span className="block">
                   Hi, I&apos;m <span className="text-accent">Liam</span>.
                 </span>
-                <span className="block">
-                  I design and build digital experiences.
-                </span>
+                <span className="block">I design and build</span>
+                <span className="block">digital experiences.</span>
               </h1>
               <p className="mt-6 max-w-[52ch] text-body text-text-muted">
                 Custom automation, spreadsheets, websites, and technology
@@ -169,31 +168,82 @@ export default function Home() {
       </section>
 
       {/*
-        Short, mockup-matching identity section — NOT the three-virtue block
-        (§9.6, §11 both rule that out by name, and the owner separately chose
-        to cut it rather than replace it with a specifics version). This is
-        just the mockup's "About Me" label, heading and paragraph, ships
-        as its literal words per the same owner call covering the hero.
-
-        Flagging one thing rather than silently shipping it: "Designer.
-        Developer. Problem Solver." sits close to §9.6's named anti-goal
-        ("Clean Code / Thoughtful Design / Problem Solver") even without the
-        three-column layout that anti-goal is really about. Shipping it
-        as-is under the same "recreate the mockup first" direction already
-        given twice this phase — but it's the kind of line worth revisiting
-        once the faithful-recreation pass is done.
+        Owner override, 2026-08-17: the three-virtue trio (§9.6's named
+        anti-goal, §11's "no generic virtue blocks", §16's "owner chose to
+        cut it entirely") is back, because the owner supplied a new mockup
+        and declared it authoritative over those calls — same override
+        pattern as the hero copy above. CLAUDE.md §9.6/§11/§16 need a pass to
+        stop contradicting this; flagging here rather than silently drifting.
       */}
       <section className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
-        <p className="text-small font-medium text-accent">About Me</p>
-        <h2 className="mt-2 max-w-[24ch] text-h2 text-text">
-          Designer. Developer. Problem Solver.
-        </h2>
-        <p className="mt-4 max-w-[60ch] text-body text-text-muted">
-          I&apos;m Liam, a designer and developer based in Canada. I enjoy
-          turning ideas into clean, functional solutions with a focus on
-          simplicity and impact. When I&apos;m not coding or designing, you
-          can find me learning something new or working on a side project.
-        </p>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:items-start">
+          <div>
+            <p className="text-small font-medium text-accent">About Me</p>
+            <h2 className="mt-2 max-w-[24ch] text-h2 text-text">
+              Designer. Developer. Problem Solver.
+            </h2>
+            <p className="mt-4 max-w-[60ch] text-body text-text-muted">
+              I&apos;m Liam, a designer and developer based in Canada. I enjoy
+              turning ideas into clean, functional solutions with a focus on
+              simplicity and impact. When I&apos;m not coding or designing,
+              you can find me learning something new or working on a side
+              project.
+            </p>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-3">
+            {[
+              {
+                title: "Clean Code",
+                description:
+                  "I write maintainable, scalable, and efficient code.",
+                icon: <path d="m8 6-4 6 4 6M16 6l4 6-4 6" />,
+              },
+              {
+                title: "Thoughtful Design",
+                description:
+                  "I design with clarity, purpose, and the user in mind.",
+                icon: (
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                ),
+              },
+              {
+                title: "Problem Solver",
+                description:
+                  "I love solving complex problems with simple, elegant solutions.",
+                icon: (
+                  <>
+                    <circle cx="12" cy="12" r="9" />
+                    <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
+                  </>
+                ),
+              },
+            ].map((virtue) => (
+              <div key={virtue.title}>
+                <div className="flex h-11 w-11 items-center justify-center rounded-full border border-accent text-accent">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5"
+                  >
+                    {virtue.icon}
+                  </svg>
+                </div>
+                <h3 className="mt-4 text-body font-semibold text-text">
+                  {virtue.title}
+                </h3>
+                <p className="mt-2 text-small text-text-muted">
+                  {virtue.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/*
