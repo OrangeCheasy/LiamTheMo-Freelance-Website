@@ -97,7 +97,7 @@ export default function Home() {
                   href="/portfolio"
                   className="group inline-flex items-center gap-2 rounded-full border border-accent px-6 py-3 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
                 >
-                  View my work
+                  View My Work
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 24 24"
@@ -136,13 +136,13 @@ export default function Home() {
       >
         <div className="flex items-baseline justify-between gap-4">
           <h2 id="featured-work-heading" className="text-h2 text-text">
-            Featured work
+            Featured Work
           </h2>
           <Link
             href="/portfolio"
             className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
           >
-            View all
+            View All
             <span aria-hidden="true">→</span>
           </Link>
         </div>
@@ -153,12 +153,18 @@ export default function Home() {
       </section>
 
       {/*
-        No secondary link here (unlike the other pages' CTASection) — the
-        triage widget right above this section already is the "browse
-        services" action for this page; repeating it as a link would be
-        redundant rather than a second, lower-commitment option.
+        Mockup-exact copy and button label for this one instance — every
+        other CTASection call keeps the shared defaults (see the component's
+        own note on why). No secondary link here either, unlike other pages'
+        CTASection — the triage widget right above this section already is
+        the "browse services" action for this page; repeating it as a link
+        would be redundant rather than a second, lower-commitment option.
       */}
-      <CTASection />
+      <CTASection
+        title="Let's Work Together"
+        description="Have a project in mind or just want to say hi? I'd love to hear from you."
+        ctaLabel="Get In Touch"
+      />
     </>
   );
 }

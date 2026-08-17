@@ -3,22 +3,33 @@ import { CTA } from "@/lib/nav";
 import type { ServiceSlug } from "@/lib/types";
 
 /*
-  The reusable bottom-of-page conversion block (CLAUDE.md §5).
+  The reusable bottom-of-page conversion block (CLAUDE.md §5, §15 Phase 2).
 
   It exists because of success criterion 2 in §2 — every page ends with a path to
   the quote form — and building it once here means the service, portfolio and
   about pages inherit it at steps 3, 4 and 6 rather than each growing its own.
 
-  Server component. It is a heading, a paragraph and two links.
+  Server component. It is a heading, a paragraph and a link.
 
   The reply promise is not marketing copy invented here: §8 fixes the wording of
   the form's success state as "I'll reply within one business day", and saying
   something different before the click than after it would be a broken promise.
+
+  MOCKUP PANEL: the warm radial gradient + accent border is Phase 2's home-page
+  treatment. `title`/`description`/`ctaLabel` stay overridable because every
+  other page using this component (services, portfolio, about) has its own,
+  page-specific copy — the mockup only shows the home page, so only the home
+  page's call passes mockup-exact copy. The panel styling itself (gradient,
+  border, pill button) applies everywhere, since that's a visual system choice,
+  not page content.
 */
 
 interface CTASectionProps {
   title?: string;
   description?: string;
+  /** Overrides the shared CTA.label ("Contact now") for this one instance —
+      only the home page needs "Get In Touch" to match the mockup. */
+  ctaLabel?: string;
   /** Optional second, lower-commitment destination. */
   secondary?: { href: string; label: string };
   /**
@@ -33,36 +44,56 @@ interface CTASectionProps {
 export default function CTASection({
   title = "Tell me what you're trying to get done",
   description = "Describe the problem in plain words. I'll reply within one business day with what it would take.",
+  ctaLabel,
   secondary,
   topic,
 }: CTASectionProps) {
   const ctaHref = topic ? `${CTA.href}?topic=${topic}` : CTA.href;
 
   return (
-    <section
-      aria-labelledby="cta-heading"
-      className="border-t border-border bg-surface"
-    >
+    <section aria-labelledby="cta-heading" className="bg-bg">
       <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
         {/*
-          Neutral panel, not accent (§9.2) — the band itself isn't clickable,
-          only the button inside it is, so the band stays a surface and the
-          accent goes on the one element that earns it.
+          Warm gradient panel, anchored top-left, fading into the surface
+          tone — §9.4's "soft radial glow beats a black box-shadow" applied to
+          the panel itself rather than just a hover state. border-accent here
+          is legitimate under §9.2: the whole panel funnels to the one button
+          inside it, unlike CTASection's old neutral-band treatment.
         */}
-        <div className="rounded-2xl border border-border bg-surface px-6 py-10 sm:px-10 sm:py-12">
-          <h2 id="cta-heading" className="max-w-[22ch] text-h2 text-text">
-            {title}
-          </h2>
-          <p className="mt-3 max-w-[56ch] text-body text-text-muted">
-            {description}
-          </p>
+        <div
+          className="flex flex-col gap-6 rounded-2xl border border-accent px-6 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-12"
+          style={{
+            background:
+              "radial-gradient(ellipse 90% 100% at 0% 0%, var(--color-accent-dim), transparent 70%), var(--color-surface)",
+          }}
+        >
+          <div>
+            <h2 id="cta-heading" className="max-w-[26ch] text-h2 text-text">
+              {title}
+            </h2>
+            <p className="mt-3 max-w-[48ch] text-body text-text-muted">
+              {description}
+            </p>
+          </div>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               href={ctaHref}
-              className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent px-5 py-2.5 font-semibold text-bg transition-colors hover:bg-accent-hover"
+              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-3 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
             >
-              {CTA.label}
+              {ctaLabel ?? CTA.label}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              >
+                <path d="M7 17 17 7M9 7h8v8" />
+              </svg>
             </Link>
             {secondary ? (
               <Link
