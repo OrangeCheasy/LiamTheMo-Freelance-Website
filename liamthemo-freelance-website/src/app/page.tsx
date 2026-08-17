@@ -67,12 +67,23 @@ export default function Home() {
 
         <div className="relative mx-auto max-w-6xl px-5 pt-4 pb-6 sm:px-8 sm:pt-6 sm:pb-8">
           <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
-            <div>
+            {/*
+              ml-5: measured in the mockup — the hero text block sits ~25px
+              (native scale) further right than the logo/nav's left edge,
+              not flush with it like the rest of the page's containers.
+            */}
+            <div className="ml-5">
               {/*
                 Owner call, overriding §11's "outcome work" reading of this
                 exact line: ships as the mockup's literal words.
+
+                text-h1, not text-display: measured cap-height in the mockup
+                — the heading is exactly 2x the description paragraph's
+                cap-height (26px vs 13px, native scale). text-display (40-60px)
+                overshoots that; text-h1 (32-44px) is the closest existing
+                scale step to the ~34px that ratio implies against text-body.
               */}
-              <h1 className="max-w-[18ch] text-display text-text">
+              <h1 className="max-w-[18ch] text-h1 text-text">
                 <span className="block">
                   Hi, I&apos;m <span className="text-accent">Liam</span>.
                 </span>
@@ -130,19 +141,29 @@ export default function Home() {
         className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
       >
         <div className="flex items-baseline justify-between gap-4">
-          <h2 id="featured-work-heading" className="text-h2 text-text">
+          {/*
+            text-body, not text-h2: measured the mockup directly — "Featured
+            Work"'s cap-height matches the hero description paragraph's
+            cap-height exactly (13px each, native mockup scale). It's still
+            an <h2> semantically, and still bold in the display face via the
+            global h1-h4 rule in globals.css — just not big.
+          */}
+          <h2 id="featured-work-heading" className="text-body text-text">
             Featured Work
           </h2>
           <Link
             href="/portfolio"
-            className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
+            className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-accent hover:text-accent-hover"
           >
             View All
             <span aria-hidden="true">→</span>
           </Link>
         </div>
 
-        <div className="mt-8">
+        {/* mt-2, matching the About Me label-to-heading gap directly below —
+            same "small label to next content" rhythm, not the mt-8 this used
+            before. */}
+        <div className="mt-2">
           <FeaturedWork projects={projects} />
         </div>
       </section>
@@ -184,7 +205,7 @@ export default function Home() {
       */}
       <CTASection
         title="Let's Work Together"
-        description="Have a project in mind or just want to say hi? I'd love to hear from you."
+        description={"Have a project in mind or just want to say hi?\nI'd love to hear from you."}
         ctaLabel="Get In Touch"
       />
     </>

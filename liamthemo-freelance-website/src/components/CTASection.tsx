@@ -61,35 +61,73 @@ export default function CTASection({
           the panel itself rather than just a hover state. No border: depth
           comes from the gradient alone, matching the mockup exactly.
 
-          MEASURED, NOT GUESSED — twice now. Peak colour: sampling the
-          mockup's brightest pixel gives ~rgb(90,32,2) against a ~rgb(15,10,6)
-          panel base, which is --color-accent at ~30% opacity composited over
-          --color-surface (confirmed by re-deriving the same numbers from this
-          exact CSS: 255×0.3+20×0.7≈90, 106×0.3+18×0.7≈44, 26×0.3+18×0.7≈20 —
-          R matches almost exactly; the mockup's G/B run a little lower,
-          which --color-accent's own defined hue can't fully replicate without
-          inventing an off-token colour, so this stays as the closest
-          faithful match rather than chasing an exact G/B match §9.1 doesn't
-          license.
+          FULL RE-DERIVATION from pixel data (previous passes here guessed a
+          linear falloff; the real thing isn't linear and isn't circular).
+          Sampled excess-over-base brightness at fine radius steps from the
+          panel's true top-left fill corner (not the geometric corner — that
+          point sits on the anti-aliased edge and reads as background, which
+          quietly broke an earlier attempt at this), averaged across several
+          rows/columns to cancel noise, along pure horizontal and pure
+          vertical rays (vertical only out to the panel's own ~90px height,
+          where it hits the panel's bottom edge and the data ends).
 
-          Panel proportions: the mockup's panel measures 917×90px at its own
-          scale — a ~10:1 bar, not a box. The gradient's reach is sized
-          relative to that: at native scale it's ~90%+ decayed by ~65-70% of
-          the panel's width, not the ~85% this used before, which is what
-          read as "stretching too far right."
+          ln(excess) vs radius is a straight line in BOTH directions —
+          confirms exponential decay, not the linear interpolation a plain
+          2-stop CSS gradient produces. The two directions decay at clearly
+          different, independently-fitted rates:
+            horizontal: excess = 77·exp(−0.0032·r)   (r in native mockup px)
+            vertical:   excess = 92·exp(−0.0203·r)
+          Vertical decays ~6.35× faster than horizontal — a strongly
+          elongated ellipse, not the circle it might look like at a glance.
+          E-fold distances (÷917 panel width, ÷90 panel height): horizontal
+          ≈34% of panel width, vertical ≈55% of panel height — that sets the
+          ellipse size below. Stops are placed every half e-fold
+          (exp(−0.5)≈0.607, exp(−1)≈0.368, exp(−1.5)≈0.223, ...) so the
+          gradient traces the curve instead of straight-lining between two
+          points on it. Peak opacity is 32%, close to the ~30% the sampled
+          peak pixel itself resolves to against --color-surface — deliberately
+          NOT pushed brighter this time: the previous "deeper" attempt raised
+          opacity but left the slow linear falloff in place, which is why it
+          read as a wide wash rather than a contained, deep corner glow. A
+          correctly fast, correctly-shaped falloff is what makes a modest
+          peak opacity still read as deep.
+
+          Two owner adjustments on top of the fitted model, not re-derived
+          from pixels — these are taste calls the mockup itself doesn't
+          dictate:
+          — Ellipse sized down another 5% (34%→32%, 55%→52%) for a visibly
+            faster falloff than the strict fit produced.
+          — Colour is a literal #ff3a00, not --color-accent (#FF6A1A). This
+            is the one deliberate exception to "never hardcode a hex value in
+            a component" (CLAUDE.md §9.1) in this file: an explicit owner
+            colour choice for this one glow, not a design-system token, so it
+            stays local rather than growing a new global token for a
+            single-use value.
         */}
         <div
-          className="flex flex-col gap-4 rounded-2xl px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-5"
+          className="flex flex-col gap-4 rounded-2xl px-6 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:pt-5 sm:pb-4"
           style={{
             background:
-              "radial-gradient(ellipse 90% 100% at 0% 0%, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 65%), var(--color-surface)",
+              "radial-gradient(ellipse 32% 52% at 0% 0%, " +
+              "color-mix(in srgb, #ff3a00 32%, transparent) 0%, " +
+              "color-mix(in srgb, #ff3a00 19.4%, transparent) 50%, " +
+              "color-mix(in srgb, #ff3a00 11.8%, transparent) 100%, " +
+              "color-mix(in srgb, #ff3a00 7.1%, transparent) 150%, " +
+              "color-mix(in srgb, #ff3a00 4.3%, transparent) 200%, " +
+              "color-mix(in srgb, #ff3a00 2.6%, transparent) 250%, " +
+              "color-mix(in srgb, #ff3a00 1.6%, transparent) 300%, " +
+              "transparent 400%), var(--color-surface)",
           }}
         >
           <div>
             <h2 id="cta-heading" className="max-w-[26ch] text-h3 text-text">
               {title}
             </h2>
-            <p className="mt-1.5 max-w-[48ch] text-small text-text-muted">
+            {/* whitespace-pre-line: lets a caller force a line break with a
+                literal \n (the home page's two-sentence version does) while
+                every other caller's plain string renders exactly as before —
+                no \n present, nothing changes. */}
+            <p className="mt-1.5 max-w-[48ch] whitespace-pre-line text-small text-text-muted">
               {description}
             </p>
           </div>
