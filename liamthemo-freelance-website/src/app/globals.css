@@ -1,83 +1,38 @@
 @import "tailwindcss";
 
 /*
-  Design tokens. Everything visual should come from here rather than from
-  one-off hex values in components — see CLAUDE.md §9.
-
-  THEMES
-  ------
-  This block defines the LIGHT theme. Dark overrides the same variable names
-  further down, which is why no component in this codebase uses a `dark:`
-  variant: components reference roles (`bg-surface`, `text-ink`), and the theme
-  decides what those resolve to. Changing the palette should never mean touching
-  a component.
-
-  The dark theme is dark grey (#1a1d21), not black — 1.24:1 off pure black. That
-  plus a soft coral accent is what keeps it clear of §9's "near-black background
-  with one acid-green accent" anti-goal.
+  Design tokens (CLAUDE.md §9.1). The site is dark only — no toggle, no
+  prefers-color-scheme branch, no data-theme attribute. Every token below is a
+  single value, not a light/dark pair. Everything visual should come from here
+  rather than a one-off hex value in a component.
 */
 @theme {
-  /* --- Colour: light theme --------------------------------------------- */
+  /* --- Colour: molten dark (§9.1) --------------------------------------- */
+  --color-bg: #0b0a0a; /* warm near-black page canvas, not pure #000 */
+  --color-surface: #141212; /* cards, raised panels, section bands */
+  --color-surface-2: #1c1919; /* hover states, nested surfaces */
+  --color-border: #2a2626; /* hairline, low contrast */
+  --color-text: #f5f3f1; /* warm white */
+  --color-text-muted: #a8a19c;
+  --color-accent: #ff6a1a;
+  --color-accent-hover: #ff8340;
+  --color-accent-dim: rgb(255 106 26 / 12%); /* glow, tints, focus rings */
+
   /*
-    Cool-neutral greys, not cream. A warm off-white base under a coral accent is
-    the "cream + terracotta" anti-goal (§9); the cool greys are what keep this
-    palette clear of it.
+    Not in §9.1 — form validation (QuoteForm, §8) still needs a colour
+    distinct from accent, so an invalid field doesn't read as a call to
+    action. Same warm-dark discipline as the palette above: legible on
+    --bg/--surface, and far enough from orange that the two are never
+    confused as the same signal.
   */
-  --color-surface: #ffffff;
-  --color-surface-muted: #f4f6f8;
-  --color-ink: #14181d;
-  --color-ink-muted: #55606b;
-  --color-line: #e3e7eb;
+  --color-danger: #ff6b6b;
+  --color-danger-dim: rgb(255 107 107 / 14%);
 
   /*
-    Coral splits into a PASTEL and a DUSTY tone, and the split is a contrast
-    requirement rather than a stylistic one (CLAUDE.md §9.2).
-
-    A pastel measures 1.5–1.8:1 on white. It can therefore never be text, a
-    hairline, an icon stroke or a focus ring in the light theme — it fails both
-    the 4.5:1 text bar and the 3:1 non-text bar. It is only ever a FILL, with ink
-    on top. The dusty tone does everything that needs contrast.
-
-    `accent`       dusty. Link text, focus rings, thin rules.       5.91:1
-    `accent-fill`  pastel. Button and block backgrounds.
-    `accent-fill-ink`  the label on a pastel fill.                 11.70:1
-    `accent-tint`  softest wash, for callouts. Text on it is ink.  16.19:1
-
-    A pastel fill on white is only 1.52:1 against the page, so the block's own
-    edge is invisible and it stops reading as a control. Every pastel fill
-    therefore carries `border-accent`. In the dark theme that border matches the
-    fill and does nothing — harmless, because there the fill already has 11.10:1
-    against the background.
-  */
-  --color-accent: #ad3f3c;
-  --color-accent-hover: #8f3230;
-  --color-accent-fill: #fcc4bf;
-  --color-accent-fill-hover: #f8ada6;
-  --color-accent-fill-ink: #14181d;
-  --color-accent-tint: #fff1ee;
-
-  /*
-    Danger — form validation only (QuoteForm, §8). A distinct semantic colour
-    from the coral accent above, not a second action colour: it never sits on a
-    link, a button or a focus ring, only on inline error text, an invalid
-    field's border, and the error-summary band. 6.54:1 on white, well past the
-    4.5:1 text bar.
-  */
-  --color-danger: #b3261e;
-  --color-danger-tint: #fdecea;
-
-  /*
-    Service identity hues (CLAUDE.md §1's five service lines). One OKLCH family:
-    L=0.87, C=0.065, hue varies — identical tone, so they read as a set rather
-    than five unrelated colours.
-
-    These are IDENTITY ONLY. Never a button, never a link, never a focus ring —
-    coral above stays the single action colour. They are theme-independent by
-    design: light fills with ink labels work on white and on dark grey alike,
-    and every one measures better than 11.7:1.
-
-    Unused until build order step 3; Tailwind drops unused theme variables from
-    the output, so they cost nothing until a component references them.
+    Service identity hues (CLAUDE.md §1's five service lines) — untouched by
+    this phase. Identity only, never a link, button or focus ring (§9.2);
+    kept as-is pending an explicit decision on whether/how they carry into
+    the redesign.
   */
   --color-service-automation: #fcc4bf;
   --color-service-excel: #e1d4a4;
@@ -120,148 +75,16 @@
   --text-eyebrow--font-weight: 600;
 }
 
-/*
-  Dark theme. Same variable names, different values — see the note at the top.
-
-  Three states are supported, and the two selectors below cover all of them:
-
-    no data-theme attribute  -> follow the operating system
-    data-theme="dark"        -> forced dark, regardless of the OS
-    data-theme="light"       -> forced light, regardless of the OS
-
-  The `:not([data-theme="light"])` guard is what makes an explicit light choice
-  survive an OS set to dark. Both selectors have equal specificity, but they can
-  never both apply with conflicting values, so source order does not matter.
-
-  `color-scheme` is not decoration: it tells the browser to render scrollbars,
-  form controls and the canvas in the matching theme. Without it those stay
-  light against a dark page.
-*/
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-
-    --color-surface: #1a1d21;
-    --color-surface-muted: #23272c;
-    --color-ink: #e8eaed;
-    --color-ink-muted: #a0a7b0;
-    --color-line: #31363d;
-
-    /*
-      The pastel is 11.10:1 on #1a1d21, so on dark it needs no dusty counterpart
-      — accent and accent-fill collapse to the same colour. The service hues are
-      not repeated here; they are theme-independent.
-    */
-    --color-accent: #fcc4bf;
-    --color-accent-hover: #ffdad6;
-    --color-accent-fill: #fcc4bf;
-    --color-accent-fill-hover: #ffdad6;
-    --color-accent-fill-ink: #14181d;
-    --color-accent-tint: #2d2320;
-
-    /* 7.41:1 on #1a1d21. */
-    --color-danger: #ff8a80;
-    --color-danger-tint: #3a211f;
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-
-  --color-surface: #1a1d21;
-  --color-surface-muted: #23272c;
-  --color-ink: #e8eaed;
-  --color-ink-muted: #a0a7b0;
-  --color-line: #31363d;
-
-  --color-accent: #fcc4bf;
-  --color-accent-hover: #ffdad6;
-  --color-accent-fill: #fcc4bf;
-  --color-accent-fill-hover: #ffdad6;
-  --color-accent-fill-ink: #14181d;
-  --color-accent-tint: #2d2320;
-
-  --color-danger: #ff8a80;
-  --color-danger-tint: #3a211f;
-}
-
-/*
-  Theme-swapped images (Project.images[].srcDark, CLAUDE.md §9's "real
-  screenshots beat any illustration"). A screenshot can have its own baked-in
-  background, so unlike a colour it has no shared token to swap through — both
-  variants sit in the DOM and this shows the one matching the active theme,
-  using the identical three-state rule as the palette above.
-*/
-.theme-dark-only {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-light-only {
-    display: none;
-  }
-  :root:not([data-theme="light"]) .theme-dark-only {
-    display: block;
-  }
-}
-
-:root[data-theme="dark"] .theme-light-only {
-  display: none;
-}
-
-:root[data-theme="dark"] .theme-dark-only {
-  display: block;
-}
-
-/*
-  Same idea, for a `fill`-positioned pair stacked in one box (ProjectCard's
-  thumbnail) rather than sequential document flow. `display: none` is wrong
-  here: a browser never issues the network request for a `display: none`
-  <img>, and — confirmed by testing this against the real theme-toggle
-  button, not just a reload with a pre-set preference — it does not retroactively
-  fetch it once `display` flips to `block` later. The card was rendering
-  blank after a visitor toggled theme. `opacity: 0` keeps the element genuinely
-  laid out (same box as its visible sibling, so it reads as on-screen and
-  loads normally) while staying invisible and non-interactive.
-*/
-.theme-fill-dark {
-  opacity: 0;
-  pointer-events: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-fill-light {
-    opacity: 0;
-    pointer-events: none;
-  }
-  :root:not([data-theme="light"]) .theme-fill-dark {
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-
-:root[data-theme="dark"] .theme-fill-light {
-  opacity: 0;
-  pointer-events: none;
-}
-
-:root[data-theme="dark"] .theme-fill-dark {
-  opacity: 1;
-  pointer-events: auto;
-}
-
 @layer base {
   html {
-    /* Default; the unlayered dark blocks above override it, since unlayered
-       CSS outranks anything in @layer base. */
-    color-scheme: light;
+    color-scheme: dark;
     /* Stops iOS Safari inflating text in landscape. */
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background-color: var(--color-surface);
-    color: var(--color-ink);
+    background-color: var(--color-bg);
+    color: var(--color-text);
     font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: 1.65;
@@ -276,7 +99,7 @@
   }
 
   /*
-    One global focus ring (CLAUDE.md §11). :focus-visible rather than :focus so
+    One global focus ring (CLAUDE.md §10). :focus-visible rather than :focus so
     mouse users do not see it on click. The 2px offset is what keeps it visible
     on accent-filled buttons, where a ring drawn inside would vanish.
   */
@@ -284,6 +107,25 @@
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
     border-radius: 2px;
+  }
+
+  /*
+    §10: color-scheme: dark handles most browser-rendered UI, but Chrome's
+    autofill highlight is a hardcoded light-yellow fill that ignores it — an
+    autofilled QuoteForm input would otherwise render with a white background
+    against the dark surface. The box-shadow inset is the standard override:
+    it paints over the autofill background with the surface colour without
+    touching layout, and the long transition delay stops Chrome's own
+    background-color transition from flashing yellow before the override
+    applies.
+  */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    box-shadow: 0 0 0 1000px var(--color-surface) inset;
+    -webkit-text-fill-color: var(--color-text);
+    caret-color: var(--color-text);
+    transition: background-color 5000s ease-in-out 0s;
   }
 
   @media (prefers-reduced-motion: reduce) {

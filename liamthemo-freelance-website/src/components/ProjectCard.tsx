@@ -39,50 +39,23 @@ export default function ProjectCard({ project }: { project: Project }) {
     <li>
       <Link
         href={`/portfolio/${project.slug}`}
-        className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-accent"
+        className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent"
       >
         {/*
           3:2 to match the 1440x960 thumbnail source size — full image, no
-          crop — for the common case. bg-surface-muted is only visible when
+          crop — for the common case. bg-surface-2 is only visible when
           `thumb.fit === "contain"` letterboxes an image whose aspect ratio
           is too extreme to crop into 3:2 (e.g. a wide banner).
         */}
-        <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-line bg-surface-muted">
+        <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-border bg-surface-2">
           {thumb ? (
-            thumb.srcDark ? (
-              <>
-                {/*
-                  theme-fill-light/dark, not theme-light-only/dark-only: the
-                  display-based pair leaves the hidden image `display: none`,
-                  which stops the browser from ever fetching it (verified
-                  against the real theme-toggle button — the card stayed
-                  blank after switching theme). See the comment in
-                  globals.css next to `.theme-fill-dark`.
-                */}
-                <Image
-                  src={thumb.src}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  className={`theme-fill-light ${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
-                />
-                <Image
-                  src={thumb.srcDark}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  className={`theme-fill-dark ${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
-                />
-              </>
-            ) : (
-              <Image
-                src={thumb.src}
-                alt=""
-                fill
-                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                className={`${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
-              />
-            )
+            <Image
+              src={thumb.src}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className={`${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
+            />
           ) : primaryService ? (
             <div
               aria-hidden="true"
@@ -93,7 +66,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           ) : (
             <div
               aria-hidden="true"
-              className="flex h-full w-full items-center justify-center bg-surface-muted text-5xl"
+              className="flex h-full w-full items-center justify-center bg-surface-2 text-5xl"
             >
               {project.icon ?? "📁"}
             </div>
@@ -108,15 +81,15 @@ export default function ProjectCard({ project }: { project: Project }) {
             ).map((label) => (
               <span
                 key={label}
-                className="rounded-full border border-line px-2.5 py-1 text-small text-ink-muted"
+                className="rounded-full border border-border px-2.5 py-1 text-small text-text-muted"
               >
                 {label}
               </span>
             ))}
           </div>
 
-          <h3 className="mt-4 text-h3 text-ink">{project.title}</h3>
-          <p className="mt-2 flex-1 text-body text-ink-muted">
+          <h3 className="mt-4 text-h3 text-text">{project.title}</h3>
+          <p className="mt-2 flex-1 text-body text-text-muted">
             {project.summary}
           </p>
 

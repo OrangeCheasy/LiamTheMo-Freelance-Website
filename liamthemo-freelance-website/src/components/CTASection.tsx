@@ -3,22 +3,35 @@ import { CTA } from "@/lib/nav";
 import type { ServiceSlug } from "@/lib/types";
 
 /*
-  The reusable bottom-of-page conversion block (CLAUDE.md §5).
+  The reusable bottom-of-page conversion block (CLAUDE.md §5, §15 Phase 2).
 
   It exists because of success criterion 2 in §2 — every page ends with a path to
   the quote form — and building it once here means the service, portfolio and
   about pages inherit it at steps 3, 4 and 6 rather than each growing its own.
 
-  Server component. It is a heading, a paragraph and two links.
+  Server component. It is a heading, a paragraph and a link.
 
   The reply promise is not marketing copy invented here: §8 fixes the wording of
   the form's success state as "I'll reply within one business day", and saying
   something different before the click than after it would be a broken promise.
+
+  MOCKUP PANEL: the warm radial gradient is Phase 2's home-page treatment —
+  no border on the panel itself (owner correction after the first pass added
+  one the mockup doesn't have); depth comes from the gradient alone, per
+  §9.4's "glow over box-shadow." `title`/`description`/`ctaLabel` stay
+  overridable because every other page using this component (services,
+  portfolio, about) has its own, page-specific copy — the mockup only shows
+  the home page, so only the home page's call passes mockup-exact copy. The
+  panel styling itself (gradient, pill button) applies everywhere, since
+  that's a visual system choice, not page content.
 */
 
 interface CTASectionProps {
   title?: string;
   description?: string;
+  /** Overrides the shared CTA.label ("Contact now") for this one instance —
+      only the home page needs "Get In Touch" to match the mockup. */
+  ctaLabel?: string;
   /** Optional second, lower-commitment destination. */
   secondary?: { href: string; label: string };
   /**
@@ -33,50 +46,121 @@ interface CTASectionProps {
 export default function CTASection({
   title = "Tell me what you're trying to get done",
   description = "Describe the problem in plain words. I'll reply within one business day with what it would take.",
+  ctaLabel,
   secondary,
   topic,
 }: CTASectionProps) {
   const ctaHref = topic ? `${CTA.href}?topic=${topic}` : CTA.href;
 
   return (
-    <section
-      aria-labelledby="cta-heading"
-      className="border-t border-line bg-surface"
-    >
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+    <section aria-labelledby="cta-heading" className="bg-bg">
+      <div className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
         {/*
-          Pastel fill with an ink heading on top — legal under §9.2 because the
-          pastel is a filled area, never the text. The border is required: on a
-          light surface the fill is only ~1.5:1 against the page, so without it
-          the block's own edge disappears.
-        */}
-        <div className="rounded-2xl border border-accent bg-accent-fill px-6 py-10 sm:px-10 sm:py-12">
-          <h2
-            id="cta-heading"
-            className="max-w-[22ch] text-h2 text-accent-fill-ink"
-          >
-            {title}
-          </h2>
-          <p className="mt-3 max-w-[56ch] text-body text-accent-fill-ink">
-            {description}
-          </p>
+          Warm gradient panel, anchored top-left, fading into the surface
+          tone — §9.4's "soft radial glow beats a black box-shadow" applied to
+          the panel itself rather than just a hover state. No border: depth
+          comes from the gradient alone, matching the mockup exactly.
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+          FULL RE-DERIVATION from pixel data (previous passes here guessed a
+          linear falloff; the real thing isn't linear and isn't circular).
+          Sampled excess-over-base brightness at fine radius steps from the
+          panel's true top-left fill corner (not the geometric corner — that
+          point sits on the anti-aliased edge and reads as background, which
+          quietly broke an earlier attempt at this), averaged across several
+          rows/columns to cancel noise, along pure horizontal and pure
+          vertical rays (vertical only out to the panel's own ~90px height,
+          where it hits the panel's bottom edge and the data ends).
+
+          ln(excess) vs radius is a straight line in BOTH directions —
+          confirms exponential decay, not the linear interpolation a plain
+          2-stop CSS gradient produces. The two directions decay at clearly
+          different, independently-fitted rates:
+            horizontal: excess = 77·exp(−0.0032·r)   (r in native mockup px)
+            vertical:   excess = 92·exp(−0.0203·r)
+          Vertical decays ~6.35× faster than horizontal — a strongly
+          elongated ellipse, not the circle it might look like at a glance.
+          E-fold distances (÷917 panel width, ÷90 panel height): horizontal
+          ≈34% of panel width, vertical ≈55% of panel height — that sets the
+          ellipse size below. Stops are placed every half e-fold
+          (exp(−0.5)≈0.607, exp(−1)≈0.368, exp(−1.5)≈0.223, ...) so the
+          gradient traces the curve instead of straight-lining between two
+          points on it. Peak opacity is 32%, close to the ~30% the sampled
+          peak pixel itself resolves to against --color-surface — deliberately
+          NOT pushed brighter this time: the previous "deeper" attempt raised
+          opacity but left the slow linear falloff in place, which is why it
+          read as a wide wash rather than a contained, deep corner glow. A
+          correctly fast, correctly-shaped falloff is what makes a modest
+          peak opacity still read as deep.
+
+          Two owner adjustments on top of the fitted model, not re-derived
+          from pixels — these are taste calls the mockup itself doesn't
+          dictate:
+          — Ellipse sized down another 5% (34%→32%, 55%→52%) for a visibly
+            faster falloff than the strict fit produced.
+          — Colour is a literal #ff3a00, not --color-accent (#FF6A1A). This
+            is the one deliberate exception to "never hardcode a hex value in
+            a component" (CLAUDE.md §9.1) in this file: an explicit owner
+            colour choice for this one glow, not a design-system token, so it
+            stays local rather than growing a new global token for a
+            single-use value.
+        */}
+        <div
+          className="flex flex-col gap-4 rounded-2xl px-6 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:pt-5 sm:pb-4"
+          style={{
+            background:
+              "radial-gradient(ellipse 32% 52% at 0% 0%, " +
+              "color-mix(in srgb, #ff3a00 32%, transparent) 0%, " +
+              "color-mix(in srgb, #ff3a00 19.4%, transparent) 50%, " +
+              "color-mix(in srgb, #ff3a00 11.8%, transparent) 100%, " +
+              "color-mix(in srgb, #ff3a00 7.1%, transparent) 150%, " +
+              "color-mix(in srgb, #ff3a00 4.3%, transparent) 200%, " +
+              "color-mix(in srgb, #ff3a00 2.6%, transparent) 250%, " +
+              "color-mix(in srgb, #ff3a00 1.6%, transparent) 300%, " +
+              "transparent 400%), var(--color-surface)",
+          }}
+        >
+          <div>
+            <h2 id="cta-heading" className="max-w-[26ch] text-h3 text-text">
+              {title}
+            </h2>
+            {/* whitespace-pre-line: lets a caller force a line break with a
+                literal \n (the home page's two-sentence version does) while
+                every other caller's plain string renders exactly as before —
+                no \n present, nothing changes. */}
+            <p className="mt-1.5 max-w-[48ch] whitespace-pre-line text-small text-text-muted">
+              {description}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             {/*
-              Inverted against the pastel band: the surface-coloured button is
-              what carries the contrast here, since a pastel button on a pastel
-              band would have no edge at all.
+              min-w on the primary button, not just content-fit padding: in
+              the mockup this button measures ~1.5x wider than the hero's
+              "View My Work" pill despite similar-length text — a deliberate
+              long-pill shape, not accidental sizing.
             */}
             <Link
               href={ctaHref}
-              className="inline-flex items-center justify-center rounded-lg border border-accent bg-surface px-5 py-2.5 font-semibold text-ink transition-colors hover:bg-surface-muted"
+              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-2 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)] sm:min-w-[240px]"
             >
-              {CTA.label}
+              {ctaLabel ?? CTA.label}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              >
+                <path d="M7 17 17 7M9 7h8v8" />
+              </svg>
             </Link>
             {secondary ? (
               <Link
                 href={secondary.href}
-                className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 font-medium text-accent-fill-ink underline underline-offset-4 transition-colors hover:bg-accent-fill-hover"
+                className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 font-medium text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
               >
                 {secondary.label}
               </Link>

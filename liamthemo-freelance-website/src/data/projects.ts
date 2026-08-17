@@ -35,13 +35,20 @@ export const projects: Project[] = [
     problem:
       "The business needed a site that gets a visitor to the right service quickly, ends every page with a path to the quote form, and doubles as a portfolio for both prospective clients and potential employers — without needing a new page written by hand every time a service or project is added.",
     solution:
-      "Built with Next.js (App Router) and TypeScript, deployed to Cloudflare Workers rather than a paid platform to keep hosting costs at effectively zero for a low-traffic marketing site. Services and portfolio case studies are generated from typed data files, so adding one is a data change, not a new page. Includes a light/dark theme toggle, and a triage widget on the home page that routes a visitor straight to the right service based on the problem they describe.",
+      "Built with Next.js (App Router) and TypeScript, deployed to Cloudflare Workers rather than a paid platform to keep hosting costs at effectively zero for a low-traffic marketing site. Services and portfolio case studies are generated from typed data files, so adding one is a data change, not a new page.",
     // result: intentionally omitted (§10) — the site isn't launched with
     // real traffic yet, so there's no conversion number to report.
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
     // images: intentionally omitted — no screenshots needed; the visitor is
     // already looking at it.
-    featured: true,
+    //
+    // featured: false — CLAUDE.md §15 Phase 2's approved mockup shows a
+    // specific three: Fuse Factory, OrangeCheasy, Restaurant Sales Parser.
+    // This site is real work, but it isn't image-led the way the mockup's
+    // grid needs (no `images`, and a screenshot of the site the visitor is
+    // already on doesn't demonstrate anything). Flipped in favour of the
+    // mockup's picks rather than adding a fourth featured card.
+    featured: false,
   },
   {
     slug: "fuse-factory",
@@ -74,7 +81,8 @@ export const projects: Project[] = [
         alt: "Fuse Factory game thumbnail: the game logo above three cube-shaped Boomie characters with lit fuses, in a factory setting with colored crates.",
       },
     ],
-    featured: false,
+    // featured: true — one of the mockup's three home-page picks (§15 Phase 2).
+    featured: true,
   },
   {
     slug: "orangecheasy-youtube",
@@ -123,7 +131,8 @@ export const projects: Project[] = [
         height: 1984,
       },
     ],
-    featured: false,
+    // featured: true — one of the mockup's three home-page picks (§15 Phase 2).
+    featured: true,
   },
   {
     slug: "restaurant-sales-parser",
@@ -151,10 +160,11 @@ export const projects: Project[] = [
     // TODO(owner): confirm the rest of the stack (e.g. the library used to read
     // the export, the input file format — .csv vs .xlsx — and what generates
     // the final report).
+    // Dark-only site — dark.webp is the sole image; the retired light.webp
+    // variant has been deleted.
     images: [
       {
-        src: "/portfolio/restaurant-sales-parser/light.webp",
-        srcDark: "/portfolio/restaurant-sales-parser/dark.webp",
+        src: "/portfolio/restaurant-sales-parser/dark.webp",
         alt: "Diagram showing the parser turning 35 pages of unstructured raw server sales data into a clean weekly summary table with totals per server, broken out by special, food, and drink sales.",
       },
     ],

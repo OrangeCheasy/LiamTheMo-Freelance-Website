@@ -58,13 +58,13 @@ export default async function ProjectPage({
 
   return (
     <>
-      <section className="border-b border-line bg-surface-muted">
+      <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Link
             href="/portfolio"
             className="text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
           >
-            ← Portfolio
+            ← Projects
           </Link>
 
           <div className="mt-5 flex flex-wrap gap-2">
@@ -72,7 +72,7 @@ export default async function ProjectPage({
               ? project.services.map((serviceSlug) => (
                   <span
                     key={serviceSlug}
-                    className={`rounded-full px-2.5 py-1 text-small font-medium text-accent-fill-ink ${SERVICE_META[serviceSlug].chipClass}`}
+                    className={`rounded-full px-2.5 py-1 text-small font-medium text-bg ${SERVICE_META[serviceSlug].chipClass}`}
                   >
                     {SERVICE_META[serviceSlug].title}
                   </span>
@@ -80,7 +80,7 @@ export default async function ProjectPage({
               : project.skills?.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-full border border-line px-2.5 py-1 text-small text-ink-muted"
+                    className="rounded-full border border-border px-2.5 py-1 text-small text-text-muted"
                   >
                     {skill}
                   </span>
@@ -94,12 +94,12 @@ export default async function ProjectPage({
                 alt={project.avatar.alt}
                 width={56}
                 height={56}
-                className="h-14 w-14 shrink-0 rounded-full border border-line object-cover"
+                className="h-14 w-14 shrink-0 rounded-full border border-border object-cover"
               />
             ) : null}
-            <h1 className="max-w-[24ch] text-h1 text-ink">{project.title}</h1>
+            <h1 className="max-w-[24ch] text-h1 text-text">{project.title}</h1>
           </div>
-          <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
+          <p className="mt-4 max-w-[56ch] text-body text-text-muted">
             {project.summary}
           </p>
 
@@ -124,14 +124,14 @@ export default async function ProjectPage({
           <div className="min-w-0 space-y-10">
             <div>
               <Eyebrow as="h2">The problem</Eyebrow>
-              <p className="mt-4 max-w-[70ch] text-body text-ink">
+              <p className="mt-4 max-w-[70ch] text-body text-text">
                 {project.problem}
               </p>
             </div>
 
             <div>
               <Eyebrow as="h2">The solution</Eyebrow>
-              <p className="mt-4 max-w-[70ch] text-body text-ink">
+              <p className="mt-4 max-w-[70ch] text-body text-text">
                 {project.solution}
               </p>
             </div>
@@ -145,21 +145,23 @@ export default async function ProjectPage({
             {project.result ? (
               <div>
                 <Eyebrow as="h2">The result</Eyebrow>
-                <p className="mt-4 max-w-[70ch] text-body text-ink">
+                <p className="mt-4 max-w-[70ch] text-body text-text">
                   {project.result}
                 </p>
 
+                {/* Neutral, not accent (§9.2) — an informational stat panel,
+                    not a control. */}
                 {project.metrics && project.metrics.length > 0 ? (
                   <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
                     {project.metrics.map((metric) => (
                       <div
                         key={metric.label}
-                        className="rounded-xl border border-accent bg-accent-fill px-4 py-4"
+                        className="rounded-xl border border-border bg-surface-2 px-4 py-4"
                       >
-                        <dt className="text-small text-accent-fill-ink">
+                        <dt className="text-small text-text-muted">
                           {metric.label}
                         </dt>
-                        <dd className="mt-1 text-h3 text-accent-fill-ink">
+                        <dd className="mt-1 text-h3 text-text">
                           {metric.value}
                         </dd>
                       </div>
@@ -184,36 +186,17 @@ export default async function ProjectPage({
                   {project.images.map((image) => (
                     <figure
                       key={image.src}
-                      className="self-start overflow-hidden rounded-xl border border-line"
+                      className="self-start overflow-hidden rounded-xl border border-border"
                     >
-                      {image.srcDark ? (
-                        <>
-                          <Image
-                            src={image.src}
-                            alt={image.alt}
-                            width={image.width ?? 1536}
-                            height={image.height ?? 1024}
-                            className="theme-light-only h-auto w-full"
-                          />
-                          <Image
-                            src={image.srcDark}
-                            alt={image.alt}
-                            width={image.width ?? 1536}
-                            height={image.height ?? 1024}
-                            className="theme-dark-only h-auto w-full"
-                          />
-                        </>
-                      ) : (
-                        <Image
-                          src={image.src}
-                          alt={image.alt}
-                          width={image.width ?? 1536}
-                          height={image.height ?? 1024}
-                          className="h-auto w-full"
-                        />
-                      )}
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        width={image.width ?? 1536}
+                        height={image.height ?? 1024}
+                        className="h-auto w-full"
+                      />
                       {image.caption ? (
-                        <figcaption className="border-t border-line bg-surface-muted px-4 py-2 text-small text-ink-muted">
+                        <figcaption className="border-t border-border bg-surface px-4 py-2 text-small text-text-muted">
                           {image.caption}
                         </figcaption>
                       ) : null}
@@ -225,13 +208,13 @@ export default async function ProjectPage({
           </div>
 
           {/* Technical detail, kept out of the main reading path (§6). */}
-          <aside className="lg:border-l lg:border-line lg:pl-8">
+          <aside className="lg:border-l lg:border-border lg:pl-8">
             <Eyebrow as="h2">Built with</Eyebrow>
             <ul className="mt-4 flex flex-wrap gap-2">
               {project.stack.map((tech) => (
                 <li
                   key={tech}
-                  className="rounded-full border border-line px-3 py-1 text-small text-ink-muted"
+                  className="rounded-full border border-border px-3 py-1 text-small text-text-muted"
                 >
                   {tech}
                 </li>

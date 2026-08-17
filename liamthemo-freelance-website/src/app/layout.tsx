@@ -34,29 +34,12 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
 };
 
-/*
-  Runs before first paint so a returning visitor never sees a flash of the wrong
-  theme. It has to be inline and render-blocking — anything deferred, or any
-  React state, resolves after the browser has already painted.
-
-  It only applies an explicitly stored choice. With nothing stored it leaves the
-  attribute off entirely, and the prefers-color-scheme block in globals.css
-  takes over, which is what makes "follow the OS" the default.
-*/
-const themeScript = `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}})()`;
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // suppressHydrationWarning: the script above mutates data-theme on <html>
-    // before React hydrates, so the server and client markup differ by design.
     <html
       lang="en"
       className={`${inter.variable} ${bricolage.variable} h-full antialiased`}
-      suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body className="flex min-h-full flex-col">
         {/*
           First focusable element on the page. Invisible until focused, then it
@@ -64,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-5 focus:z-[60] focus:rounded-lg focus:border focus:border-accent focus:bg-accent-fill focus:px-4 focus:py-2 focus:text-small focus:font-semibold focus:text-accent-fill-ink"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-5 focus:z-[60] focus:rounded-lg focus:border focus:border-accent focus:bg-accent focus:px-4 focus:py-2 focus:text-small focus:font-semibold focus:text-bg"
         >
           Skip to content
         </a>

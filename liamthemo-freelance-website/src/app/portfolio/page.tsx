@@ -11,12 +11,12 @@ import { projects } from "@/data/projects";
 */
 
 export const metadata: Metadata = {
-  title: "Portfolio",
+  title: "Projects",
   description:
     "Real automation, spreadsheet and Roblox work — the problem, what was built, and what changed.",
   openGraph: {
     type: "website",
-    title: "Portfolio",
+    title: "Projects",
     description:
       "Real automation, spreadsheet and Roblox work — the problem, what was built, and what changed.",
   },
@@ -25,16 +25,16 @@ export const metadata: Metadata = {
 export default function PortfolioPage() {
   return (
     <>
-      <section className="border-b border-line bg-surface-muted">
+      <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>Real work</Eyebrow>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <h1 className="max-w-[20ch] text-h1 text-ink">Portfolio</h1>
-            <span className="rounded-full border border-line px-2.5 py-1 text-small font-medium text-ink-muted">
+            <h1 className="max-w-[20ch] text-h1 text-text">Projects</h1>
+            <span className="rounded-full border border-border px-2.5 py-1 text-small font-medium text-text-muted">
               WIP
             </span>
           </div>
-          <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
+          <p className="mt-4 max-w-[56ch] text-body text-text-muted">
             A look at finished work: what the problem was, what got built, and
             what changed because of it.
           </p>
@@ -51,8 +51,9 @@ export default function PortfolioPage() {
 
       {/*
         There's no /services index to link a "Browse services" secondary CTA
-        to anymore — the triage widget on the home page is the de facto
-        services index now, so that's where this points.
+        to — the home page is where it points, on the (currently
+        unrealized) expectation that a "Services" section lands there per
+        the owner's plan; see the note atop src/app/page.tsx.
       */}
       <CTASection secondary={{ href: "/", label: "Browse services" }} />
     </>

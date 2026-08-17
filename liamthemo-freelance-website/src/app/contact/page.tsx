@@ -12,10 +12,17 @@ import { SERVICE_META, type ServiceSlug } from "@/lib/types";
   per request rather than serving prerendered HTML from the assets binding
   (§4.1). That is the one architectural cost this build introduces. It buys
   something real: §7 requires that a visitor who already stated their problem
-  (via the triage widget or a service page's CTA) is never asked to repeat it,
+  (via a service page's CTA — the home page's former triage widget also fed
+  this before it was removed, see page.tsx) is never asked to repeat it,
   which means the prefill has to happen before the form's first paint, not
   after a client-side hydration flash. Every other page in the app remains
   fully static — this is the only route that changed.
+
+  `topic=unsure` (the triage widget's old "not sure what I need" option) has
+  no link pointing at it anywhere on the site now, but the branch below still
+  handles it correctly if reached directly — left in rather than stripped,
+  since a future home-page "Services" section may reintroduce an equivalent
+  option.
 
   The actual form submission is a separate concern, handled by
   src/app/api/quote/route.ts. This page just renders a <form>; the Worker isn't
@@ -62,7 +69,7 @@ export default async function ContactPage({
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-line bg-surface-muted">
+      <section className="relative overflow-hidden border-b border-border bg-surface">
         {/*
           Same dot-grid token as the home hero (§9: "precision, technical,
           tidy", not a gradient blob) — this page had none of the home page's
@@ -72,25 +79,25 @@ export default async function ContactPage({
         */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--color-line)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"
         />
 
         <div className="relative mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>Contact</Eyebrow>
-          <h1 className="mt-3 max-w-[24ch] text-h1 text-ink">{heading}</h1>
-          <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
+          <h1 className="mt-3 max-w-[24ch] text-h1 text-text">{heading}</h1>
+          <p className="mt-4 max-w-[56ch] text-body text-text-muted">
             {description}
           </p>
 
           {/*
-            The direct-email escape hatch the owner asked for. Pastel fill
-            with an ink label — same treatment as every other button on the
-            site (§9.2), not a one-off style, so it reads as "another way to
-            do the same thing" rather than a competing action.
+            The direct-email escape hatch the owner asked for. Solid accent
+            with dark text on top — same treatment as every other button on
+            the site (§9.2), not a one-off style, so it reads as "another way
+            to do the same thing" rather than a competing action.
           */}
           <a
             href="mailto:contact@liamthemo.com"
-            className="mt-7 inline-flex items-center gap-2.5 rounded-xl border border-accent bg-accent-fill px-5 py-3 font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover"
+            className="mt-7 inline-flex items-center gap-2.5 rounded-xl border border-accent bg-accent px-5 py-3 font-semibold text-bg transition-colors hover:bg-accent-hover"
           >
             <svg
               aria-hidden="true"
@@ -107,7 +114,7 @@ export default async function ContactPage({
             </svg>
             contact@liamthemo.com
           </a>
-          <p className="mt-2.5 text-small text-ink-muted">
+          <p className="mt-2.5 text-small text-text-muted">
             Prefer email? Skip the form and write to me directly.
           </p>
         </div>

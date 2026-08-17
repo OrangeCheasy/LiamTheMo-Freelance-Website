@@ -12,20 +12,18 @@
   architectural cost.
 */
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import ThemeToggle from "@/components/ThemeToggle";
 import { CTA, mainNav, SITE_NAME } from "@/lib/nav";
 
 const FOCUSABLE = "a[href], button:not([disabled])";
 
-// Pastel fill, ink label, dusty border. The border is not decoration: without
-// it a pastel block is 1.52:1 against a white page and stops looking clickable.
+// Solid accent, dark text on top — accent is bright enough on --bg to carry
+// UI-sized text/fills directly (§10), so this needs no separate "-ink" token.
 const ctaClasses =
-  "inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-4 py-2 " +
-  "text-small font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover";
+  "inline-flex items-center justify-center rounded-lg border border-accent bg-accent px-4 py-2 " +
+  "text-small font-semibold text-bg transition-colors hover:bg-accent-hover";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -111,25 +109,20 @@ export default function Navbar() {
   }
 
   return (
-    <header
-      ref={headerRef}
-      className="sticky top-0 z-50 border-b border-line bg-surface"
-    >
+    <header ref={headerRef} className="sticky top-0 z-50 bg-bg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
+        {/*
+          Mockup mark: "lm" set in the display face, no icon graphic — replaces
+          the old spelled-out wordmark + icon.svg placeholder. aria-label keeps
+          the accessible name as the full site name; a screen reader shouldn't
+          announce two meaningless letters.
+        */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink"
+          aria-label={SITE_NAME}
+          className="font-display text-2xl font-bold tracking-tight text-accent"
         >
-          {/* Placeholder mark (public/icon.svg) — swap once the real logo exists. */}
-          <Image
-            src="/icon.svg"
-            alt=""
-            width={28}
-            height={28}
-            unoptimized
-            className="rounded-md"
-          />
-          {SITE_NAME}
+          lm
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-6 md:flex">
@@ -139,12 +132,13 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
-                  // The active rule uses the dusty tone, not the pastel — a
-                  // pastel hairline on white is invisible (see globals.css).
-                  className={`relative text-small transition-colors hover:text-ink ${
+                  // isActive() never matches "/#services" — usePathname()
+                  // never carries a hash fragment, so that link intentionally
+                  // never shows as current. It isn't a distinct page.
+                  className={`relative text-small transition-colors hover:text-text ${
                     isActive(link.href)
-                      ? "font-medium text-ink after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-accent after:content-['']"
-                      : "text-ink-muted"
+                      ? "font-medium text-text after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-accent after:content-['']"
+                      : "text-text-muted"
                   }`}
                 >
                   {link.label}
@@ -153,7 +147,6 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <Link href={CTA.href} className={ctaClasses}>
               {CTA.label}
             </Link>
@@ -161,17 +154,15 @@ export default function Navbar() {
         </nav>
 
         {/* Mobile controls, grouped so justify-between still splits the bar into
-            two ends. The theme toggle sits outside the panel so it is reachable
-            without opening the menu. */}
+            two ends. */}
         <div className="flex items-center gap-1 md:hidden">
-          <ThemeToggle />
           <button
             ref={toggleRef}
             type="button"
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-controls="mobile-menu"
-            className="-mr-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink"
+            className="-mr-2 inline-flex h-10 w-10 items-center justify-center rounded-lg text-text"
           >
             <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
             <svg
@@ -196,7 +187,7 @@ export default function Navbar() {
       {open && (
         <div
           id="mobile-menu"
-          className="absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-line bg-surface shadow-sm md:hidden"
+          className="absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-border bg-surface shadow-sm md:hidden"
         >
           <nav aria-label="Main" className="mx-auto max-w-6xl px-5 py-4 sm:px-8">
             <ul className="flex flex-col">
@@ -207,10 +198,10 @@ export default function Navbar() {
                     aria-current={isActive(link.href) ? "page" : undefined}
                     // Same marker rotated: an orange bar down the left edge.
                     // Inactive items keep a transparent one so nothing shifts.
-                    className={`block border-b border-l-2 border-line py-3 pl-3 ${
+                    className={`block border-b border-l-2 border-border py-3 pl-3 ${
                       isActive(link.href)
-                        ? "border-l-accent font-medium text-ink"
-                        : "border-l-transparent text-ink-muted"
+                        ? "border-l-accent font-medium text-text"
+                        : "border-l-transparent text-text-muted"
                     }`}
                   >
                     {link.label}

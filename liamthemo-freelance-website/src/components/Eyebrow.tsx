@@ -1,12 +1,15 @@
 import type { ElementType, ReactNode } from "react";
 
 /*
-  The signature element of the "marked up" direction: a short coral rule above a
-  small tracked label. Used to title sections and footer columns.
+  A short rule above a small tracked label. Used to title sections and footer
+  columns.
 
-  The rule uses the dusty accent, not the pastel. A pastel hairline on a light
-  surface measures about 1.5:1 and is effectively invisible — see the contrast
-  note in globals.css.
+  Neutral, not accent. §9.2 reserves orange for actions and current state —
+  this rule sits above section labels site-wide and is never clickable, so it
+  uses --border rather than --accent. (The old light/dark version of this
+  component used the accent here as a documented one-mark-per-page exception;
+  the redesign doc restates §9.2 without that carve-out, so this phase drops
+  it rather than assume it still applies.)
 */
 
 interface EyebrowProps {
@@ -25,8 +28,8 @@ export default function Eyebrow({
 }: EyebrowProps) {
   return (
     <div className={className}>
-      <span aria-hidden="true" className="block h-0.5 w-8 bg-accent" />
-      <Label id={id} className="mt-3 text-eyebrow uppercase text-ink">
+      <span aria-hidden="true" className="block h-0.5 w-8 bg-border" />
+      <Label id={id} className="mt-3 text-eyebrow uppercase text-text">
         {children}
       </Label>
     </div>
