@@ -1,83 +1,55 @@
+import Image from "next/image";
+
 /*
   The hero's visual (CLAUDE.md §15 Phase 2, mockup composition: "large heading
-  left, artwork right"). Rebuilds the mockup's glowing-badge concept as inline
-  SVG + CSS rather than reusing the mockup's own render.
+  left, artwork right").
 
-  WHY NOT THE MOCKUP'S ASSET. That render only exists baked into the flattened
-  homepage screenshot — extracted, it's a ~650x320px crop, below retina
-  quality at real hero size, unlicensed for production use, and it's an LCP
-  candidate, so shipping a soft upscaled crop as the first paint is a bad
-  trade. It's also the kind of generic 3D render §9.6 lists as an anti-goal.
+  SUPERSEDES THE INLINE-SVG "MOUND" VERSION. That earlier build deliberately
+  avoided the mockup's own render because the only copy of it was a crop baked
+  into the flattened full-page screenshot — below retina quality at hero size
+  and an LCP candidate, so shipping an upscaled crop was a bad trade. The
+  owner has since supplied the real source render at /public/homepage/hero.png
+  (1536x1024, standalone), which resolves that objection, and made this
+  mockup authoritative over the anti-goal that previously ruled a 3D render
+  out (§9.6) — an explicit override, documented here the same way the hero
+  copy's override is documented in page.tsx.
 
-  WHAT THIS IS INSTEAD: the real "lm" mark (same glyph as Navbar/Footer) on a
-  card, with a soft --accent-dim glow behind it standing in for the rim light,
-  and a low-contrast "mound" shape anchoring it to something solid — same
-  spirit as the mockup, zero image weight, infinitely crisp, no licensing
-  question, and it reinforces the actual logo instead of a stock-feeling prop.
+  hero.webp is a sharp-recompressed copy of the source PNG (quality 82) —
+  1.7MB down to ~110KB — kept as the actual `src` so this one image doesn't
+  blow the homepage's 600KB payload target on its own (§12). The source PNG
+  stays in public/homepage/ for future re-exports at a different crop/quality.
 
-  EDGES BLEND, NOT A VISIBLE BOX. The glow is a blurred radial-gradient div
-  behind the SVG, feathering to transparent well before the container edge —
-  required per this phase's brief ("edges blend into the background rather
-  than showing a visible box"). The mound uses --surface-2, one step off
-  --bg, so its silhouette reads as form without a hard outline.
+  `sizes="(max-width: 1023px) 0px, 30rem"` pairs with `priority`: it's the
+  LCP element at lg+ (so it preloads, no lazy-load delay), but the wrapper is
+  `hidden lg:block` below that breakpoint (same mobile call as before — see
+  page.tsx), and a `0px` sizes entry makes the browser pick the smallest
+  generated srcset candidate there instead of the full desktop image, so the
+  unconditional preload tag Next emits for `priority` doesn't cost mobile
+  real bytes.
+
+  Decorative, not informational — the heading already states the outcome in
+  words — so `alt=""` and `aria-hidden` are correct here, not an omission.
 */
 
 export default function HeroArt({ className = "" }: { className?: string }) {
   return (
-    <div className={`relative flex items-center justify-center ${className}`}>
+    <div className={`relative ${className}`} aria-hidden="true">
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 blur-3xl"
+        className="pointer-events-none absolute inset-0 -z-10 blur-3xl"
         style={{
           background:
             "radial-gradient(closest-side, var(--color-accent-dim), transparent)",
         }}
       />
-      <svg
-        viewBox="0 0 480 480"
-        aria-hidden="true"
-        focusable="false"
-        className="relative h-auto w-full max-w-[26rem]"
-      >
-        {/* Mound — low-contrast against --bg on purpose, so it reads as a
-            surface the card sits on rather than a distinct shape. */}
-        <path
-          d="M40 400 Q100 320 190 340 Q260 300 330 350 Q410 330 450 400 L450 460 L30 460 Z"
-          className="fill-surface-2"
-        />
-
-        {/* Card */}
-        <rect
-          x="140"
-          y="90"
-          width="200"
-          height="200"
-          rx="32"
-          className="fill-surface stroke-border"
-          strokeWidth="2"
-        />
-        {/* Rim light — one edge only, echoing the mockup's directional glow
-            without a literal 3D render. */}
-        <path
-          d="M172 92 Q142 92 142 122 L142 288"
-          fill="none"
-          className="stroke-accent"
-          strokeWidth="2"
-          strokeLinecap="round"
-          opacity="0.6"
-        />
-
-        <text
-          x="240"
-          y="215"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          className="fill-accent font-display font-bold"
-          fontSize="88"
-        >
-          lm
-        </text>
-      </svg>
+      <Image
+        src="/homepage/hero.webp"
+        alt=""
+        width={1536}
+        height={1024}
+        priority
+        sizes="(max-width: 1023px) 0px, 30rem"
+        className="h-auto w-full max-w-[30rem]"
+      />
     </div>
   );
 }

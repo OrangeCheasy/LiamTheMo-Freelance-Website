@@ -300,9 +300,10 @@ Do not produce:
 - Orange on non-interactive elements
 - Pure `#000` background or pure grey neutrals
 - Glassmorphism, frosted blur panels, animated gradient blobs
-- A "Clean Code / Thoughtful Design / Problem Solver" trio of generic virtues — see §11
 - Stock photography or generic 3D illustration where real project art could go
 - Neon glow on text. Glow belongs on surfaces and focal images, not typography.
+
+**2026-08-17, superseded in part:** the "Clean Code / Thoughtful Design / Problem Solver" trio and a generic-3D-render hero image were both on this list. The owner supplied a new mockup and declared it authoritative over both calls — the trio is back in the home page's About section, and the hero is now a photoreal desk-scene render at `/homepage/hero.webp` (see `HeroArt.tsx`, `src/app/page.tsx`). §11's "no generic virtue blocks" rule is superseded the same way.
 
 ---
 
@@ -429,7 +430,8 @@ Flag rather than deciding:
 
 - [x] Heading and body typefaces — kept Bricolage Grotesque + Inter (Phase 0), already self-hosted and already matching §9.3 before the redesign started
 - [x] Nav label — neither "Work" nor "Portfolio". Owner chose **"Projects"** (Phase 1), used consistently in nav, footer, and internal links/metadata
-- [x] Three-virtue block — owner chose to cut it entirely rather than replace it with a specifics version (Phase 2). A short, mockup-matching "About Me" label/heading/paragraph ships in its place, without the three-column layout
+- [x] Three-virtue block — reversed 2026-08-17. Owner supplied a new mockup and put it back in the home page About section (Clean Code / Thoughtful Design / Problem Solver, three columns with icons), superseding the Phase 2 cut. See §9.6.
 - [ ] Real before/after metrics for the Restaurant Sales Parser
 - [ ] Whether starting prices are published or quote-only
 - [ ] Service area wording for Local Tech Help — remote, local, or both
+- [ ] Nav label "Work" vs "Projects" — the 2026-08-17 mockup shows "Work" in the header nav, contradicting the Phase 1 "Projects" decision above. Not changed yet; only the hero image and About section were in scope for this pass. Flag to the owner before touching it.
