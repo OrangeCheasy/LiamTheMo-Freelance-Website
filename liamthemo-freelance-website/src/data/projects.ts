@@ -63,9 +63,17 @@ export const projects: Project[] = [
     stack: ["Luau"],
     // TODO(owner): confirm whether coins/progress persist via DataStore once
     // settled, and name any other tools/services worth calling out here.
-    // images: intentionally omitted — no screenshots yet since the game is
-    // still in development. Add real screenshots here once there's something
-    // worth showing (§9 prefers a real screenshot over no image).
+    // images[0] is the game's official Roblox thumbnail, not a gameplay
+    // screenshot — used as-is for the card/case-study thumbnail box (§9
+    // prefers a real image over the fallback tile). Real gameplay screenshots
+    // are planned but not added yet; append them here once they exist rather
+    // than replacing this entry.
+    images: [
+      {
+        src: "/portfolio/fuse-factory/thumbnail.webp",
+        alt: "Fuse Factory game thumbnail: the game logo above three cube-shaped Boomie characters with lit fuses, in a factory setting with colored crates.",
+      },
+    ],
     featured: false,
   },
   {
