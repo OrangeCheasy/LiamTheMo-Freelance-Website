@@ -168,7 +168,7 @@ export const projects: Project[] = [
     result:
       "11 desktops built to date, plus an ongoing stream of repairs and upgrades.",
     metrics: [{ label: "Computers built", value: "11" }],
-    stack: ["PC hardware", "Windows troubleshooting"],
+    stack: ["PC hardware", "BIOS configuration", "Software", "Windows troubleshooting"],
     // images: intentionally omitted — no photos on hand yet (§9 prefers a
     // real screenshot over no image; same applies to build photos).
     featured: false,
