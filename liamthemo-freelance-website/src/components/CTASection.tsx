@@ -61,24 +61,35 @@ export default function CTASection({
           the panel itself rather than just a hover state. No border: depth
           comes from the gradient alone, matching the mockup exactly.
 
-          Three stops, not two: accent-hover (bright, opaque) right at the
-          corner for an actual hot-spot, through accent-dim, then transparent.
-          accent-dim alone (12% opacity) read as too washed-out grey-brown at
-          panel scale — this keeps the same tokens but front-loads real
-          saturation before the fade starts.
+          MEASURED, NOT GUESSED — twice now. Peak colour: sampling the
+          mockup's brightest pixel gives ~rgb(90,32,2) against a ~rgb(15,10,6)
+          panel base, which is --color-accent at ~30% opacity composited over
+          --color-surface (confirmed by re-deriving the same numbers from this
+          exact CSS: 255×0.3+20×0.7≈90, 106×0.3+18×0.7≈44, 26×0.3+18×0.7≈20 —
+          R matches almost exactly; the mockup's G/B run a little lower,
+          which --color-accent's own defined hue can't fully replicate without
+          inventing an off-token colour, so this stays as the closest
+          faithful match rather than chasing an exact G/B match §9.1 doesn't
+          license.
+
+          Panel proportions: the mockup's panel measures 917×90px at its own
+          scale — a ~10:1 bar, not a box. The gradient's reach is sized
+          relative to that: at native scale it's ~90%+ decayed by ~65-70% of
+          the panel's width, not the ~85% this used before, which is what
+          read as "stretching too far right."
         */}
         <div
-          className="flex flex-col gap-6 rounded-2xl px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
+          className="flex flex-col gap-4 rounded-2xl px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-5"
           style={{
             background:
-              "radial-gradient(ellipse 130% 160% at 0% 0%, var(--color-accent-hover) 0%, var(--color-accent-dim) 45%, transparent 85%), var(--color-surface)",
+              "radial-gradient(ellipse 90% 100% at 0% 0%, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 65%), var(--color-surface)",
           }}
         >
           <div>
-            <h2 id="cta-heading" className="max-w-[26ch] text-h2 text-text">
+            <h2 id="cta-heading" className="max-w-[26ch] text-h3 text-text">
               {title}
             </h2>
-            <p className="mt-3 max-w-[48ch] text-body text-text-muted">
+            <p className="mt-1.5 max-w-[48ch] text-small text-text-muted">
               {description}
             </p>
           </div>
