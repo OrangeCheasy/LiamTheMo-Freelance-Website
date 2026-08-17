@@ -100,16 +100,13 @@ export const projects: Project[] = [
       alt: "OrangeCheasy YouTube channel profile picture, a cartoon wedge of cheese.",
     },
     // images[0] drives the portfolio card thumbnail (ProjectCard reads
-    // images[0]) — the banner goes first on purpose. It's ~6:1, far too wide
-    // to crop into the 3:2 card box without losing the logo text, so
-    // `fit: "contain"` shows it whole, letterboxed, instead of cropped.
+    // images[0]) — the banner goes first on purpose. It's already a 1536x1024
+    // (3:2) crop, matching the studio-standard size, so it needs no
+    // width/height override or a non-default `fit`.
     images: [
       {
         src: "/portfolio/youtube/banner.webp",
-        alt: "OrangeCheasy YouTube channel banner artwork.",
-        width: 2276,
-        height: 377,
-        fit: "contain",
+        alt: "OrangeCheasy YouTube channel banner artwork: pixel-art logo text over a sunset city skyline with cartoon cheese wedges scattered across it.",
       },
       {
         src: "/portfolio/youtube/channel.webp",

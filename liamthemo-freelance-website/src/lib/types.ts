@@ -105,7 +105,7 @@ export interface Project {
  * `--color-service-*` tokens in globals.css if either changes.
  *
  * TODO: this duplicates data that now exists elsewhere. `services.ts` holds the
- * same five titles and icons, and `ServiceCard.tsx` holds the same five chip
+ * same five titles and icons, and `ServiceTriage.tsx` holds the same five chip
  * classes, so there are several places this display metadata can drift. They
  * agree today.
  * Reconciling means deriving this from `services.ts` — which cannot live in

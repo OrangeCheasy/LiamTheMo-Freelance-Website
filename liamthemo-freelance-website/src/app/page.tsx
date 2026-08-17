@@ -87,10 +87,10 @@ export default function Home() {
                   equally weighted buttons make the visitor choose twice.
                 */}
                 <Link
-                  href="/services"
+                  href="/portfolio"
                   className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 font-medium text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
                 >
-                  See what I do
+                  See what I&apos;ve done
                 </Link>
               </div>
             </div>
@@ -130,7 +130,13 @@ export default function Home() {
             screenshot over any illustration)
       */}
 
-      <CTASection secondary={{ href: "/services", label: "Browse services" }} />
+      {/*
+        No secondary link here (unlike the other pages' CTASection) — the
+        triage widget right above this section already is the "browse
+        services" action for this page; repeating it as a link would be
+        redundant rather than a second, lower-commitment option.
+      */}
+      <CTASection />
     </>
   );
 }

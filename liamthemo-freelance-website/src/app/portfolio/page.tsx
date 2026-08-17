@@ -49,7 +49,12 @@ export default function PortfolioPage() {
         </ul>
       </section>
 
-      <CTASection secondary={{ href: "/services", label: "Browse services" }} />
+      {/*
+        There's no /services index to link a "Browse services" secondary CTA
+        to anymore — the triage widget on the home page is the de facto
+        services index now, so that's where this points.
+      */}
+      <CTASection secondary={{ href: "/", label: "Browse services" }} />
     </>
   );
 }

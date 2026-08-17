@@ -159,8 +159,7 @@ src/
 │   ├── layout.tsx
 │   ├── page.tsx                    # home
 │   ├── services/
-│   │   ├── page.tsx                # overview of all five
-│   │   └── [slug]/page.tsx         # one page per service line
+│   │   └── [slug]/page.tsx         # one page per service line — no overview index (removed, see below)
 │   ├── portfolio/
 │   │   ├── page.tsx
 │   │   └── [slug]/page.tsx         # case study detail
@@ -170,7 +169,6 @@ src/
 ├── components/
 │   ├── Navbar.tsx
 │   ├── Footer.tsx
-│   ├── ServiceCard.tsx
 │   ├── ProjectCard.tsx
 │   ├── QuoteForm.tsx
 │   ├── ServiceTriage.tsx           # the "What can I help you with?" widget
@@ -185,6 +183,8 @@ src/
 ```
 
 Service and portfolio pages are **generated from data files**, not hand-written per page. Adding a sixth service should mean adding one object to `services.ts` — nothing else.
+
+**The `/services` overview page (the 5-card grid) was removed** (owner call): the home page's triage widget (§7) already routes a visitor to the right `/services/[slug]` page from a symptom, so a separate browse-everything index was redundant with it. `ServiceCard.tsx` and its OG-image route were deleted along with it, since nothing else rendered a service as a card. The individual `/services/[slug]` pages are untouched and still hold the real content (problems, deliverables, process, FAQs) — only the index is gone. `mainNav` (`src/lib/nav.ts`) now reads Home → Portfolio → About; "Home" is a deliberate duplicate of the logo's own link, added because the removed "Services" link needed to be replaced with *something* and the triage widget on the home page is the de facto services index now. Anywhere else that used to link to `/services` (the home hero's secondary link, `CTASection` secondary links on `/portfolio` and each service detail page) now points at `/` instead.
 
 ---
 
