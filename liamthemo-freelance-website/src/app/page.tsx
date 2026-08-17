@@ -3,7 +3,6 @@ import Link from "next/link";
 import CTASection from "@/components/CTASection";
 import FeaturedWork from "@/components/FeaturedWork";
 import HeroArt from "@/components/HeroArt";
-import ServiceTriage from "@/components/ServiceTriage";
 import { projects } from "@/data/projects";
 
 /*
@@ -11,14 +10,16 @@ import { projects } from "@/data/projects";
   searchParams or an uncached fetch, so it prerenders at build time and is served
   from the assets binding without invoking the Worker (CLAUDE.md §4.1).
 
-  The `?topic=unsure` on the triage widget's last option does NOT change that.
-  A query string in an href is inert markup; it only costs anything if the page
-  receiving it reads searchParams on the server.
-
-  It does cost something one hop over: /contact reads `?topic=` server-side to
-  prefill the form (§7), which makes that one page dynamically rendered rather
-  than static. That was a deliberate call, not an oversight — see the note at
-  the top of src/app/contact/page.tsx for why.
+  NO TRIAGE WIDGET. Owner call, overriding §7/§14 as currently written —
+  those sections call the triage widget "not up for removal" and list
+  removing it as the first "don't" in the working agreement. Removed anyway,
+  to match the mockup's flow (Hero → Featured Work → About → CTA) while the
+  site is being recreated to spec before further changes layer on top.
+  CLAUDE.md §7/§14 have been updated to reflect this rather than left
+  contradicting actual practice. The IA gap this opens — no way from the home
+  page to a specific service without already knowing its slug — is real and
+  temporary: the owner's plan is a "Services" section here later (the header
+  nav's `/#services` anchor, added in Phase 1, is already wired for it).
 */
 
 export const metadata: Metadata = {
@@ -69,9 +70,7 @@ export default function Home() {
             <div>
               {/*
                 Owner call, overriding §11's "outcome work" reading of this
-                exact line: ships as the mockup's literal words. The triage
-                widget directly below is what actually does the outcome work
-                for a confused visitor — see its own note in ServiceTriage.tsx.
+                exact line: ships as the mockup's literal words.
               */}
               <h1 className="max-w-[18ch] text-display text-text">
                 <span className="block">
@@ -88,9 +87,9 @@ export default function Home() {
 
               {/*
                 Single action, matching the mockup — "Contact now" isn't
-                dropped from the page, it's one section down as the triage
-                widget's whole reason for existing, and again at the closing
-                CTA. This link doesn't need to also carry that weight.
+                dropped from the page, it's still one nav item away and again
+                at the closing CTA. This link doesn't need to also carry
+                that weight.
               */}
               <div className="mt-9">
                 <Link
@@ -117,18 +116,14 @@ export default function Home() {
             {/*
               Hidden below lg, and that is a conversion decision rather than a
               layout shortcut. On a phone the artwork is decorative weight
-              sitting between the headline and the triage widget, and §2's
-              first success criterion is that a confused visitor finds the
-              right service in under 15 seconds. Mobile still gets the dot
-              grid and the full headline; it does not need to scroll past a
-              picture to reach the thing that actually converts.
+              sitting between the headline and the rest of the page. Mobile
+              still gets the dot grid and the full headline; it does not need
+              to scroll past a picture to reach the content below.
             */}
             <HeroArt className="hidden lg:block" />
           </div>
         </div>
       </section>
-
-      <ServiceTriage />
 
       <section
         aria-labelledby="featured-work-heading"
@@ -153,12 +148,39 @@ export default function Home() {
       </section>
 
       {/*
+        Short, mockup-matching identity section — NOT the three-virtue block
+        (§9.6, §11 both rule that out by name, and the owner separately chose
+        to cut it rather than replace it with a specifics version). This is
+        just the mockup's "About Me" label, heading and paragraph, ships
+        as its literal words per the same owner call covering the hero.
+
+        Flagging one thing rather than silently shipping it: "Designer.
+        Developer. Problem Solver." sits close to §9.6's named anti-goal
+        ("Clean Code / Thoughtful Design / Problem Solver") even without the
+        three-column layout that anti-goal is really about. Shipping it
+        as-is under the same "recreate the mockup first" direction already
+        given twice this phase — but it's the kind of line worth revisiting
+        once the faithful-recreation pass is done.
+      */}
+      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+        <p className="text-small font-medium text-accent">About Me</p>
+        <h2 className="mt-2 max-w-[24ch] text-h2 text-text">
+          Designer. Developer. Problem Solver.
+        </h2>
+        <p className="mt-4 max-w-[60ch] text-body text-text-muted">
+          I&apos;m Liam, a designer and developer based in Canada. I enjoy
+          turning ideas into clean, functional solutions with a focus on
+          simplicity and impact. When I&apos;m not coding or designing, you
+          can find me learning something new or working on a side project.
+        </p>
+      </section>
+
+      {/*
         Mockup-exact copy and button label for this one instance — every
         other CTASection call keeps the shared defaults (see the component's
         own note on why). No secondary link here either, unlike other pages'
-        CTASection — the triage widget right above this section already is
-        the "browse services" action for this page; repeating it as a link
-        would be redundant rather than a second, lower-commitment option.
+        CTASection — the header nav's Contact button already covers a second,
+        lower-commitment path to the same destination.
       */}
       <CTASection
         title="Let's Work Together"

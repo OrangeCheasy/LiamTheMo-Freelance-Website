@@ -77,9 +77,15 @@ export default function CTASection({
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            {/*
+              min-w on the primary button, not just content-fit padding: in
+              the mockup this button measures ~1.5x wider than the hero's
+              "View My Work" pill despite similar-length text — a deliberate
+              long-pill shape, not accidental sizing.
+            */}
             <Link
               href={ctaHref}
-              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-3 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
+              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-3 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)] sm:min-w-[240px]"
             >
               {ctaLabel ?? CTA.label}
               <svg

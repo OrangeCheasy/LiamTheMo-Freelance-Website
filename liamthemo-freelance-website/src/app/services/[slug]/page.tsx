@@ -213,8 +213,8 @@ export default async function ServiceDetailPage({
 
       <CTASection
         title={`Tell me about your ${service.title.toLowerCase()} problem`}
-        // No /services index to send this to anymore — the triage widget on
-        // the home page is the de facto services index now.
+        // No /services index to send this to — see the equivalent note in
+        // src/app/portfolio/page.tsx.
         secondary={{ href: "/", label: "See other services" }}
         topic={service.slug}
       />

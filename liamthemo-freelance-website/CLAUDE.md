@@ -39,7 +39,7 @@ Submissions route through email routing, Discord webhooks, and the on-site form,
 
 Judge every change against these, in order:
 
-1. **Does a non-technical visitor find their own problem within one screen of scrolling?** The triage widget is how. Not optional, not decoration.
+1. **Does a non-technical visitor find their own problem within one screen of scrolling?** This was the triage widget's job; it was removed from the home page in Phase 2 (§7) and nothing replaces it yet. Currently failing — the planned home-page "Services" section is what's meant to cover this.
 2. **Does the work look impressive?** Real screenshots and project art, shown large. This is the portfolio half earning its keep.
 3. **Does every page end with a path to the form?**
 4. **Does it load fast on a phone on mobile data?** A dark, image-heavy design makes this harder. See §12.
@@ -143,7 +143,7 @@ src/
 ├── components/
 │   ├── Navbar.tsx
 │   ├── Footer.tsx
-│   ├── ServiceTriage.tsx           # the conversion mechanic — see §7
+│   ├── HeroArt.tsx
 │   ├── ServiceCard.tsx
 │   ├── ProjectCard.tsx
 │   ├── FeaturedWork.tsx
@@ -213,30 +213,13 @@ Case studies are **problem → solution → result**. Stack goes in a sidebar fo
 
 ---
 
-## 7. The triage widget (`ServiceTriage.tsx`)
+## 7. Service routing on the home page
 
-**This survived the redesign deliberately. It is the highest-converting element on the site and it is not up for removal.**
+**Superseded.** This section originally specified the triage widget (`ServiceTriage.tsx`, "What can I help you with?" — six symptom-worded cards) and called it out in the strongest terms in this document: "the highest-converting element on the site," "not up for removal." It was removed from the home page anyway, by explicit owner instruction, during Phase 2 — see the note at the top of `src/app/page.tsx`. The component is deleted, not just unused.
 
-It sits directly below the hero, above featured work. In the new design it does double duty: for the portfolio visitor it reads as a capabilities overview, so it isn't wasted space for either audience.
+**Why it was removed:** to match the approved mockup's flow (Hero → Featured Work → About → closing CTA) while the site is being recreated to spec before further changes layer on top, rather than to abandon symptom-based routing as a concept.
 
-**Prompt:** "What can I help you with?"
-
-| Label | Destination |
-|---|---|
-| 🔄 I have a repetitive task | `/services/automation` |
-| 📊 I need help with data or Excel | `/services/excel-data` |
-| 🖥️ My computer or technology isn't working | `/services/local-tech-help` |
-| 🌐 I need a website | `/services/websites` |
-| 🎮 I need Roblox development | `/services/roblox` |
-| ❓ I'm not sure what I need | `/contact?topic=unsure` |
-
-**Requirements:**
-- Real `<Link>` elements. Keyboard-navigable, crawlable, middle-clickable.
-- Labels describe the **symptom**, not the service name. Never rename these to "Python Scripting" or "Data Engineering."
-- "I'm not sure what I need" is a first-class option. A meaningful share of good leads land there.
-- Topic passes through to the quote form so the visitor doesn't answer twice.
-
-**Redesign treatment:** dark surface cards, hairline borders, accent glow on hover, emoji retained at larger size. Do not replace the emoji with abstract line icons — the emoji are legible at a glance and carry meaning a generic icon set does not.
+**What replaces it:** not built yet. The plan is a "Services" section on the home page, after Featured Work — the header nav's "Services" item (`/#services`, added Phase 1) already anchors there in anticipation. Until that section exists, there is a real, acknowledged gap: nothing on the home page routes a confused visitor to a specific service. If that section revives symptom-worded cards, keep the discipline the original widget was built on — labels describe the visitor's symptom ("I retype the same numbers every week"), never the service name ("Python Scripting"), and a first-class "not sure what I need" option, since a meaningful share of good leads land there. `/contact?topic=unsure` still works if linked to; nothing currently links to it.
 
 ---
 
@@ -410,7 +393,7 @@ feature branch → npm run dev → npm run preview
 - Flag when a visual choice threatens the performance budget **before** building it.
 
 **Don't:**
-- Remove or weaken the triage widget, or drop Services from the nav.
+- Drop Services from the nav. (The triage widget itself was removed in Phase 2 by explicit owner override — see §7 — so this no longer says "or weaken the triage widget"; it isn't there to weaken.)
 - Rewire the form delivery pipeline.
 - Assume Vercel. No `@vercel/*`, no Vercel env var names, no `runtime = "edge"`.
 - Reach for KV, D1, R2, or Durable Objects. A portfolio with a contact form needs none of them.
@@ -429,7 +412,7 @@ The site is live and working. **This is a restyle of a functioning site, not a r
 
 0. Dark-only tokens and fonts; remove the existing theme toggle and any light-theme code — ship with existing layout intact
 1. Navbar + Footer restyle (Services returns to nav, toggle gone)
-2. Home: hero, then triage widget restyle, then featured work grid
+2. Home: hero, then featured work grid, then a short about section, then closing CTA (the triage widget originally specified here was removed by owner override — see §7)
 3. Services index + detail template
 4. Portfolio index + case study template
 5. Contact page restyle — **form logic and delivery untouched**
@@ -444,9 +427,9 @@ Ship each phase as its own PR. The site stays live and coherent throughout — n
 
 Flag rather than deciding:
 
-- [ ] Heading and body typefaces — final choice
-- [ ] "Work" vs "Portfolio" as the nav label (mockup says Work, current site says Portfolio; pick one, use it everywhere)
-- [ ] What replaces the generic three-virtue block on the home page
+- [x] Heading and body typefaces — kept Bricolage Grotesque + Inter (Phase 0), already self-hosted and already matching §9.3 before the redesign started
+- [x] Nav label — neither "Work" nor "Portfolio". Owner chose **"Projects"** (Phase 1), used consistently in nav, footer, and internal links/metadata
+- [x] Three-virtue block — owner chose to cut it entirely rather than replace it with a specifics version (Phase 2). A short, mockup-matching "About Me" label/heading/paragraph ships in its place, without the three-column layout
 - [ ] Real before/after metrics for the Restaurant Sales Parser
 - [ ] Whether starting prices are published or quote-only
 - [ ] Service area wording for Local Tech Help — remote, local, or both

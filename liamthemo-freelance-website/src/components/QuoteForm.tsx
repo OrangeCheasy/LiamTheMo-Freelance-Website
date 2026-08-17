@@ -47,8 +47,9 @@ import {
 type FieldErrors = Partial<Record<keyof QuoteFormPayload, string>>;
 
 interface QuoteFormProps {
-  /** From /contact's `?topic=` (triage widget or a service page CTA) — the
-      visitor already told us this once and must not be asked again (§7).
+  /** From /contact's `?topic=` (a service page's CTA — see the note atop
+      contact/page.tsx on the now-unlinked triage-widget-era `unsure` value)
+      — the visitor already told us this once and must not be asked again (§7).
       A non-empty value implies "Services" and pre-answers the gate, so the
       rest of the form is visible immediately rather than behind one more
       click the visitor shouldn't need to make. */

@@ -18,7 +18,7 @@ import type { Project } from "@/lib/types";
   a featured entry, so this is a defensive check, not the primary guard.
 
   BELOW THE FOLD, LAZY, DELIBERATELY UNLIKE THE HERO. This section renders
-  after the hero and triage widget, so `loading="lazy"` (next/image's default
+  after the hero, so `loading="lazy"` (next/image's default
   once `priority` is absent, made explicit here so a future edit can't
   silently drop it) keeps these three images out of the critical request path
   entirely — they don't compete with the LCP element for bandwidth.

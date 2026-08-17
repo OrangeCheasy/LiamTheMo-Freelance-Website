@@ -23,9 +23,11 @@ export interface NavLink {
  * href is written for that section now (`/#services`) so nothing here needs
  * to change when it ships; until then this link just lands on the home page
  * with no scroll, which is a harmless no-op rather than a broken link.
- * `/services/[slug]` pages still exist and are still linked from the triage
- * widget — only the index page is gone, and stays gone; the plan is a home
- * page section, not a rebuilt index.
+ * `/services/[slug]` pages still exist — the index page is gone and stays
+ * gone (the plan is a home page section, not a rebuilt index) — and are
+ * still reachable via each portfolio case study's "Related services" links
+ * and the sitemap. The home page's own former way in, the triage widget,
+ * was removed per an explicit owner call — see the note atop page.tsx.
  *
  * The old `serviceNav` export (all five service links, for a footer column)
  * is gone along with that column — see the mockup-fidelity note atop

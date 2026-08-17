@@ -51,8 +51,9 @@ export default function PortfolioPage() {
 
       {/*
         There's no /services index to link a "Browse services" secondary CTA
-        to anymore — the triage widget on the home page is the de facto
-        services index now, so that's where this points.
+        to — the home page is where it points, on the (currently
+        unrealized) expectation that a "Services" section lands there per
+        the owner's plan; see the note atop src/app/page.tsx.
       */}
       <CTASection secondary={{ href: "/", label: "Browse services" }} />
     </>

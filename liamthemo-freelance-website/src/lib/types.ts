@@ -102,14 +102,13 @@ export interface Project {
  * CSS custom properties and needs a literal value. Keep it in sync with the
  * `--color-service-*` tokens in globals.css if either changes.
  *
- * TODO: this duplicates data that now exists elsewhere. `services.ts` holds the
- * same five titles and icons, and `ServiceTriage.tsx` holds the same five chip
- * classes, so there are several places this display metadata can drift. They
- * agree today.
+ * TODO: this duplicates data that now exists elsewhere — `services.ts` holds
+ * the same five titles and icons, so there are two places this display
+ * metadata can drift. They agree today.
  * Reconciling means deriving this from `services.ts` — which cannot live in
  * this file, since `services.ts` imports from it and the cycle would be real.
- * The derived map belongs in `services.ts` itself, with the four consumers
- * here updated to import it from there.
+ * The derived map belongs in `services.ts` itself, with the consumers here
+ * updated to import it from there.
  */
 export const SERVICE_META: Record<
   ServiceSlug,

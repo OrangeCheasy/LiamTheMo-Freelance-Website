@@ -12,10 +12,17 @@ import { SERVICE_META, type ServiceSlug } from "@/lib/types";
   per request rather than serving prerendered HTML from the assets binding
   (§4.1). That is the one architectural cost this build introduces. It buys
   something real: §7 requires that a visitor who already stated their problem
-  (via the triage widget or a service page's CTA) is never asked to repeat it,
+  (via a service page's CTA — the home page's former triage widget also fed
+  this before it was removed, see page.tsx) is never asked to repeat it,
   which means the prefill has to happen before the form's first paint, not
   after a client-side hydration flash. Every other page in the app remains
   fully static — this is the only route that changed.
+
+  `topic=unsure` (the triage widget's old "not sure what I need" option) has
+  no link pointing at it anywhere on the site now, but the branch below still
+  handles it correctly if reached directly — left in rather than stripped,
+  since a future home-page "Services" section may reintroduce an equivalent
+  option.
 
   The actual form submission is a separate concern, handled by
   src/app/api/quote/route.ts. This page just renders a <form>; the Worker isn't

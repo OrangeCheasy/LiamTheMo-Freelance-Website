@@ -16,10 +16,12 @@ import { SITE_NAME } from "@/lib/nav";
   mockup's logo + copyright + icon row is safe rather than a regression: every
   page already ends with its own CTASection immediately above this footer
   (§2's "every page ends with a path to the form" requirement is covered
-  there), and the header's own "Services" entry (added this phase) now covers
-  the "way in that isn't the triage widget" need that the footer's service
-  links used to carry alone. Nothing this footer used to do is left
-  uncovered.
+  there), and the header's own "Services" entry (added Phase 1) is meant to
+  cover the "way in besides the home page" need the footer's service links
+  used to carry alone — that entry currently anchors to a home-page section
+  that doesn't exist yet (Phase 2's home page removed the triage widget
+  before replacing it; see page.tsx), so this is a temporary real gap, not
+  a resolved one. Nothing else this footer used to do is left uncovered.
 */
 
 const iconLinkClasses =
