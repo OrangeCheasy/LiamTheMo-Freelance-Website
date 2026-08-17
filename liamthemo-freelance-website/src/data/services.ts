@@ -153,7 +153,7 @@ export const services: readonly Service[] = [
         a: "A domain name and hosting, both of which are ongoing costs paid to whoever provides them rather than to me. I will tell you what they are before you commit to anything.",
       },
     ],
-    relatedProjects: [],
+    relatedProjects: ["this-website"],
   },
 
   {
@@ -219,7 +219,7 @@ export const services: readonly Service[] = [
         a: "I am in Calgary, Alberta, and I work anywhere in the city as well as nearby towns such as Airdrie. Further out is still possible, but the travel time is added to the quote. A lot of problems can also be solved remotely, so ask before assuming you need someone in the room.",
       },
     ],
-    relatedProjects: [],
+    relatedProjects: ["computer-builds-and-repairs"],
   },
 
   {
@@ -271,7 +271,7 @@ export const services: readonly Service[] = [
         a: "Either. I am comfortable with both, so it comes down to what your team already uses.",
       },
     ],
-    relatedProjects: ["fuse-factory"],
+    relatedProjects: ["fuse-factory", "echo-realms"],
   },
 ];
 

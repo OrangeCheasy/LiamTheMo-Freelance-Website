@@ -28,7 +28,12 @@ export default function PortfolioPage() {
       <section className="border-b border-line bg-surface-muted">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>Real work</Eyebrow>
-          <h1 className="mt-3 max-w-[20ch] text-h1 text-ink">Portfolio</h1>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <h1 className="max-w-[20ch] text-h1 text-ink">Portfolio</h1>
+            <span className="rounded-full border border-line px-2.5 py-1 text-small font-medium text-ink-muted">
+              WIP
+            </span>
+          </div>
           <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
             A look at finished work: what the problem was, what got built, and
             what changed because of it.
