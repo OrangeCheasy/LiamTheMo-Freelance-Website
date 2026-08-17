@@ -41,7 +41,14 @@ export const projects: Project[] = [
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
     // images: intentionally omitted — no screenshots needed; the visitor is
     // already looking at it.
-    featured: true,
+    //
+    // featured: false — CLAUDE.md §15 Phase 2's approved mockup shows a
+    // specific three: Fuse Factory, OrangeCheasy, Restaurant Sales Parser.
+    // This site is real work, but it isn't image-led the way the mockup's
+    // grid needs (no `images`, and a screenshot of the site the visitor is
+    // already on doesn't demonstrate anything). Flipped in favour of the
+    // mockup's picks rather than adding a fourth featured card.
+    featured: false,
   },
   {
     slug: "fuse-factory",
@@ -74,7 +81,8 @@ export const projects: Project[] = [
         alt: "Fuse Factory game thumbnail: the game logo above three cube-shaped Boomie characters with lit fuses, in a factory setting with colored crates.",
       },
     ],
-    featured: false,
+    // featured: true — one of the mockup's three home-page picks (§15 Phase 2).
+    featured: true,
   },
   {
     slug: "orangecheasy-youtube",
@@ -123,7 +131,8 @@ export const projects: Project[] = [
         height: 1984,
       },
     ],
-    featured: false,
+    // featured: true — one of the mockup's three home-page picks (§15 Phase 2).
+    featured: true,
   },
   {
     slug: "restaurant-sales-parser",

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import CTASection from "@/components/CTASection";
-import Mark from "@/components/Mark";
-import ProcessDiagram from "@/components/ProcessDiagram";
+import FeaturedWork from "@/components/FeaturedWork";
+import HeroArt from "@/components/HeroArt";
 import ServiceTriage from "@/components/ServiceTriage";
-import { CTA } from "@/lib/nav";
+import { projects } from "@/data/projects";
 
 /*
   Home. Fully static — nothing on this page reads cookies(), headers(),
@@ -67,68 +67,90 @@ export default function Home() {
         <div className="relative mx-auto max-w-6xl px-5 pt-16 pb-16 sm:px-8 sm:pt-24 sm:pb-20">
           <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
             <div>
-              <h1 className="max-w-[16ch] text-display text-text">
-                I build tools that save you <Mark>time</Mark>
+              {/*
+                Owner call, overriding §11's "outcome work" reading of this
+                exact line: ships as the mockup's literal words. The triage
+                widget directly below is what actually does the outcome work
+                for a confused visitor — see its own note in ServiceTriage.tsx.
+              */}
+              <h1 className="max-w-[18ch] text-display text-text">
+                <span className="block">
+                  Hi, I&apos;m <span className="text-accent">Liam</span>.
+                </span>
+                <span className="block">
+                  I design and build digital experiences.
+                </span>
               </h1>
               <p className="mt-6 max-w-[52ch] text-body text-text-muted">
                 Custom automation, spreadsheets, websites, and technology
                 solutions for individuals and small businesses.
               </p>
 
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link
-                  href={CTA.href}
-                  className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent px-5 py-2.5 font-semibold text-bg transition-colors hover:bg-accent-hover"
-                >
-                  {CTA.label}
-                </Link>
-                {/*
-                  Secondary action is a link, not a second filled button. Two
-                  equally weighted buttons make the visitor choose twice.
-                */}
+              {/*
+                Single action, matching the mockup — "Contact now" isn't
+                dropped from the page, it's one section down as the triage
+                widget's whole reason for existing, and again at the closing
+                CTA. This link doesn't need to also carry that weight.
+              */}
+              <div className="mt-9">
                 <Link
                   href="/portfolio"
-                  className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 font-medium text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
+                  className="group inline-flex items-center gap-2 rounded-full border border-accent px-6 py-3 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
                 >
-                  See what I&apos;ve done
+                  View my work
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  >
+                    <path d="M7 17 17 7M9 7h8v8" />
+                  </svg>
                 </Link>
               </div>
             </div>
 
             {/*
               Hidden below lg, and that is a conversion decision rather than a
-              layout shortcut. On a phone the diagram is decorative weight sitting
-              between the headline and the triage widget, and §2's first success
-              criterion is that a confused visitor finds the right service in
-              under 15 seconds. Mobile still gets the dot grid and the marked
-              keyword; it does not need to scroll past a picture to reach the
-              thing that actually converts.
+              layout shortcut. On a phone the artwork is decorative weight
+              sitting between the headline and the triage widget, and §2's
+              first success criterion is that a confused visitor finds the
+              right service in under 15 seconds. Mobile still gets the dot
+              grid and the full headline; it does not need to scroll past a
+              picture to reach the thing that actually converts.
             */}
-            <ProcessDiagram className="hidden lg:block" />
+            <HeroArt className="hidden lg:block" />
           </div>
         </div>
       </section>
 
       <ServiceTriage />
 
-      {/*
-        TODO (owner input required): the social proof strip from §14 step 2 sits
-        here, between the triage widget and the closing CTA.
+      <section
+        aria-labelledby="featured-work-heading"
+        className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20"
+      >
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id="featured-work-heading" className="text-h2 text-text">
+            Featured work
+          </h2>
+          <Link
+            href="/portfolio"
+            className="inline-flex shrink-0 items-center gap-1 text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
+          >
+            View all
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
 
-        Deliberately not built. Everything that would fill it — a result metric,
-        a client name, a testimonial, a project count — is either an open
-        decision in §15 or something §10 forbids inventing. A strip of plausible
-        placeholder numbers is the single fastest way to lose a real client, and
-        it would be indistinguishable from real copy by the time anyone came back
-        to fix it.
-
-        To unblock, the owner needs to supply any ONE of:
-          - a real metric for the Restaurant Sales Parser (hours saved per week,
-            and the manual step it removed)
-          - permission to name Fuse Factory publicly
-          - a screenshot of real work that can be shown (§9 prefers a real
-            screenshot over any illustration)
-      */}
+        <div className="mt-8">
+          <FeaturedWork projects={projects} />
+        </div>
+      </section>
 
       {/*
         No secondary link here (unlike the other pages' CTASection) — the

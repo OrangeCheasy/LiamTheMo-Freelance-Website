@@ -103,8 +103,11 @@ const unsure = {
   emoji: "❓",
 } as const;
 
+// §9.4: hover is a border shift, a subtle lift, and a glow — not just a
+// colour change. accent-dim (not a hard black shadow, which disappears on a
+// dark background) is what §9.4 names for exactly this.
 const cardBase =
-  "group flex h-full items-center gap-4 rounded-xl border p-5 transition-colors";
+  "group flex h-full items-center gap-4 rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5";
 
 const chipBase =
   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg";
@@ -144,7 +147,7 @@ export default function ServiceTriage() {
             <li key={option.href}>
               <Link
                 href={option.href}
-                className={`${cardBase} border-border bg-surface-2 hover:border-accent`}
+                className={`${cardBase} border-border bg-surface-2 hover:border-accent hover:shadow-[0_0_28px_var(--color-accent-dim)]`}
               >
                 <span aria-hidden="true" className={`${chipBase} ${option.chipClass}`}>
                   {option.emoji}
@@ -169,7 +172,7 @@ export default function ServiceTriage() {
             */}
             <Link
               href={unsure.href}
-              className={`${cardBase} border-accent bg-accent-dim hover:bg-surface-2`}
+              className={`${cardBase} border-accent bg-accent-dim hover:bg-surface-2 hover:shadow-[0_0_32px_var(--color-accent-dim)]`}
             >
               <span aria-hidden="true" className={`${chipBase} bg-accent-dim`}>
                 {unsure.emoji}
