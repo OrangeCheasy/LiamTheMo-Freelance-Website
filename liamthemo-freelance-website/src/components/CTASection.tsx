@@ -15,13 +15,15 @@ import type { ServiceSlug } from "@/lib/types";
   the form's success state as "I'll reply within one business day", and saying
   something different before the click than after it would be a broken promise.
 
-  MOCKUP PANEL: the warm radial gradient + accent border is Phase 2's home-page
-  treatment. `title`/`description`/`ctaLabel` stay overridable because every
-  other page using this component (services, portfolio, about) has its own,
-  page-specific copy — the mockup only shows the home page, so only the home
-  page's call passes mockup-exact copy. The panel styling itself (gradient,
-  border, pill button) applies everywhere, since that's a visual system choice,
-  not page content.
+  MOCKUP PANEL: the warm radial gradient is Phase 2's home-page treatment —
+  no border on the panel itself (owner correction after the first pass added
+  one the mockup doesn't have); depth comes from the gradient alone, per
+  §9.4's "glow over box-shadow." `title`/`description`/`ctaLabel` stay
+  overridable because every other page using this component (services,
+  portfolio, about) has its own, page-specific copy — the mockup only shows
+  the home page, so only the home page's call passes mockup-exact copy. The
+  panel styling itself (gradient, pill button) applies everywhere, since
+  that's a visual system choice, not page content.
 */
 
 interface CTASectionProps {
@@ -52,19 +54,18 @@ export default function CTASection({
 
   return (
     <section aria-labelledby="cta-heading" className="bg-bg">
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
         {/*
           Warm gradient panel, anchored top-left, fading into the surface
           tone — §9.4's "soft radial glow beats a black box-shadow" applied to
-          the panel itself rather than just a hover state. border-accent here
-          is legitimate under §9.2: the whole panel funnels to the one button
-          inside it, unlike CTASection's old neutral-band treatment.
+          the panel itself rather than just a hover state. No border: depth
+          comes from the gradient alone, matching the mockup exactly.
         */}
         <div
-          className="flex flex-col gap-6 rounded-2xl border border-accent px-6 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-12"
+          className="flex flex-col gap-6 rounded-2xl px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
           style={{
             background:
-              "radial-gradient(ellipse 90% 100% at 0% 0%, var(--color-accent-dim), transparent 70%), var(--color-surface)",
+              "radial-gradient(ellipse 130% 160% at 0% 0%, var(--color-accent-dim), transparent 85%), var(--color-surface)",
           }}
         >
           <div>
@@ -85,7 +86,7 @@ export default function CTASection({
             */}
             <Link
               href={ctaHref}
-              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-3 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)] sm:min-w-[240px]"
+              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-2 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)] sm:min-w-[240px]"
             >
               {ctaLabel ?? CTA.label}
               <svg

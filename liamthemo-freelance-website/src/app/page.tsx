@@ -65,7 +65,7 @@ export default function Home() {
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"
         />
 
-        <div className="relative mx-auto max-w-6xl px-5 pt-16 pb-16 sm:px-8 sm:pt-24 sm:pb-20">
+        <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-12 sm:px-8 sm:pt-12 sm:pb-16">
           <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
             <div>
               {/*
@@ -94,7 +94,7 @@ export default function Home() {
               <div className="mt-9">
                 <Link
                   href="/portfolio"
-                  className="group inline-flex items-center gap-2 rounded-full border border-accent px-6 py-3 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
+                  className="group inline-flex items-center gap-2 rounded-full border border-accent px-6 py-2 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
                 >
                   View My Work
                   <svg
@@ -127,7 +127,7 @@ export default function Home() {
 
       <section
         aria-labelledby="featured-work-heading"
-        className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20"
+        className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14"
       >
         <div className="flex items-baseline justify-between gap-4">
           <h2 id="featured-work-heading" className="text-h2 text-text">
@@ -162,7 +162,7 @@ export default function Home() {
         given twice this phase — but it's the kind of line worth revisiting
         once the faithful-recreation pass is done.
       */}
-      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+      <section className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
         <p className="text-small font-medium text-accent">About Me</p>
         <h2 className="mt-2 max-w-[24ch] text-h2 text-text">
           Designer. Developer. Problem Solver.
