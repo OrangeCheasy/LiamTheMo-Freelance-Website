@@ -76,10 +76,10 @@ export default function ProcessDiagram({
         width="180"
         height="200"
         rx="14"
-        className="fill-surface stroke-line"
+        className="fill-surface stroke-border"
         strokeWidth="2"
       />
-      <rect x="26" y="64" width="70" height="8" rx="4" className="fill-line" />
+      <rect x="26" y="64" width="70" height="8" rx="4" className="fill-border" />
       {inputRows.map((row) => (
         <rect
           key={row.y}
@@ -88,23 +88,23 @@ export default function ProcessDiagram({
           width={row.width}
           height="7"
           rx="3.5"
-          className="fill-line"
+          className="fill-border"
         />
       ))}
 
-      {/* --- The arrow: ink-muted, not accent ---------------------------
-          Coral here would put the single loudest colour on the one element
-          nobody can click. Neutral keeps the action signal pointing at the
-          buttons where it belongs. */}
+      {/* --- The arrow: text-muted, not accent ---------------------------
+          Orange here would put the single loudest colour on the one element
+          nobody can click (§9.2). Neutral keeps the action signal pointing at
+          the buttons where it belongs. */}
       <path
         d="M196 170 H222"
-        className="stroke-ink-muted"
+        className="stroke-text-muted"
         strokeWidth="2"
         strokeLinecap="round"
       />
       <path
         d="M215 163 L223 170 L215 177"
-        className="stroke-ink-muted"
+        className="stroke-text-muted"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -120,15 +120,15 @@ export default function ProcessDiagram({
         width="180"
         height="200"
         rx="14"
-        className="fill-surface stroke-line"
+        className="fill-surface stroke-border"
         strokeWidth="2"
       />
-      <rect x="254" y="94" width="60" height="8" rx="4" className="fill-line" />
-      <rect x="254" y="120" width="120" height="7" rx="3.5" className="fill-line" />
-      <rect x="254" y="134" width="120" height="7" rx="3.5" className="fill-line" />
+      <rect x="254" y="94" width="60" height="8" rx="4" className="fill-border" />
+      <rect x="254" y="120" width="120" height="7" rx="3.5" className="fill-border" />
+      <rect x="254" y="134" width="120" height="7" rx="3.5" className="fill-border" />
 
-      {/* Pastel as a filled area with nothing written on it — the one pattern
-          §9.2 explicitly permits for a pastel. */}
+      {/* Neutral, not accent (§9.2) — this is a decorative bar in an
+          illustration, nothing here is clickable. */}
       {outputBars.map((bar) => (
         <rect
           key={bar.x}
@@ -137,12 +137,12 @@ export default function ProcessDiagram({
           width="18"
           height={bar.height}
           rx="3"
-          className="fill-accent-fill"
+          className="fill-text-muted"
         />
       ))}
       <path
         d={`M250 ${BASELINE + 6} H398`}
-        className="stroke-line"
+        className="stroke-border"
         strokeWidth="2"
         strokeLinecap="round"
       />

@@ -14,7 +14,7 @@ import Eyebrow from "@/components/Eyebrow";
   on the page is the right outcome, not a compromise.
 
   COLOUR.
-  The cards are neutral surfaces with a hairline border; coral stays the only
+  The cards are neutral surfaces with a hairline border; orange stays the only
   action colour (§9.2). The service hues appear ONLY as the fill behind each
   emoji chip, which is identity marking on a non-interactive sub-element — never
   the affordance itself, never a border, never text. Emoji are aria-hidden: the
@@ -116,7 +116,7 @@ function Arrow() {
   return (
     <span
       aria-hidden="true"
-      className="ml-auto self-center pl-2 text-ink-muted transition-transform group-hover:translate-x-0.5"
+      className="ml-auto self-center pl-2 text-text-muted transition-transform group-hover:translate-x-0.5"
     >
       →
     </span>
@@ -127,14 +127,14 @@ export default function ServiceTriage() {
   return (
     <section
       aria-labelledby="triage-heading"
-      className="border-t border-line bg-surface-muted"
+      className="border-t border-border bg-surface"
     >
       <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
         <Eyebrow>Start here</Eyebrow>
-        <h2 id="triage-heading" className="mt-3 max-w-[20ch] text-h2 text-ink">
+        <h2 id="triage-heading" className="mt-3 max-w-[20ch] text-h2 text-text">
           What can I help you with?
         </h2>
-        <p className="mt-3 max-w-[52ch] text-body text-ink-muted">
+        <p className="mt-3 max-w-[52ch] text-body text-text-muted">
           Pick whichever sounds closest. You do not need to know what the work is
           called.
         </p>
@@ -144,14 +144,14 @@ export default function ServiceTriage() {
             <li key={option.href}>
               <Link
                 href={option.href}
-                className={`${cardBase} border-line bg-surface hover:border-accent`}
+                className={`${cardBase} border-border bg-surface-2 hover:border-accent`}
               >
                 <span aria-hidden="true" className={`${chipBase} ${option.chipClass}`}>
                   {option.emoji}
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-medium text-ink">{option.label}</span>
-                  <span className="mt-1 block text-small text-ink-muted">
+                  <span className="block font-medium text-text">{option.label}</span>
+                  <span className="mt-1 block text-small text-text-muted">
                     {option.hint}
                   </span>
                 </span>
@@ -161,16 +161,22 @@ export default function ServiceTriage() {
           ))}
 
           <li className="sm:col-span-2 lg:col-span-3">
+            {/*
+              Accent survives here — unlike the neutral cards above, this
+              entire block is the clickable target, so the tint marks it as
+              the highlighted option rather than decorating something inert
+              (§9.2).
+            */}
             <Link
               href={unsure.href}
-              className={`${cardBase} border-accent bg-accent-tint hover:bg-surface`}
+              className={`${cardBase} border-accent bg-accent-dim hover:bg-surface-2`}
             >
-              <span aria-hidden="true" className={`${chipBase} bg-accent-fill`}>
+              <span aria-hidden="true" className={`${chipBase} bg-accent-dim`}>
                 {unsure.emoji}
               </span>
               <span className="min-w-0">
-                <span className="block font-medium text-ink">{unsure.label}</span>
-                <span className="mt-1 block text-small text-ink-muted">
+                <span className="block font-medium text-text">{unsure.label}</span>
+                <span className="mt-1 block text-small text-text-muted">
                   {unsure.hint}
                 </span>
               </span>

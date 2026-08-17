@@ -56,9 +56,9 @@ interface QuoteFormProps {
 }
 
 const fieldClasses =
-  "mt-1.5 w-full rounded-lg border border-line bg-surface px-3 py-2 text-body text-ink outline-none transition-colors focus:border-accent disabled:opacity-60";
+  "mt-1.5 w-full rounded-lg border border-border bg-surface px-3 py-2 text-body text-text outline-none transition-colors focus:border-accent disabled:opacity-60";
 const invalidFieldClasses = "border-danger focus:border-danger";
-const labelClasses = "block text-small font-medium text-ink";
+const labelClasses = "block text-small font-medium text-text";
 
 export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
   const formId = useId();
@@ -78,9 +78,9 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
 
   if (status === "success") {
     return (
-      <div className="rounded-2xl border border-line bg-surface-muted p-8 text-center sm:p-10">
-        <h2 className="text-h3 text-ink">Request sent</h2>
-        <p className="mx-auto mt-3 max-w-[48ch] text-body text-ink-muted">
+      <div className="rounded-2xl border border-border bg-surface p-8 text-center sm:p-10">
+        <h2 className="text-h3 text-text">Request sent</h2>
+        <p className="mx-auto mt-3 max-w-[48ch] text-body text-text-muted">
           I&apos;ll reply within one business day with what it would take. You
           should also see a confirmation land in your inbox shortly.
         </p>
@@ -180,7 +180,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
         <div
           ref={summaryRef}
           role="alert"
-          className="mb-6 rounded-lg border border-danger bg-danger-tint px-4 py-3 text-small text-ink"
+          className="mb-6 rounded-lg border border-danger bg-danger-dim px-4 py-3 text-small text-text"
         >
           {serverError}
         </div>
@@ -188,7 +188,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
         <div
           ref={summaryRef}
           role="alert"
-          className="mb-6 rounded-lg border border-danger bg-danger-tint px-4 py-3 text-small text-ink"
+          className="mb-6 rounded-lg border border-danger bg-danger-dim px-4 py-3 text-small text-text"
         >
           {errorCount === 1
             ? "One field needs a fix before this can send."
@@ -453,7 +453,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
             <button
               type="submit"
               disabled={submitting}
-              className="mt-3 inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-6 py-2.5 font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-3 inline-flex items-center justify-center rounded-lg border border-accent bg-accent px-6 py-2.5 font-semibold text-bg transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-70"
             >
               {submitting ? "Sending…" : "Send request"}
             </button>
@@ -482,7 +482,7 @@ function Field({
       <label htmlFor={id} className={labelClasses}>
         {label}
         {hint ? (
-          <span className="ml-1.5 font-normal text-ink-muted">({hint})</span>
+          <span className="ml-1.5 font-normal text-text-muted">({hint})</span>
         ) : null}
       </label>
       {children}

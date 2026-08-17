@@ -1,47 +1,51 @@
-@AGENTS.md
 # CLAUDE.md
 
 Project instructions for Claude Code. Read this before touching anything in the repo.
+
+**This version supersedes the pre-redesign CLAUDE.md.** Stack, hosting, and workflow sections are unchanged. §1, §2, §9, §10, §11, and §12 were rewritten for the dark/orange redesign.
 
 ---
 
 ## 1. What this project is
 
-A **freelance services website** — primarily a lead-generation site, not a résumé.
+**liamthemo.com** — a personal portfolio that doubles as a lead-generation site for freelance client work.
 
-The portfolio section is the one deliberate exception: the owner uses it as a projects showcase seen by prospective clients *and* potential employers, so it can include personal/passion work — not just commissioned client case studies — as long as it's real and not invented (§6, §10).
+Two jobs, weighted differently per visitor:
 
-Every other page exists to move a visitor toward one action: **submitting the quote form.**
+| Visitor | Arrives via | Wants to know | Converts by |
+|---|---|---|---|
+| **Roblox / dev client** | Discord, referral, project listing | Is this person good? | Seeing the work |
+| **Small-business owner** | Search, word of mouth, local referral | Can this person fix my problem? | Finding their symptom, then the form |
 
-The owner is a solo freelancer offering five service lines:
+The design serves the first. The information architecture serves the second. **Neither may be sacrificed for the other.** A change that makes the site more beautiful but harder for a restaurant owner to navigate is a bad change. A change that adds a conversion element looking like a template is also a bad change.
+
+### Service lines
 
 | Service line | What's sold |
 |---|---|
 | Automation & Python | Scripts, repetitive-task automation, data parsing, CSV/PDF processing, small-business tools, API/integration work |
-| Excel & Data | Custom spreadsheets, automated reports, dashboards, sales/performance trackers, data cleanup, spreadsheet automation |
-| Websites | Small-business sites, landing pages, restaurant/menu sites, portfolio sites, ongoing maintenance |
+| Excel & Data | Custom spreadsheets, automated reports, dashboards, sales/performance trackers, data cleanup |
+| Websites | Small-business sites, landing pages, restaurant/menu sites, portfolio sites, maintenance |
 | Local Tech Help | Computer setup, Windows/software troubleshooting, printers, Wi-Fi/networking, file transfers, backups |
 | Roblox Development | Luau scripting, gameplay systems, UI systems, DataStore systems, bug fixes, optimization |
 
-**Audience:** small-business owners and individuals who are not technical, plus a smaller stream of Roblox project owners who are. Copy defaults to the non-technical reader. The Roblox page is the one place where jargon is allowed, because there it builds credibility.
+### Lead handling
 
-### The one-sentence positioning
-
-> I build tools that save you time.
-> Custom automation, spreadsheets, websites, and technology solutions for individuals and small businesses.
+Submissions route through email routing, Discord webhooks, and the on-site form, all landing directly with the owner. This is built and working. **Do not redesign, replace, or "improve" the delivery pipeline.** Restyling the form is in scope; changing where submissions go is not.
 
 ---
 
 ## 2. Success criteria
 
-When evaluating any change, judge it against these in order:
+Judge every change against these, in order:
 
-1. Does a confused visitor find the right service in under 15 seconds?
-2. Does every page end with a path to the quote form?
-3. Does the site load fast on a phone on mobile data?
-4. Does it look like a small business, not a student portfolio?
+1. **Does a non-technical visitor find their own problem within one screen of scrolling?** The triage widget is how. Not optional, not decoration.
+2. **Does the work look impressive?** Real screenshots and project art, shown large. This is the portfolio half earning its keep.
+3. **Does every page end with a path to the form?**
+4. **Does it load fast on a phone on mobile data?** A dark, image-heavy design makes this harder. See §12.
+5. **Does it look like one person with taste, not a template?**
 
-If a proposed feature does not serve one of those, say so plainly and recommend cutting it. **Do not build features just because they're technically interesting.** Flag scope creep out loud.
+If a proposed feature serves none of these, say so and recommend cutting it. Flag scope creep out loud.
 
 ---
 
@@ -56,42 +60,38 @@ If a proposed feature does not serve one of those, say so plainly and recommend 
 | Dev environment | GitHub Codespaces |
 | Hosting | **Cloudflare Workers** via `@opennextjs/cloudflare` |
 | Deploy tooling | Wrangler + GitHub Actions |
-| DNS + domain | Cloudflare (custom `.ca` / `.com`, pending) |
+| Domain | liamthemo.com (Cloudflare DNS) |
 
 ### Why Cloudflare and not Vercel
 
-Vercel's free Hobby tier prohibits commercial use, and Vercel defines "commercial" to include any site built or hosted for financial gain — a freelancer's own lead-generation site qualifies. Staying on Vercel legitimately would mean $20/month from day one. Cloudflare Workers has no such restriction and the free tier comfortably covers a marketing site.
-
-**The tradeoff, stated plainly:** Vercel's developer experience for Next.js is better. Cloudflare requires an adapter, a `wrangler.jsonc`, a deploy workflow, and more care around environment variables. That setup cost is paid once. Do not reintroduce Vercel-specific APIs or assume Vercel behaviour anywhere in this codebase.
+Vercel's free Hobby tier prohibits commercial use, and defines "commercial" to include any site built or hosted for financial gain — a freelancer's own lead-generation site qualifies. Cloudflare Workers has no such restriction. The tradeoff is a worse developer experience: an adapter, a `wrangler.jsonc`, a deploy workflow, and more care around environment variables. That cost is already paid. **Do not reintroduce Vercel-specific APIs or assume Vercel behaviour anywhere in this codebase.**
 
 **Rules:**
-- No new dependencies without justification. State the tradeoff before adding one. A 40 KB animation library for one fade is a bad trade.
-- No CSS-in-JS, no styled-components, no UI kit. Tailwind only.
-- Server Components by default. Add `"use client"` only where interactivity actually requires it (forms, the triage widget, mobile nav, the theme toggle).
-- **Node.js runtime only.** Never set `export const runtime = "edge"`. The OpenNext adapter targets the Node.js runtime; the Edge runtime is the older `next-on-pages` path and is not what this project uses.
-- No database until there's a reason for one. Content lives in typed files under `src/data/`.
-- Prefer static rendering. Every page that can be prerendered should be. See §4.1 for why this is a cost and reliability decision, not just a performance one.
+- No new dependencies without justification. State the tradeoff first. A 40 KB animation library for one fade is a bad trade — and in this redesign that temptation will come up repeatedly.
+- Tailwind only. No CSS-in-JS, no UI kit, no component library.
+- Server Components by default. `"use client"` only where interactivity genuinely requires it: mobile nav, quote form, scroll-triggered animation.
+- **Node.js runtime only.** Never set `export const runtime = "edge"`.
+- Content lives in typed files under `src/data/`. No CMS, no database.
+- Prefer static rendering. Every page that can be prerendered must be. See §4.1.
 
 ---
 
 ## 4. Commands
 
 ```bash
-npm run dev       # next dev — normal Next.js dev loop, use this for everyday work
-npm run build     # next build — must pass before any PR
-npm run lint      # eslint
-npx tsc --noEmit  # typecheck
+npm run dev        # next dev — everyday work
+npm run build      # next build — must pass before any PR
+npm run lint       # eslint
+npx tsc --noEmit   # typecheck
 
-npm run preview   # opennextjs-cloudflare build && ... preview — runs the real Worker locally
-npm run deploy    # opennextjs-cloudflare build && ... deploy — production deploy
-npm run cf-typegen # regenerate types for Cloudflare bindings
+npm run preview    # runs the real Worker locally
+npm run deploy     # production deploy
+npm run cf-typegen # regenerate Cloudflare binding types
 ```
 
-`npm run build` and `npx tsc --noEmit` must both pass before opening a PR. No exceptions.
+`npm run build` and `npx tsc --noEmit` must both pass before opening a PR.
 
-**Additionally:** anything touching a route handler, server action, middleware, or environment variable must be verified with `npm run preview` before the PR opens. `next dev` runs in Node; production runs in workerd. They are not the same runtime, and this is where surprises appear.
-
-Use one package manager for the whole project and commit only that lockfile. Mixing npm and pnpm breaks OpenNext builds in confusing ways.
+Anything touching a route handler, server action, middleware, environment variable, **or `next/image`** must be verified with `npm run preview` before the PR opens. `next dev` runs in Node; production runs in workerd.
 
 ### 4.1 The free-tier budget
 
@@ -99,55 +99,28 @@ Use one package manager for the whole project and commit only that lockfile. Mix
 |---|---|
 | Worker requests | 100,000/day, resets 00:00 UTC |
 | CPU time | 10ms per invocation |
-| Static asset requests | Free and unlimited — they never invoke the Worker |
+| Static asset requests | Free and unlimited — never invoke the Worker |
 | Worker bundle size | 3 MB |
-| Subrequests per invocation | 50 |
 
-**What this means for architecture:** a statically prerendered page is served from the assets binding and costs nothing. A dynamically rendered page invokes the Worker and burns request quota and CPU. For a five-service marketing site, essentially everything should be static, with the quote-form handler as the only routine dynamic path.
+A statically prerendered page is served from the assets binding and costs nothing. A dynamic page burns request quota and CPU. Everything except `/contact` should be static.
 
-Practical consequences:
-- Do not add `force-dynamic`, uncached `fetch`, `cookies()`, or `headers()` to a page that has no reason to be dynamic. Each one silently converts a free static page into a metered one.
-- 10ms CPU is generous for a form handler and tight for heavy SSR. If a route needs real computation, that is a signal the work belongs at build time.
-- Exceeding the daily request cap returns Cloudflare error 1027 — the site goes down rather than generating a surprise bill. Predictable, but a real failure mode worth knowing.
-- Upgrading later is $5/month and requires no code changes. Do not contort the architecture to stay free; just do not waste the free tier carelessly.
+- Do not add `force-dynamic`, uncached `fetch`, `cookies()`, or `headers()` to a page with no reason to be dynamic. Each silently converts a free page into a metered one.
+- Exceeding the daily cap returns Cloudflare error 1027 — the site goes down rather than billing you.
+- Upgrading is $5/month and requires no code changes. Don't contort the architecture to stay free; just don't waste the tier carelessly.
 
 ### 4.2 Required config
 
-`wrangler.jsonc` at the repo root:
+`wrangler.jsonc` at the repo root must retain `nodejs_compat`, the `assets` binding, and the `images` binding. Do not hand-edit `.open-next/`.
 
-```jsonc
-{
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
-  "name": "<site-name>",
-  "compatibility_date": "2026-08-07",
-  "compatibility_flags": ["nodejs_compat"],
-  "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
-  "images": {
-    "binding": "IMAGES"
-  }
-}
-```
+### 4.3 Environment variables
 
-Also required:
-- `open-next.config.ts` at the repo root
-- `.open-next/` and `.wrangler/` added to `.gitignore`
-- `initOpenNextCloudflareForDev()` called in `next.config.ts` so bindings work in `next dev`
+Cloudflare separates build-time from runtime, and getting this wrong is the most common OpenNext failure.
 
-Do not hand-edit generated output in `.open-next/`. If something is wrong there, fix the source or the config.
+- **Build-time** (`NEXT_PUBLIC_*`, anything read during `next build`) → GitHub Actions secrets/vars.
+- **Runtime** (form delivery keys, Discord webhook URL) → `wrangler secret put`, read server-side only.
+- `NEXT_PUBLIC_*` is compiled into the client bundle and is public. **The Discord webhook URL must never be a `NEXT_PUBLIC_` variable** — a public webhook URL is an open spam endpoint.
 
-### 4.3 Environment variables — read this before adding one
-
-Cloudflare separates build-time and runtime variables, and getting this wrong is the single most common OpenNext deployment failure.
-
-- **Build-time** (anything `NEXT_PUBLIC_*`, or anything read during `next build`) must be available to the build step — in CI, that means GitHub Actions secrets/vars, not the Worker's runtime settings.
-- **Runtime** (form delivery keys, API tokens) belongs in Wrangler secrets via `wrangler secret put NAME`, read server-side only.
-- `NEXT_PUBLIC_*` values are compiled into the client bundle and are public. Never put a key there.
-
-If a build fails with an undefined variable that "definitely exists in Cloudflare," it was set as a runtime variable and needed to be a build-time one. Check that first.
+If a build fails on an undefined variable that "definitely exists in Cloudflare," it was set at runtime and needed to be build-time.
 
 ---
 
@@ -156,23 +129,26 @@ If a build fails with an undefined variable that "definitely exists in Cloudflar
 ```
 src/
 ├── app/
-│   ├── layout.tsx
+│   ├── layout.tsx                  # fonts, skip link
 │   ├── page.tsx                    # home
 │   ├── services/
-│   │   └── [slug]/page.tsx         # one page per service line — no overview index (removed, see below)
+│   │   ├── page.tsx
+│   │   └── [slug]/page.tsx
 │   ├── portfolio/
 │   │   ├── page.tsx
-│   │   └── [slug]/page.tsx         # case study detail
+│   │   └── [slug]/page.tsx
 │   ├── about/page.tsx
-│   └── contact/page.tsx            # quote form lives here
+│   └── contact/page.tsx
 │
 ├── components/
 │   ├── Navbar.tsx
 │   ├── Footer.tsx
+│   ├── ServiceTriage.tsx           # the conversion mechanic — see §7
+│   ├── ServiceCard.tsx
 │   ├── ProjectCard.tsx
+│   ├── FeaturedWork.tsx
 │   ├── QuoteForm.tsx
-│   ├── ServiceTriage.tsx           # the "What can I help you with?" widget
-│   └── CTASection.tsx              # reusable bottom-of-page conversion block
+│   └── CTASection.tsx
 │
 ├── data/
 │   ├── services.ts
@@ -182,76 +158,69 @@ src/
     └── types.ts
 ```
 
-Service and portfolio pages are **generated from data files**, not hand-written per page. Adding a sixth service should mean adding one object to `services.ts` — nothing else.
-
-**The `/services` overview page (the 5-card grid) was removed** (owner call): the home page's triage widget (§7) already routes a visitor to the right `/services/[slug]` page from a symptom, so a separate browse-everything index was redundant with it. `ServiceCard.tsx` and its OG-image route were deleted along with it, since nothing else rendered a service as a card. The individual `/services/[slug]` pages are untouched and still hold the real content (problems, deliverables, process, FAQs) — only the index is gone. `mainNav` (`src/lib/nav.ts`) now reads Home → Portfolio → About; "Home" is a deliberate duplicate of the logo's own link, added because the removed "Services" link needed to be replaced with *something* and the triage widget on the home page is the de facto services index now. Anywhere else that used to link to `/services` (the home hero's secondary link, `CTASection` secondary links on `/portfolio` and each service detail page) now points at `/` instead.
+Service and portfolio pages generate from data files. Adding a sixth service = one object in `services.ts`, nothing else.
 
 ---
 
 ## 6. Data model
 
-Keep these shapes in `src/lib/types.ts`. Do not change them without updating every consumer.
+Keep these in `src/lib/types.ts`. Do not change shapes without updating every consumer.
 
 ```ts
 export type ServiceSlug =
-  | "automation"
-  | "excel-data"
-  | "websites"
-  | "local-tech-help"
-  | "roblox";
+  | "automation" | "excel-data" | "websites" | "local-tech-help" | "roblox";
 
 export interface Service {
   slug: ServiceSlug;
-  title: string;            // "Automation & Python"
-  tagline: string;          // one line, benefit-first, no jargon
-  icon: string;             // emoji or icon key
-  problems: string[];       // symptoms in the client's words — "I retype the same report every Monday"
-  deliverables: string[];   // what they actually receive
-  process: string[];        // 3–4 steps, plain language
-  startingPrice?: string;   // "from $X" — omit entirely rather than guess
-  turnaround?: string;      // "typically 3–7 days"
+  title: string;
+  tagline: string;           // one line, benefit-first, no jargon
+  icon: string;
+  problems: string[];        // symptoms in the client's words
+  deliverables: string[];
+  process: string[];         // 3–4 steps, plain language
+  startingPrice?: string;    // omit rather than guess
+  turnaround?: string;
   faqs: { q: string; a: string }[];
-  relatedProjects: string[]; // Project.slug values
+  relatedProjects: string[];
 }
 
 export interface Project {
   slug: string;
   title: string;
-  client?: string;           // omit or anonymize if not cleared
-  services: ServiceSlug[];   // enables cross-linking from service pages
-  summary: string;           // one sentence, outcome-focused
+  client?: string;
+  services: ServiceSlug[];
+  summary: string;
   problem: string;
   solution: string;
-  result: string;            // quantified where possible: hours saved, errors removed
+  result: string;            // quantified where possible
   stack: string[];
+  cover: { src: string; alt: string };   // required — this design is card-led
   images?: { src: string; alt: string }[];
   featured: boolean;
 }
 ```
 
-### Known portfolio entries
+`cover` is required in this redesign. The featured work grid is the visual centrepiece; a project without art breaks it.
 
-- **Restaurant Sales Parser** — flagship. Parses raw sales exports into reports automatically. Lead with the time saved per week and the manual step it eliminated. This is the single best proof for both Automation and Excel & Data. Still no owner-confirmed `result`/metrics — see the TODOs in `src/data/projects.ts`.
-- **Excel Performance Dashboard** — proof for Excel & Data. Not added yet, no owner input.
-- **Fuse Factory** — proof for Roblox Development. Added. A personal/passion project, not commissioned work, and still in active development (per §1, the portfolio doubles as a showcase for employers, not only clients). `problem`/`solution` describe the design goal and what's actually been built — a modular codebase (spawning, movement, UI, and drops as separate systems), UI built in code rather than laid out in Studio, an event-driven architecture on both server and client, a weighted item-drop system, and round/spawn-rate escalation — rather than a client engagement. Boomies currently move **randomly**, not toward the player; pattern-based movement AI is a planned feature, not a built one — do not write it up as already working. `result` and `metrics` are intentionally omitted — no client outcome to report. `images[0]` is now the game's official Roblox thumbnail (owner-provided, not a gameplay screenshot); real gameplay screenshots are planned and will be appended once they exist (§9).
-- **Computer Builds & Repairs** — proof for Local Tech Help. Not one engagement — a running total across many people (friends, family, and paying clients), so `client` is omitted entirely rather than naming or anonymizing one. `result`/`metrics` report the one owner-confirmed count (11 desktops built) rather than a narrative client outcome. `images` omitted — no build photos on hand yet; add real ones once they exist (§9).
-- **Echo Realms** — proof for Roblox Development, alongside Fuse Factory. A personal project: modular/reusable systems for enemy AI (with attack telegraphing so players can react), zone-based spawning, phase-structured bosses, and weighted loot tables. Technically playable but light on content and currently **on hold** — a game at this scope is hard to build solo. Do not write it up as finished or content-complete. `result`/`images` intentionally omitted, same reasoning as Fuse Factory.
-- **This Website** — proof for Websites, and the one entry that's `featured: true` alongside Restaurant Sales Parser, since it's a live example of the work in front of the visitor right now. No external client (it's the owner's own business site), so `client` is omitted. `result` is omitted — the site has no launched traffic yet to report a number against.
-- **OrangeCheasy (YouTube)** — the first portfolio entry with `services: []`. Video editing and channel growth aren't sellable service lines, so it's tagged with `skills` (plain, non-colour chips) instead of a service badge, uses `icon` for the fallback thumbnail tile, and links out via `externalLink` to the real channel (youtube.com/orangecheasy). `result`/`metrics` report the one owner-confirmed number: 300 → 2,000 subscribers in 3 months.
+### Portfolio entries
 
-Write client case studies as **problem → solution → result**, not as feature lists. A small-business owner does not care that it uses `pandas`; they care that Monday morning went from two hours to five minutes. Put the stack in a sidebar for the technical readers.
+- **Restaurant Sales Parser** — flagship. Proof for Automation *and* Excel & Data. Lead with time saved per week.
+- **Fuse Factory** — proof for Roblox.
+- **Orange Cheasy** — proof for Roblox.
+- **Excel Performance Dashboard** — proof for Excel & Data.
 
-A personal/passion project like Fuse Factory doesn't have a client result to report, so it bends this template: `problem` becomes the design goal or gap being filled, `solution` becomes what's actually been built, and `result` stays omitted rather than forced. Do not invent a client-style outcome for a project that doesn't have one.
+Case studies are **problem → solution → result**. Stack goes in a sidebar for technical readers, never the lead. A restaurant owner cares that Monday went from two hours to five minutes, not that it uses pandas.
 
 ---
 
 ## 7. The triage widget (`ServiceTriage.tsx`)
 
-This is the signature element of the home page and the main conversion mechanic. It sits directly under the hero.
+**This survived the redesign deliberately. It is the highest-converting element on the site and it is not up for removal.**
+
+It sits directly below the hero, above featured work. In the new design it does double duty: for the portfolio visitor it reads as a capabilities overview, so it isn't wasted space for either audience.
 
 **Prompt:** "What can I help you with?"
 
-**Options:**
 | Label | Destination |
 |---|---|
 | 🔄 I have a repetitive task | `/services/automation` |
@@ -262,170 +231,222 @@ This is the signature element of the home page and the main conversion mechanic.
 | ❓ I'm not sure what I need | `/contact?topic=unsure` |
 
 **Requirements:**
-- Real `<Link>` elements, not `onClick` router pushes. Must be keyboard-navigable, crawlable, and middle-clickable.
-- Labels are written from the visitor's side of the screen — they describe the *symptom*, not the service name. Never rename these to "Python Scripting" or "Data Engineering."
-- "I'm not sure what I need" is a first-class option, not a fallback. A meaningful share of good leads land there. It should reach a friendly, low-pressure version of the form.
-- Selecting an option should pass the topic through to the quote form so the visitor doesn't re-answer the same question.
+- Real `<Link>` elements. Keyboard-navigable, crawlable, middle-clickable.
+- Labels describe the **symptom**, not the service name. Never rename these to "Python Scripting" or "Data Engineering."
+- "I'm not sure what I need" is a first-class option. A meaningful share of good leads land there.
+- Topic passes through to the quote form so the visitor doesn't answer twice.
+
+**Redesign treatment:** dark surface cards, hairline borders, accent glow on hover, emoji retained at larger size. Do not replace the emoji with abstract line icons — the emoji are legible at a glance and carry meaning a generic icon set does not.
 
 ---
 
 ## 8. Quote form (`QuoteForm.tsx`)
 
-**Fields:** name, email, service (prefilled from triage/service page), description of the problem, budget range (optional, use ranges not a free text box), timeline, preferred contact method.
+**Fields:** name, email, service (prefilled), description, budget range (select, not free text), timeline, preferred contact method. Seven maximum.
 
-**Rules:**
-- Keep it under seven fields. Every added field costs conversions.
-- Validate client-side *and* on the server. Never trust the client.
-- The submit button says "Send request" and the success state says "Request sent." Same verb throughout.
-- On success, show what happens next and when: "I'll reply within one business day." Do not just show a checkmark.
-- Errors state what went wrong and how to fix it. No apologies, no vagueness.
-- Handle submission through a Next.js Route Handler or Server Action. **Never put an API key, form endpoint secret, or email credential in client-side code.** Secrets go in Wrangler secrets (`wrangler secret put`) and are read server-side only. See §4.3.
-- Add a honeypot field and basic rate limiting. This form will get spam.
-- This handler is the site's main dynamic path and the only routine consumer of the Worker request budget. Keep it lean: one outbound call to the delivery provider, no heavy parsing, no image work. Stay well under 10ms CPU.
-- Rate limiting: use Cloudflare's own WAF rate-limiting rules on the `/api/quote` path rather than building an in-Worker counter. Blocked requests are stopped at the edge and never invoke the Worker, which protects both the inbox and the daily request cap. Workers KV free tier allows only 1,000 writes/day, so KV-backed counters are a poor fit here.
+- Validate client-side *and* server-side.
+- Submit says "Send request"; success says "Request sent." Same verb.
+- Success state states what happens next and when. Not just a checkmark.
+- Errors say what went wrong and how to fix it.
+- Honeypot field. Rate limiting via Cloudflare WAF rules on the handler path — blocked requests never invoke the Worker, protecting both the inbox and the request budget. No in-Worker counter, no KV.
+- Delivery secrets in Wrangler secrets, server-side only. **The existing email routing and Discord webhook pipeline works — restyle the form, do not rewire the delivery.**
+- Keep the handler lean: one outbound call, no heavy parsing. Well under 10ms CPU.
 
 ---
 
-## 9. Design direction
+## 9. Design system
 
-**The brief is a small technical services business built on trust and time saved.** Reliable, plainspoken, tidy. Not a flashy agency, not a startup landing page, not a dark-mode developer portfolio.
+**Direction: molten dark.** Warm near-black, a single high-energy orange, generous space, real work shown large. Confident and personal — a maker's site, not an agency's.
 
-**Anti-goals — do not produce these:**
-- Cream background + high-contrast serif + terracotta accent
-- Near-black background with one acid-green accent
-- Generic hero with a gradient blob and three floating cards
-- `01 / 02 / 03` numbered markers on things that are not actually a sequence (the process steps *are* a sequence — those are fine; the service list is not)
-- Stock photos of people in offices pointing at laptops
+The redesign source of truth is the approved homepage mockup. Where this document and the mockup disagree, raise it rather than guessing.
 
-**Direction to work within, unless the owner overrides it:**
-- High-legibility base in both themes. One accent hue used for actions and nothing else. If a color appears on a non-clickable element, it should not be the accent.
-- Type: one characterful display face for headings used with restraint, one highly legible body face. Set a real type scale. Avoid the default Next.js font stack. Currently Bricolage Grotesque for headings, Inter for body.
-- Generous whitespace, restrained borders, no heavy shadows. Precision over decoration.
-- Motion: subtle and purposeful only — hover states, one scroll reveal at most per page. Respect `prefers-reduced-motion`.
-- Real screenshots of actual work beat any illustration. Show the dashboard. Show the parser output. Show the game.
+### 9.1 Tokens
 
-Before building a new page section, propose the layout in one or two sentences and get a yes. Do not silently redesign existing pages.
+**The site is dark only.** There is no light theme and no theme toggle. Define tokens as CSS custom properties on `:root` and expose them to Tailwind via the theme config. **Never hardcode a hex value in a component.**
 
-### 9.1 Themes — owner override to "light base"
+```
+  --bg              #0B0A0A   warm near-black, not pure #000
+  --surface         #141212   cards, raised panels
+  --surface-2       #1C1919   hover, nested surfaces
+  --border          #2A2626   hairline, low contrast
+  --text            #F5F3F1   warm white
+  --text-muted      #A8A19C
+  --accent          #FF6A1A
+  --accent-hover    #FF8340
+  --accent-dim      rgba(255,106,26,0.12)   glow, tints, focus rings
+```
 
-The site ships **two themes with a visitor-facing toggle**, overriding the light-only line above.
+**Neutrals are warm-tinted on purpose.** Pure grey next to orange reads dead and cheap. Do not "clean up" these values to neutral greys.
 
-- Dark is **dark grey (`#1a1d21`), never black.** Black plus a saturated accent is the anti-goal above; dark grey plus a pastel is not.
-- Three states: no stored preference follows the OS, an explicit choice wins over it. A blocking inline script in the root layout applies the stored choice before first paint — without it, returning visitors see a flash of the wrong theme.
-- Both themes are **pastel**, not just the dark one.
+Set `color-scheme: dark` on `:root` so browser-rendered UI — form controls, scrollbars, autofill backgrounds — matches. Without it, autofilled inputs render with a white background that looks broken against the dark surface.
 
-### 9.2 The colour rules — do not break these
+Because there is no light theme, tokens may be used directly and confidently. Do not add conditional theme logic, `dark:` variants, or a `data-theme` attribute "for later." If a light theme is ever wanted, it is a deliberate future project, not something to scaffold for now.
 
-**Never write a `dark:` variant.** Both themes define the same custom-property names with different values in `globals.css`. Components reference roles — `bg-surface`, `text-ink`, `bg-accent` — and the theme decides what they resolve to. A palette change must never require touching a component. If you find yourself adding `dark:`, the token is missing; add the token.
+### 9.2 Accent discipline
 
-**Pastels fill; ink labels.** A pastel is 1.3:1–1.8:1 against a light surface. It therefore may *never* carry text, a hairline, an icon stroke, or a focus ring on a light background — it fails both the 4.5:1 text bar and the 3:1 non-text bar. Pastel is legal as a **filled area** (buttons, cards, bands, chips) with ink text on top, which measures 10:1 or better.
+Orange marks **actions and current state**. Nothing else.
 
-**Every colour pair is measured before it ships**, in both themes: body text ≥ 4.5:1, large text and non-text indicators ≥ 3:1. Do not eyeball a pastel — they are exactly the case where intuition is wrong.
+- Links, buttons, active nav, focus rings, hover glow, the logo: accent.
+- Section labels, dividers, body copy, card borders at rest, decorative flourishes: **not** accent.
 
-The palette itself lives in `src/app/globals.css` and is documented there. Do not copy hex values into this file; they will go stale.
+If orange appears on something that cannot be clicked, it's wrong. This discipline is what makes the mockup look designed rather than decorated — orange everywhere looks like a Bootstrap theme.
+
+### 9.3 Type
+
+- One heading face with character, one highly legible body face. Self-host via `next/font` — no external font CDN, which adds a render-blocking third-party request.
+- Headings: tight tracking, weight 600–700, large. The mockup's hero is roughly 56–64px desktop.
+- Body: 16–17px, line height 1.6+. Muted colour for secondary copy.
+- Sentence case everywhere, including buttons.
+- Set a real type scale in the Tailwind config and use it. No arbitrary `text-[27px]`.
+
+### 9.4 Surfaces and depth
+
+- Cards: `--surface`, 1px `--border`, radius 12–16px.
+- Depth comes from **contrast and warm glow**, not drop shadows. A soft radial `--accent-dim` behind a focal element beats a black box-shadow, which disappears on dark backgrounds anyway.
+- Hover: border shifts toward accent, subtle lift, glow appears. Under 200ms.
+
+### 9.5 Motion
+
+- Subtle and purposeful. Hover transitions, at most one scroll-reveal per section.
+- **Respect `prefers-reduced-motion` on every animation.** Not optional.
+- No parallax, no scroll-jacking, no animated gradient meshes, no cursor followers. These read as dated template and cost CPU on mobile.
+
+### 9.6 Anti-goals
+
+Do not produce:
+- Orange on non-interactive elements
+- Pure `#000` background or pure grey neutrals
+- Glassmorphism, frosted blur panels, animated gradient blobs
+- A "Clean Code / Thoughtful Design / Problem Solver" trio of generic virtues — see §11
+- Stock photography or generic 3D illustration where real project art could go
+- Neon glow on text. Glow belongs on surfaces and focal images, not typography.
 
 ---
 
-## 10. Copy rules
+## 10. Dark-only commitments
 
-- Sentence case everywhere, including buttons and headings.
-- Lead with the outcome, follow with the method. "Stop retyping your weekly numbers" beats "Python-based data automation."
-- No superlatives, no "cutting-edge," no "passionate about." No em-dash-heavy marketing voice.
-- Specific beats clever, always. Name the actual task, the actual file type, the actual hour saved.
-- Never invent client names, testimonials, review counts, years of experience, or project results. If a number isn't known, leave it out and flag it as a TODO for the owner to fill in. Fabricated social proof is the fastest way to lose a real client.
-- Prices: only publish what the owner has confirmed. `startingPrice` is optional in the type for exactly this reason.
+There is no light theme. That removes a large amount of work, but it makes three things non-negotiable, because a dark site has no fallback when they're wrong.
+
+**Contrast.** Dark backgrounds hide low-contrast text far more effectively than light ones do, and `--text-muted` on `--surface` is the pairing most likely to fail. Every text/background combination must pass WCAG AA. `--accent` on `--bg` passes for large text and UI elements; it does **not** pass for small body copy, so never set paragraph text in orange.
+
+**Focus states.** A default browser focus ring is a thin dark outline and is effectively invisible here. Every interactive element needs an explicit, high-contrast focus ring built from `--accent`, tested by tabbing through the page rather than assumed from the code.
+
+**Browser-rendered UI.** Form controls, autofill, scrollbars, and selection highlights default to light styling. `color-scheme: dark` handles most of it; autofill on inputs usually needs an explicit override. Check the contact form after any browser has saved credentials against it.
+
+**The upside worth protecting:** dark-only means the hero artwork, the glow treatments, and the project cover art only ever need to work against one background. Do not spend that saved effort adding theme abstraction back in.
 
 ---
 
-## 11. Quality floor
+## 11. Copy rules
+
+- Sentence case everywhere.
+- **Lead with the outcome, follow with the method.** "Stop retyping your weekly numbers" beats "Python-based data automation."
+- The hero must do outcome work, not just identity work. A personal introduction is fine as the opening line, but a visitor must learn *what problem you solve* without scrolling. "I design and build digital experiences" fails this test — it tells a restaurant owner nothing.
+- **No generic virtue blocks.** "Clean code, thoughtful design, problem solver" appears on thousands of developer portfolios and signals nothing. If a three-column block earns its place, fill it with specifics: what you actually build, who for, what changed as a result.
+- No superlatives, no "cutting-edge," no "passionate about."
+- **Never invent** client names, testimonials, review counts, years of experience, or project results. If a number isn't known, leave it out and flag a TODO. Fabricated social proof is the fastest way to lose a real client.
+- Publish only prices the owner has confirmed.
+- Roblox pages may use technical language — there it builds credibility. Everywhere else, plain language wins.
+
+---
+
+## 12. Quality floor
 
 Every page ships with:
-- Working keyboard navigation and visible focus states
-- Semantic HTML — real headings in order, real buttons, real links, real labels tied to inputs
-- Alt text on every image
-- Responsive from 320px up
-- Lighthouse performance ≥ 90 on mobile
-- `next/image` for all images; no raw `<img>`. Image optimization on Workers requires the `images` binding in `wrangler.jsonc` (§4.2) — it does not work by default the way it does on Vercel. Verify optimized images render correctly in `npm run preview`, not just `next dev`.
-- Per-page `metadata` export: title, description, Open Graph tags
+- Keyboard navigation with **explicit, high-contrast focus states** — default browser rings are invisible on dark. Verify by tabbing, not by reading the code.
+- Semantic HTML: headings in order, real buttons, real links, labels tied to inputs
+- Alt text on every image, including project art
+- Responsive from 320px
+- WCAG AA contrast on every text/background pair, `--text-muted` on `--surface` especially
+- Per-page `metadata`: title, description, Open Graph
+- `next/image` for all images, verified under `npm run preview` — the Cloudflare images binding means optimization doesn't work by default the way it would on Vercel
 
-**SEO:** each service page targets a plain-language phrase a real person would search, not a job title. Include location terms on the Local Tech Help page since that service is geographically bound. Ship `sitemap.ts` and `robots.ts`. Add LocalBusiness structured data once the domain and business details are settled.
+### Performance budget
+
+This design is image-heavy and dark, which makes performance harder. Non-negotiable:
+
+- **Lighthouse performance ≥ 90 on mobile.** If a visual choice can't hold that, the visual choice loses.
+- Hero image: WebP or AVIF, responsive `sizes`, `priority` set. It is the LCP element — treat it as one.
+- Project cover art: lazy-loaded below the fold, correctly sized. Never ship a 2000px PNG scaled down in CSS.
+- Total homepage image payload target: **under 600 KB**. Report the actual number after building the home page.
+- No more than two web font weights per family. Subset where possible.
+
+### SEO
+
+- **Confirm `robots` is not set to `noindex`.** The pre-redesign site shipped `noindex, nofollow`, making it invisible to search. Verify in the built output, not just the source.
+- Each service page targets a plain-language phrase a real person would search.
+- Include location terms on Local Tech Help — that service is geographically bound.
+- Ship `sitemap.ts` and `robots.ts`. Add LocalBusiness structured data.
 
 ---
 
-## 12. Git workflow and deployment
+## 13. Git workflow and deployment
 
 ```
-feature branch → npm run dev → npm run preview (real Worker runtime)
-              → commit + push → GitHub PR (CI: lint, typecheck, build)
-              → merge to main → GitHub Actions runs opennextjs-cloudflare build
-              → wrangler deploy → live
+feature branch → npm run dev → npm run preview
+              → commit + push → PR (CI: lint, typecheck, build)
+              → merge to main → GitHub Actions → wrangler deploy → live
 ```
 
-- Branch names: `feat/quote-form`, `fix/mobile-nav`, `content/restaurant-parser-case-study`
+- Branches: `feat/theme-tokens`, `fix/mobile-nav`, `content/parser-case-study`
 - Never commit directly to `main`. `main` is production.
-- Commit messages: imperative and specific. `Add triage widget to home page`, not `updates`.
+- Commit messages: imperative and specific.
 - One concern per PR. A PR that adds a feature and restyles the footer is two PRs.
-- PR description states what changed and how to verify it.
-- `.env.local`, `.open-next/`, and `.wrangler/` are gitignored and stay that way. If a secret is ever committed, rotate it — do not just delete the line.
-
-**Deploy workflow requirements:**
-- Deployment runs from GitHub Actions on merge to `main`, on Linux. `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` live in repository secrets.
-- The API token should be scoped to Workers deploy permissions only, not an account-wide key.
-- Build-time environment variables must be declared in the Actions workflow (§4.3). A deploy that succeeds locally and fails in CI is almost always this.
-- There is no automatic preview-URL-per-PR the way Vercel provides. If preview deploys become worth it, use a separate named Worker for staging and gate it behind Cloudflare Access rather than leaving a staging URL public. Do not build this until it is actually needed.
-- If a deploy breaks production, roll back with `wrangler rollback` first and diagnose afterward.
+- `.env.local`, `.open-next/`, `.wrangler/` stay gitignored. If a secret is committed, rotate it — don't just delete the line.
+- Deploy runs from GitHub Actions on merge to `main`. `CLOUDFLARE_API_TOKEN` scoped to Workers deploy only.
+- Broken production: `wrangler rollback` first, diagnose after.
 
 ---
 
-## 13. Working agreement for Claude
+## 14. Working agreement for Claude
 
 **Do:**
-- Explain *why* an approach was chosen, not just what the code does. The owner is leveling up toward professional practice, not collecting snippets.
-- State tradeoffs plainly, including when the simpler option is better than the one requested.
-- Push back on ideas that are overbuilt, hard to maintain solo, or unlikely to convert. Honest feedback is more useful than agreement.
-- Build reusable pieces. This site is a template for future client sites — anything hardcoded here is work repeated later.
-- Ask before making decisions the owner hasn't made: pricing, real client names, business address, phone number, legal/business-name details.
-- Call out when a change would convert a static page into a dynamically rendered one, and say why it is or isn't worth it.
+- Explain *why*, not just what. The owner is building professional practice, not collecting snippets.
+- State tradeoffs plainly, including when the simpler option beats the requested one.
+- Push back on ideas that are overbuilt, hard to maintain solo, or unlikely to convert.
+- Build reusable pieces. This site is a template for future client work.
+- Propose visual direction in a sentence or two and wait for sign-off before building a new section.
+- Flag when a change would convert a static page into a dynamic one.
+- Flag when a visual choice threatens the performance budget **before** building it.
 
 **Don't:**
-- Add a CMS, auth, analytics dashboard, blog engine, or database unless explicitly asked.
-- Assume Vercel. No `@vercel/*` packages, no Vercel-specific env var names, no `runtime = "edge"`, no assuming image optimization or ISR "just works" without the corresponding Cloudflare binding.
-- Reach for Workers KV, D1, R2, or Durable Objects for this site. A brochure site with a contact form needs none of them, and each one adds free-tier limits to track.
+- Remove or weaken the triage widget, or drop Services from the nav.
+- Rewire the form delivery pipeline.
+- Assume Vercel. No `@vercel/*`, no Vercel env var names, no `runtime = "edge"`.
+- Reach for KV, D1, R2, or Durable Objects. A portfolio with a contact form needs none of them.
+- Add a CMS, auth, analytics dashboard, or blog engine unless asked.
+- Hardcode colours instead of using tokens.
+- Add theme-switching logic, `dark:` variants, or a `data-theme` attribute. The site is dark only by decision, not by default.
 - Refactor unrelated files while implementing a feature.
 - Invent content, credentials, or results.
-- Ship a component without a mobile layout.
 - Leave `console.log` or commented-out code in a PR.
 
 ---
 
-## 14. Build order
+## 15. Redesign build order
 
-0. **Deploy pipeline first** — scaffold, add the OpenNext adapter, get a placeholder page live on a `workers.dev` URL via GitHub Actions. Prove the whole chain works while there is nothing to debug.
-1. Layout shell — Navbar, Footer, typography scale, Tailwind theme tokens
-2. Home — hero + triage widget + brief social proof strip
-3. `services.ts` + the dynamic service page template
-4. `projects.ts` + portfolio index and case study template — Restaurant Sales Parser first
-5. Quote form with working delivery to the owner's inbox
+The site is live and working. **This is a restyle of a functioning site, not a rebuild.** Do not delete working pages to start fresh.
+
+0. Dark-only tokens and fonts; remove the existing theme toggle and any light-theme code — ship with existing layout intact
+1. Navbar + Footer restyle (Services returns to nav, toggle gone)
+2. Home: hero, then triage widget restyle, then featured work grid
+3. Services index + detail template
+4. Portfolio index + case study template
+5. Contact page restyle — **form logic and delivery untouched**
 6. About
-7. SEO pass — metadata, sitemap, OG images
-8. Custom domain + WAF rate-limiting rule on the form endpoint + analytics
+7. Performance and accessibility pass; confirm indexing is on
 
-Step 0 is not optional and is not busywork. Debugging a runtime mismatch or an environment-variable split against a finished site is far worse than doing it against a page that says "hello."
-
-Ship 0–5 before polishing anything. A live site with a working form beats a beautiful unfinished one.
+Ship each phase as its own PR. The site stays live and coherent throughout — no phase leaves it half-styled in production.
 
 ---
 
-## 15. Open decisions
+## 16. Open decisions
 
-Flag these to the owner rather than deciding unilaterally:
+Flag rather than deciding:
 
-- [ ] Business/display name and logo
-- [ ] Domain (`.ca` vs `.com`) — register through Cloudflare or transfer DNS to Cloudflare so the Worker route attaches cleanly
-- [ ] Worker name (becomes the `workers.dev` subdomain before the custom domain is live)
-- [ ] Contact email and whether a phone number is published
-- [ ] Form delivery method (email service vs form backend) — must be callable via a single `fetch` from a Worker; anything requiring a long-lived Node process or an SMTP socket will not work
-- [ ] Service area for Local Tech Help — remote, local, or both
+- [ ] Heading and body typefaces — final choice
+- [ ] "Work" vs "Portfolio" as the nav label (mockup says Work, current site says Portfolio; pick one, use it everywhere)
+- [ ] What replaces the generic three-virtue block on the home page
+- [ ] Real before/after metrics for the Restaurant Sales Parser
 - [ ] Whether starting prices are published or quote-only
-- [ ] Real metrics for the Restaurant Sales Parser case study
-- [ ] Whether Fuse Factory can be named publicly
+- [ ] Service area wording for Local Tech Help — remote, local, or both

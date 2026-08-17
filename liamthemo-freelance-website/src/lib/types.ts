@@ -66,8 +66,6 @@ export interface Project {
   stack: string[];
   images?: {
     src: string;
-    /** Same shot rendered for the dark theme, when the asset itself (not just page chrome) needs swapping — e.g. a graphic with a baked-in background. Omit when one image works in both themes. */
-    srcDark?: string;
     alt: string;
     caption?: string;
     /**

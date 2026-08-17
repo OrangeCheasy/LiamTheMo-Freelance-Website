@@ -50,11 +50,12 @@ export async function generateMetadata({
 
 // Numbered markers are correct here and only here: the process genuinely is a
 // sequence, which §9 calls out as the exception to its "no 01 / 02 / 03" rule.
+// Neutral, not accent (§9.2) — it's an informational marker, not a control.
 function StepNumber({ n }: { n: number }) {
   return (
     <span
       aria-hidden="true"
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-accent bg-accent-fill text-small font-semibold text-accent-fill-ink"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 text-small font-semibold text-text"
     >
       {n}
     </span>
@@ -79,8 +80,8 @@ export default async function ServiceDetailPage({
         <span aria-hidden="true" className="block text-4xl">
           {service.icon}
         </span>
-        <h1 className="mt-4 max-w-[20ch] text-h1 text-ink">{service.title}</h1>
-        <p className="mt-4 max-w-[52ch] text-body text-ink-muted">
+        <h1 className="mt-4 max-w-[20ch] text-h1 text-text">{service.title}</h1>
+        <p className="mt-4 max-w-[52ch] text-body text-text-muted">
           {service.tagline}
         </p>
       </section>
@@ -93,13 +94,13 @@ export default async function ServiceDetailPage({
       */}
       <section
         aria-labelledby="problems-heading"
-        className="border-t border-line bg-surface-muted"
+        className="border-t border-border bg-surface"
       >
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>Sound familiar?</Eyebrow>
           <h2
             id="problems-heading"
-            className="mt-3 max-w-[24ch] text-h2 text-ink"
+            className="mt-3 max-w-[24ch] text-h2 text-text"
           >
             If any of these are you, this is the right page
           </h2>
@@ -107,7 +108,7 @@ export default async function ServiceDetailPage({
             {service.problems.map((problem) => (
               <li
                 key={problem}
-                className="rounded-xl border border-line bg-surface p-5 text-body text-ink"
+                className="rounded-xl border border-border bg-surface-2 p-5 text-body text-text"
               >
                 &ldquo;{problem}&rdquo;
               </li>
@@ -123,18 +124,19 @@ export default async function ServiceDetailPage({
         <Eyebrow>What you get</Eyebrow>
         <h2
           id="deliverables-heading"
-          className="mt-3 max-w-[24ch] text-h2 text-ink"
+          className="mt-3 max-w-[24ch] text-h2 text-text"
         >
           What you actually receive
         </h2>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2">
           {service.deliverables.map((item) => (
             <li key={item} className="flex gap-3">
+              {/* Decorative bullet, not clickable — neutral, not accent (§9.2). */}
               <span
                 aria-hidden="true"
-                className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-text-muted"
               />
-              <span className="text-body text-ink">{item}</span>
+              <span className="text-body text-text">{item}</span>
             </li>
           ))}
         </ul>
@@ -142,13 +144,13 @@ export default async function ServiceDetailPage({
 
       <section
         aria-labelledby="process-heading"
-        className="border-t border-line bg-surface-muted"
+        className="border-t border-border bg-surface"
       >
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>How it works</Eyebrow>
           <h2
             id="process-heading"
-            className="mt-3 max-w-[24ch] text-h2 text-ink"
+            className="mt-3 max-w-[24ch] text-h2 text-text"
           >
             From first message to finished
           </h2>
@@ -156,7 +158,7 @@ export default async function ServiceDetailPage({
             {service.process.map((step, index) => (
               <li key={step} className="flex items-start gap-4">
                 <StepNumber n={index + 1} />
-                <span className="pt-1 text-body text-ink">{step}</span>
+                <span className="pt-1 text-body text-text">{step}</span>
               </li>
             ))}
           </ol>
@@ -173,27 +175,27 @@ export default async function ServiceDetailPage({
         className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20"
       >
         <Eyebrow>Questions</Eyebrow>
-        <h2 id="faq-heading" className="mt-3 max-w-[24ch] text-h2 text-ink">
+        <h2 id="faq-heading" className="mt-3 max-w-[24ch] text-h2 text-text">
           Before you get in touch
         </h2>
         <div className="mt-8 flex max-w-[70ch] flex-col">
           {faqs.map((faq) => (
             <details
               key={faq.q}
-              className="group border-b border-line py-4 first:border-t"
+              className="group border-b border-border py-4 first:border-t"
             >
-              <summary className="cursor-pointer list-none font-medium text-ink marker:content-none">
+              <summary className="cursor-pointer list-none font-medium text-text marker:content-none">
                 <span className="flex items-start justify-between gap-4">
                   {faq.q}
                   <span
                     aria-hidden="true"
-                    className="mt-0.5 shrink-0 text-ink-muted transition-transform group-open:rotate-45"
+                    className="mt-0.5 shrink-0 text-text-muted transition-transform group-open:rotate-45"
                   >
                     +
                   </span>
                 </span>
               </summary>
-              <p className="mt-3 max-w-[60ch] text-body text-ink-muted">
+              <p className="mt-3 max-w-[60ch] text-body text-text-muted">
                 {faq.a}
               </p>
             </details>

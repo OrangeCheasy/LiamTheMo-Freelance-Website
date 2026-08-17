@@ -12,33 +12,33 @@ import { CTA, mainNav, serviceNav, SITE_NAME } from "@/lib/nav";
   once a year, which it will be.
 */
 
-const linkClasses = "text-small text-ink-muted transition-colors hover:text-ink";
+const linkClasses = "text-small text-text-muted transition-colors hover:text-text";
 // The hairline between columns is part of the grid this direction is built on.
 // Only at lg, where the columns actually sit side by side.
-const columnClasses = "lg:border-l lg:border-line lg:pl-8";
+const columnClasses = "lg:border-l lg:border-border lg:pl-8";
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-line bg-surface-muted">
+    <footer className="border-t border-border bg-surface">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <div className="lg:col-span-2">
             <Link
               href="/"
-              className="font-display text-lg font-semibold tracking-tight text-ink"
+              className="font-display text-lg font-semibold tracking-tight text-text"
             >
               {SITE_NAME}
             </Link>
-            <p className="mt-3 max-w-[38ch] text-small text-ink-muted">
+            <p className="mt-3 max-w-[38ch] text-small text-text-muted">
               I build tools that save you time. Custom automation, spreadsheets,
               websites, and technology solutions for individuals and small
               businesses.
             </p>
             <Link
               href={CTA.href}
-              className="mt-6 inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-4 py-2 text-small font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover"
+              className="mt-6 inline-flex items-center justify-center rounded-lg border border-accent bg-accent px-4 py-2 text-small font-semibold text-bg transition-colors hover:bg-accent-hover"
             >
               {CTA.label}
             </Link>
@@ -81,7 +81,7 @@ export default function Footer() {
           </nav>
         </div>
 
-        <p className="mt-12 border-t border-line pt-6 text-small text-ink-muted">
+        <p className="mt-12 border-t border-border pt-6 text-small text-text-muted">
           © {year} {SITE_NAME}
         </p>
       </div>

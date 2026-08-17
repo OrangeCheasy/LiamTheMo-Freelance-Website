@@ -35,7 +35,7 @@ export const projects: Project[] = [
     problem:
       "The business needed a site that gets a visitor to the right service quickly, ends every page with a path to the quote form, and doubles as a portfolio for both prospective clients and potential employers — without needing a new page written by hand every time a service or project is added.",
     solution:
-      "Built with Next.js (App Router) and TypeScript, deployed to Cloudflare Workers rather than a paid platform to keep hosting costs at effectively zero for a low-traffic marketing site. Services and portfolio case studies are generated from typed data files, so adding one is a data change, not a new page. Includes a light/dark theme toggle, and a triage widget on the home page that routes a visitor straight to the right service based on the problem they describe.",
+      "Built with Next.js (App Router) and TypeScript, deployed to Cloudflare Workers rather than a paid platform to keep hosting costs at effectively zero for a low-traffic marketing site. Services and portfolio case studies are generated from typed data files, so adding one is a data change, not a new page. A triage widget on the home page routes a visitor straight to the right service based on the problem they describe.",
     // result: intentionally omitted (§10) — the site isn't launched with
     // real traffic yet, so there's no conversion number to report.
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
@@ -151,10 +151,11 @@ export const projects: Project[] = [
     // TODO(owner): confirm the rest of the stack (e.g. the library used to read
     // the export, the input file format — .csv vs .xlsx — and what generates
     // the final report).
+    // Dark-only site now — dark.webp is the sole image; light.webp is retired
+    // (still on disk, unreferenced) rather than deleted as part of this change.
     images: [
       {
-        src: "/portfolio/restaurant-sales-parser/light.webp",
-        srcDark: "/portfolio/restaurant-sales-parser/dark.webp",
+        src: "/portfolio/restaurant-sales-parser/dark.webp",
         alt: "Diagram showing the parser turning 35 pages of unstructured raw server sales data into a clean weekly summary table with totals per server, broken out by special, food, and drink sales.",
       },
     ],

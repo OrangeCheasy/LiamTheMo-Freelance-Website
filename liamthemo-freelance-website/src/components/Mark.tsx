@@ -1,22 +1,18 @@
 import type { ReactNode } from "react";
 
 /*
-  Emphasises a single keyword inside a heading — a pastel marker stroke sitting
-  behind the bottom third of the word, ink text riding on top.
+  Emphasises a single keyword inside a heading — a marker stroke sitting behind
+  the bottom third of the word, heading text riding on top.
 
-  WHY A FILL AND NOT COLOURED TEXT.
-  Setting the word in coral would be the obvious move and it is the one thing
-  §9.2 forbids outright: the pastel is ~1.5:1 on a light surface, so as text it
-  fails the 4.5:1 bar, and the dusty tone is reserved for links. A pastel FILL
-  with ink on top measures 11.7:1 and is explicitly the sanctioned pattern.
-
-  THE RULE THIS BENDS, STATED PLAINLY.
-  §9 says the accent should not appear on a non-clickable element. A heading is
-  not clickable. This follows the precedent Phase 1 set with Eyebrow's coral
-  rule — accent as a small structural mark rather than as a competing action
-  signal. Use it ONCE per page. The moment a second one appears, the mark stops
-  reading as emphasis and starts reading as "this might be a link", which is the
-  exact failure §9 is guarding against.
+  NEUTRAL, NOT ACCENT. The old light/dark version of this component used the
+  accent fill here — the site's only sanctioned exception to "orange marks
+  actions and current state" (§9.2), justified by a light/dark contrast
+  tradeoff that no longer exists now the site is dark-only. The redesign doc
+  restates §9.2 and §9.6's "orange on non-interactive elements" anti-goal
+  without carrying that exception forward, and a heading is not clickable, so
+  this phase drops the accent rather than assume the carve-out survived. The
+  stroke now uses --color-surface-2 — visible against --color-bg without
+  competing with the accent for the reader's attention.
 
   The stroke is aria-hidden and purely visual: <mark> would imply relevance-to-a-
   search-query semantics that do not apply here, and a screen reader announcing
@@ -43,23 +39,14 @@ interface MarkProps {
   the line box, so the two hard stops below stay locked to the letterforms at
   every size in the clamp() range, with no line-height coupling at all.
 
-  IT IS AN UNDERLINE, NOT A HIGHLIGHT, AND THAT IS A CONTRAST REQUIREMENT.
+  IT IS AN UNDERLINE, NOT A HIGHLIGHT.
 
-  A marker stroke crossing the lower third of the letterforms looks better and is
-  unshippable here. §9.2's rule is "pastels fill, ink labels": in the light theme
-  the heading is ink on the pastel and measures 11.7:1, but in the dark theme the
-  heading is #e8eaed and the pastel does not change, which measures 1.26:1. The
-  overlapped part of the word simply disappears. A `dark:` variant is banned, and
-  no single band colour clears 4.5:1 against near-white text while still being
-  visible against #1a1d21 — the two requirements have no overlap.
+  A stroke crossing the lower third of the letterforms looks better than a
+  full-height highlight and stays legible: --color-surface-2 sits close enough
+  in value to --color-bg that it reads as a mark, not a block, so the
+  overlapped part of the word never loses contrast against --color-text.
 
-  Dropping the band below the baseline dissolves the conflict instead of trading
-  it off: no text ever sits on the pastel, so the pair never needs measuring, and
-  one token works in both themes. It also stays legal as a pure decoration — the
-  sentence reads identically without it, so it carries no information subject to
-  the 3:1 non-text bar that a pastel would fail on white.
-
-  The stops: pastel from 0.08em to 0.25em above the bottom of the font box. The
+  The stops: fill from 0.08em to 0.25em above the bottom of the font box. The
   baseline sits ~0.27em above that edge, so the band clears the letterforms by a
   hair. A marked word containing a descender would cross it, exactly as a normal
   underline does.
@@ -70,7 +57,7 @@ interface MarkProps {
   disappears.
 */
 // prettier-ignore
-const stroke = "bg-[linear-gradient(to_top,transparent_0.08em,var(--color-accent-fill)_0.08em,var(--color-accent-fill)_0.25em,transparent_0.25em)]";
+const stroke = "bg-[linear-gradient(to_top,transparent_0.08em,var(--color-surface-2)_0.08em,var(--color-surface-2)_0.25em,transparent_0.25em)]";
 
 export default function Mark({ children }: MarkProps) {
   return (

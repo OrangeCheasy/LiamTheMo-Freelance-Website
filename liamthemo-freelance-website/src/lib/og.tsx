@@ -3,10 +3,10 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 /*
-  Shared renderer behind every opengraph-image.tsx in the app (CLAUDE.md §11,
-  §14 step 7). One look for the whole site rather than one-off per page: dark
-  surface, Bricolage Grotesque headline, Inter body, the same dot-grid motif as
-  the home page hero.
+  Shared renderer behind every opengraph-image.tsx in the app (CLAUDE.md §9,
+  §14 step 7). One look for the whole site rather than one-off per page: molten
+  dark surface, Bricolage Grotesque headline, Inter body, the same dot-grid
+  motif as the home page hero.
 
   These are prerendered at build time wherever the parent route is static — a
   dynamic opengraph-image.tsx under a `[slug]` folder still needs its own
@@ -14,14 +14,17 @@ import { ImageResponse } from "next/og";
   page's own static shell so the image route never invokes the Worker either
   (§4.1).
 
-  STATIC RENDER, ONE PALETTE.
-  A generated image can't read `prefers-color-scheme` or a stored theme choice
-  — there's no visitor at render time. So this always uses the dark values from
-  globals.css rather than trying to pick a "default" theme, which would be
-  arbitrary. That is the one deliberate exception to "reference tokens, never
-  hex" (§9.2): satori has no access to CSS custom properties, so the values
-  below are copied from globals.css by hand and will drift if the palette
-  changes there. Keep them in sync.
+  STATIC RENDER, HAND-COPIED PALETTE.
+  This is the one deliberate exception to "reference tokens, never hex"
+  (§9.2): satori has no access to CSS custom properties, so the values below
+  are copied from globals.css's §9.1 tokens by hand and will drift if the
+  palette changes there. Keep them in sync. The site has no theme to branch
+  on, so unlike the old two-theme version this always renders one look.
+
+  The small brand dot next to "LiamTheMo" is accent-coloured deliberately —
+  it's a static, non-interactive marketing image, not a live page element, so
+  §9.2's "orange only on clickables" rule (written for the site's UI) doesn't
+  govern a logo mark the way it governs an in-page decoration.
 */
 
 export const ogImageSize = { width: 1200, height: 630 };
@@ -90,9 +93,9 @@ export async function renderOgImage({
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
-          backgroundColor: "#1a1d21",
+          backgroundColor: "#0b0a0a",
           backgroundImage:
-            "radial-gradient(circle, #2c3138 1.5px, transparent 1.5px)",
+            "radial-gradient(circle, #2a2626 1.5px, transparent 1.5px)",
           backgroundSize: "28px 28px",
         }}
       >
@@ -103,7 +106,7 @@ export async function renderOgImage({
               width: 12,
               height: 12,
               borderRadius: "50%",
-              backgroundColor: "#fcc4bf",
+              backgroundColor: "#ff6a1a",
             }}
           />
           <span
@@ -112,7 +115,7 @@ export async function renderOgImage({
               fontWeight: 600,
               fontSize: 24,
               letterSpacing: "0.08em",
-              color: "#a0a7b0",
+              color: "#a8a19c",
               textTransform: "uppercase",
             }}
           >
@@ -150,7 +153,7 @@ export async function renderOgImage({
                   fontFamily: "Inter",
                   fontWeight: 600,
                   fontSize: 22,
-                  color: "#14181d",
+                  color: "#0b0a0a",
                 }}
               >
                 {badge.label}
@@ -182,7 +185,7 @@ export async function renderOgImage({
               fontSize: 64,
               lineHeight: 1.1,
               letterSpacing: "-0.02em",
-              color: "#e8eaed",
+              color: "#f5f3f1",
             }}
           >
             {title}
@@ -194,7 +197,7 @@ export async function renderOgImage({
               fontWeight: 400,
               fontSize: 28,
               lineHeight: 1.5,
-              color: "#a0a7b0",
+              color: "#a8a19c",
             }}
           >
             {description}

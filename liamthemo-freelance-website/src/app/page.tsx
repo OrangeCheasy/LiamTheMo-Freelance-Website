@@ -61,16 +61,16 @@ export default function Home() {
         */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--color-line)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"
         />
 
         <div className="relative mx-auto max-w-6xl px-5 pt-16 pb-16 sm:px-8 sm:pt-24 sm:pb-20">
           <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
             <div>
-              <h1 className="max-w-[16ch] text-display text-ink">
+              <h1 className="max-w-[16ch] text-display text-text">
                 I build tools that save you <Mark>time</Mark>
               </h1>
-              <p className="mt-6 max-w-[52ch] text-body text-ink-muted">
+              <p className="mt-6 max-w-[52ch] text-body text-text-muted">
                 Custom automation, spreadsheets, websites, and technology
                 solutions for individuals and small businesses.
               </p>
@@ -78,7 +78,7 @@ export default function Home() {
               <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
                   href={CTA.href}
-                  className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent-fill px-5 py-2.5 font-semibold text-accent-fill-ink transition-colors hover:bg-accent-fill-hover"
+                  className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent px-5 py-2.5 font-semibold text-bg transition-colors hover:bg-accent-hover"
                 >
                   {CTA.label}
                 </Link>

@@ -44,15 +44,15 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <section className="border-b border-line bg-surface-muted">
+      <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <div className="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <Eyebrow>About</Eyebrow>
-              <h1 className="mt-3 max-w-[20ch] text-h1 text-ink">
+              <h1 className="mt-3 max-w-[20ch] text-h1 text-text">
                 Who you would be hiring
               </h1>
-              <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
+              <p className="mt-4 max-w-[56ch] text-body text-text-muted">
                 My name is Liam. I have been building and fixing computers in
                 person since I was a kid, and now I am also a computer science
                 student in Calgary getting paid to do more of the same —
@@ -62,7 +62,7 @@ export default function AboutPage() {
                 has actually looked like.
               </p>
             </div>
-            <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border border-line sm:w-56">
+            <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border border-border sm:w-56">
               <Image
                 src="/about/fish.webp"
                 alt="Liam smiling and holding a small fish he caught, with grassy hills and a blue sky behind him."
@@ -78,22 +78,22 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
         <div className="max-w-[62ch]">
-          <h2 className="text-h2 text-ink">How this started</h2>
-          <p className="mt-4 text-body text-ink-muted">
+          <h2 className="text-h2 text-text">How this started</h2>
+          <p className="mt-4 text-body text-text-muted">
             The first thing I ever automated was my own job. Part of the work
             was copying raw sales reports and pulling out the few numbers that
             mattered — the same figures, the same way, every time. It took long
             enough that I wrote a parser to read the raw export and pull out
             only what was needed.
           </p>
-          <p className="mt-4 text-body text-ink-muted">
+          <p className="mt-4 text-body text-text-muted">
             That is still the shape of most of what I do. Someone is spending an
             hour a week on something a computer should be doing, usually without
             having stopped to consider that it is optional.
           </p>
 
-          <h2 className="mt-12 text-h2 text-ink">What I have done</h2>
-          <p className="mt-4 text-body text-ink-muted">
+          <h2 className="mt-12 text-h2 text-text">What I have done</h2>
+          <p className="mt-4 text-body text-text-muted">
             I have been doing technical work since I was 12. Since then: 11
             desktop computers built from scratch, Minecraft plugins and mods,
             3D modelling, video editing and graphic design, spreadsheets and
@@ -101,27 +101,27 @@ export default function AboutPage() {
             configuration, and a long run of repairs and software problems
             solved for people who did not want to solve them themselves.
           </p>
-          <p className="mt-4 text-body text-ink-muted">
+          <p className="mt-4 text-body text-text-muted">
             My first paid job was building a computer for someone else. I was
             paid $150 for it. Everything since has been a version of the same
             arrangement.
           </p>
 
-          <h2 className="mt-12 text-h2 text-ink">How I work</h2>
+          <h2 className="mt-12 text-h2 text-text">How I work</h2>
           {/*
             Three operating facts, not values. Each one is something a client
             can hold me to, which is the only kind of statement that does any
             work on a page like this.
           */}
           <ul className="mt-4 space-y-4">
-            <li className="text-body text-ink-muted">
-              <span className="font-semibold text-ink">I answer quickly.</span>{" "}
+            <li className="text-body text-text-muted">
+              <span className="font-semibold text-text">I answer quickly.</span>{" "}
               Usually the same day. If a day passes with no reply from me, I am
               either genuinely tied up or your message never arrived — send it
               again rather than assuming the answer is no.
             </li>
-            <li className="text-body text-ink-muted">
-              <span className="font-semibold text-ink">
+            <li className="text-body text-text-muted">
+              <span className="font-semibold text-text">
                 I am in Calgary, Alberta.
               </span>{" "}
               Anything needing hands on the hardware — repairs, printers, a
@@ -129,8 +129,8 @@ export default function AboutPage() {
               Automation, spreadsheets, websites and Roblox work are remote, and
               for those it does not matter where you are.
             </li>
-            <li className="text-body text-ink-muted">
-              <span className="font-semibold text-ink">
+            <li className="text-body text-text-muted">
+              <span className="font-semibold text-text">
                 I am studying full time.
               </span>{" "}
               So I take on work I can finish properly rather than as much of it
@@ -139,13 +139,13 @@ export default function AboutPage() {
             </li>
           </ul>
 
-          <p className="mt-12 text-body text-ink-muted">
+          <p className="mt-12 text-body text-text-muted">
             When I am away from a computer I am powerlifting, out fishing,
             hiking or camping somewhere in Alberta, or out chasing good food.
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-4">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-line">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-border">
               <Image
                 src="/about/gym.webp"
                 alt="Liam at the gym on a bench press with a training partner."
@@ -154,7 +154,7 @@ export default function AboutPage() {
                 className="object-cover"
               />
             </div>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-line">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-border">
               <Image
                 src="/about/food.webp"
                 alt="Liam adding fresh herbs to a bowl of pho at a restaurant."

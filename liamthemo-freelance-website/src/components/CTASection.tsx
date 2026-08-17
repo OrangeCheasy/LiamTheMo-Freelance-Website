@@ -41,42 +41,33 @@ export default function CTASection({
   return (
     <section
       aria-labelledby="cta-heading"
-      className="border-t border-line bg-surface"
+      className="border-t border-border bg-surface"
     >
       <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
         {/*
-          Pastel fill with an ink heading on top — legal under §9.2 because the
-          pastel is a filled area, never the text. The border is required: on a
-          light surface the fill is only ~1.5:1 against the page, so without it
-          the block's own edge disappears.
+          Neutral panel, not accent (§9.2) — the band itself isn't clickable,
+          only the button inside it is, so the band stays a surface and the
+          accent goes on the one element that earns it.
         */}
-        <div className="rounded-2xl border border-accent bg-accent-fill px-6 py-10 sm:px-10 sm:py-12">
-          <h2
-            id="cta-heading"
-            className="max-w-[22ch] text-h2 text-accent-fill-ink"
-          >
+        <div className="rounded-2xl border border-border bg-surface px-6 py-10 sm:px-10 sm:py-12">
+          <h2 id="cta-heading" className="max-w-[22ch] text-h2 text-text">
             {title}
           </h2>
-          <p className="mt-3 max-w-[56ch] text-body text-accent-fill-ink">
+          <p className="mt-3 max-w-[56ch] text-body text-text-muted">
             {description}
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-            {/*
-              Inverted against the pastel band: the surface-coloured button is
-              what carries the contrast here, since a pastel button on a pastel
-              band would have no edge at all.
-            */}
             <Link
               href={ctaHref}
-              className="inline-flex items-center justify-center rounded-lg border border-accent bg-surface px-5 py-2.5 font-semibold text-ink transition-colors hover:bg-surface-muted"
+              className="inline-flex items-center justify-center rounded-lg border border-accent bg-accent px-5 py-2.5 font-semibold text-bg transition-colors hover:bg-accent-hover"
             >
               {CTA.label}
             </Link>
             {secondary ? (
               <Link
                 href={secondary.href}
-                className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 font-medium text-accent-fill-ink underline underline-offset-4 transition-colors hover:bg-accent-fill-hover"
+                className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 font-medium text-accent underline underline-offset-4 transition-colors hover:text-accent-hover"
               >
                 {secondary.label}
               </Link>

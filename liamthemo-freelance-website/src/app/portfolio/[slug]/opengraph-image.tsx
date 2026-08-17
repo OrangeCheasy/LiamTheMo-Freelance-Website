@@ -26,6 +26,6 @@ export default async function Image({
   return renderOgImage({
     title: project.title,
     description: project.summary,
-    badge: { label: "Portfolio", color: "#fcc4bf" },
+    badge: { label: "Portfolio", color: "#ff6a1a" },
   });
 }

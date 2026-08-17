@@ -25,16 +25,16 @@ export const metadata: Metadata = {
 export default function PortfolioPage() {
   return (
     <>
-      <section className="border-b border-line bg-surface-muted">
+      <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>Real work</Eyebrow>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <h1 className="max-w-[20ch] text-h1 text-ink">Portfolio</h1>
-            <span className="rounded-full border border-line px-2.5 py-1 text-small font-medium text-ink-muted">
+            <h1 className="max-w-[20ch] text-h1 text-text">Portfolio</h1>
+            <span className="rounded-full border border-border px-2.5 py-1 text-small font-medium text-text-muted">
               WIP
             </span>
           </div>
-          <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
+          <p className="mt-4 max-w-[56ch] text-body text-text-muted">
             A look at finished work: what the problem was, what got built, and
             what changed because of it.
           </p>
