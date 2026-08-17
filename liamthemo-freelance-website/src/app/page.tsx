@@ -65,7 +65,7 @@ export default function Home() {
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"
         />
 
-        <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-12 sm:px-8 sm:pt-12 sm:pb-16">
+        <div className="relative mx-auto max-w-6xl px-5 pt-4 pb-6 sm:px-8 sm:pt-6 sm:pb-8">
           <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
             <div>
               {/*
@@ -127,7 +127,7 @@ export default function Home() {
 
       <section
         aria-labelledby="featured-work-heading"
-        className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14"
+        className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
       >
         <div className="flex items-baseline justify-between gap-4">
           <h2 id="featured-work-heading" className="text-h2 text-text">
@@ -162,7 +162,7 @@ export default function Home() {
         given twice this phase — but it's the kind of line worth revisiting
         once the faithful-recreation pass is done.
       */}
-      <section className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
+      <section className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-small font-medium text-accent">About Me</p>
         <h2 className="mt-2 max-w-[24ch] text-h2 text-text">
           Designer. Developer. Problem Solver.

@@ -54,18 +54,24 @@ export default function CTASection({
 
   return (
     <section aria-labelledby="cta-heading" className="bg-bg">
-      <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
+      <div className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
         {/*
           Warm gradient panel, anchored top-left, fading into the surface
           tone — §9.4's "soft radial glow beats a black box-shadow" applied to
           the panel itself rather than just a hover state. No border: depth
           comes from the gradient alone, matching the mockup exactly.
+
+          Three stops, not two: accent-hover (bright, opaque) right at the
+          corner for an actual hot-spot, through accent-dim, then transparent.
+          accent-dim alone (12% opacity) read as too washed-out grey-brown at
+          panel scale — this keeps the same tokens but front-loads real
+          saturation before the fade starts.
         */}
         <div
           className="flex flex-col gap-6 rounded-2xl px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-8"
           style={{
             background:
-              "radial-gradient(ellipse 130% 160% at 0% 0%, var(--color-accent-dim), transparent 85%), var(--color-surface)",
+              "radial-gradient(ellipse 130% 160% at 0% 0%, var(--color-accent-hover) 0%, var(--color-accent-dim) 45%, transparent 85%), var(--color-surface)",
           }}
         >
           <div>
