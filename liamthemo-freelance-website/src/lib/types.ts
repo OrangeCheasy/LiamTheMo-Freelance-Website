@@ -124,7 +124,7 @@ export const SERVICE_META: Record<
     icon: "🔄",
   },
   "excel-data": {
-    title: "Excel & data",
+    title: "Excel & Data",
     chipClass: "bg-service-excel",
     chipHex: "#e1d4a4",
     icon: "📊",
@@ -136,13 +136,13 @@ export const SERVICE_META: Record<
     icon: "🌐",
   },
   "local-tech-help": {
-    title: "Local tech help",
+    title: "Local Tech Help",
     chipClass: "bg-service-local",
     chipHex: "#b8d7ff",
     icon: "🖥️",
   },
   roblox: {
-    title: "Roblox development",
+    title: "Roblox Development",
     chipClass: "bg-service-roblox",
     chipHex: "#ebc6ec",
     icon: "🎮",

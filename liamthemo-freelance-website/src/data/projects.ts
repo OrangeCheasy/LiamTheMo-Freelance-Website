@@ -27,7 +27,7 @@ import type { Project } from "@/lib/types";
 export const projects: Project[] = [
   {
     slug: "this-website",
-    title: "This website",
+    title: "This Website",
     // client: omitted — this is the owner's own business site.
     services: ["websites"],
     summary:
@@ -84,7 +84,7 @@ export const projects: Project[] = [
     // aren't sellable service lines here, so this doesn't get a service chip
     // (§ notes in src/lib/types.ts on `services`/`skills`).
     services: [],
-    skills: ["Video editing", "Social media growth"],
+    skills: ["Video Editing", "Social Media Growth"],
     summary:
       "Video editing and channel growth for the OrangeCheasy YouTube channel — grew from 300 to 2,000 subscribers in 3 months.",
     problem:
@@ -162,7 +162,7 @@ export const projects: Project[] = [
   },
   {
     slug: "computer-builds-and-repairs",
-    title: "Computer builds & repairs",
+    title: "Computer Builds & Repairs",
     // client: omitted — many different people over time, not one client.
     services: ["local-tech-help"],
     summary:

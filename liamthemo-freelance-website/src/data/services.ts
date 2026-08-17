@@ -74,7 +74,7 @@ export const services: readonly Service[] = [
 
   {
     slug: "excel-data",
-    title: "Excel & data",
+    title: "Excel & Data",
     tagline: "Turn the numbers you already have into something you can read.",
     icon: "📊",
     problems: [
@@ -158,7 +158,7 @@ export const services: readonly Service[] = [
 
   {
     slug: "local-tech-help",
-    title: "Local tech help",
+    title: "Local Tech Help",
     /*
       The location lives in the tagline because this is the one geographically
       bound service (§11 requires location terms on this page) and the detail
@@ -224,7 +224,7 @@ export const services: readonly Service[] = [
 
   {
     slug: "roblox",
-    title: "Roblox development",
+    title: "Roblox Development",
     tagline: "Gameplay, UI, and data systems built to survive a live game.",
     icon: "🎮",
     /*
