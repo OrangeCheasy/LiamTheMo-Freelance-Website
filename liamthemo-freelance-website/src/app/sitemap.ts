@@ -15,7 +15,9 @@ const BASE_URL = "https://liamthemo.com";
   homepage's noindex.
 */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ["/services", "/portfolio", "/about", "/contact"];
+  // "/services" deliberately absent — the overview index route was removed;
+  // the individual /services/[slug] pages below are still listed.
+  const staticRoutes = ["/portfolio", "/about", "/contact"];
 
   const serviceRoutes = serviceSlugs.map((slug) => `/services/${slug}`);
   const projectRoutes = projects.map((project) => `/portfolio/${project.slug}`);

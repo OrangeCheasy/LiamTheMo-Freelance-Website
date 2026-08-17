@@ -159,8 +159,7 @@ src/
 │   ├── layout.tsx
 │   ├── page.tsx                    # home
 │   ├── services/
-│   │   ├── page.tsx                # overview of all five
-│   │   └── [slug]/page.tsx         # one page per service line
+│   │   └── [slug]/page.tsx         # one page per service line — no overview index (removed, see below)
 │   ├── portfolio/
 │   │   ├── page.tsx
 │   │   └── [slug]/page.tsx         # case study detail
@@ -170,7 +169,6 @@ src/
 ├── components/
 │   ├── Navbar.tsx
 │   ├── Footer.tsx
-│   ├── ServiceCard.tsx
 │   ├── ProjectCard.tsx
 │   ├── QuoteForm.tsx
 │   ├── ServiceTriage.tsx           # the "What can I help you with?" widget
@@ -185,6 +183,8 @@ src/
 ```
 
 Service and portfolio pages are **generated from data files**, not hand-written per page. Adding a sixth service should mean adding one object to `services.ts` — nothing else.
+
+**The `/services` overview page (the 5-card grid) was removed** (owner call): the home page's triage widget (§7) already routes a visitor to the right `/services/[slug]` page from a symptom, so a separate browse-everything index was redundant with it. `ServiceCard.tsx` and its OG-image route were deleted along with it, since nothing else rendered a service as a card. The individual `/services/[slug]` pages are untouched and still hold the real content (problems, deliverables, process, FAQs) — only the index is gone. `mainNav` (`src/lib/nav.ts`) now reads Home → Portfolio → About; "Home" is a deliberate duplicate of the logo's own link, added because the removed "Services" link needed to be replaced with *something* and the triage widget on the home page is the de facto services index now. Anywhere else that used to link to `/services` (the home hero's secondary link, `CTASection` secondary links on `/portfolio` and each service detail page) now points at `/` instead.
 
 ---
 
@@ -234,6 +234,10 @@ export interface Project {
 - **Restaurant Sales Parser** — flagship. Parses raw sales exports into reports automatically. Lead with the time saved per week and the manual step it eliminated. This is the single best proof for both Automation and Excel & Data. Still no owner-confirmed `result`/metrics — see the TODOs in `src/data/projects.ts`.
 - **Excel Performance Dashboard** — proof for Excel & Data. Not added yet, no owner input.
 - **Fuse Factory** — proof for Roblox Development. Added. A personal/passion project, not commissioned work, and still in active development (per §1, the portfolio doubles as a showcase for employers, not only clients). `problem`/`solution` describe the design goal and what's actually been built — a modular codebase (spawning, movement, UI, and drops as separate systems), UI built in code rather than laid out in Studio, an event-driven architecture on both server and client, a weighted item-drop system, and round/spawn-rate escalation — rather than a client engagement. Boomies currently move **randomly**, not toward the player; pattern-based movement AI is a planned feature, not a built one — do not write it up as already working. `result`, `metrics`, and `images` are intentionally omitted — no client outcome to report, and no screenshots yet since the game isn't finished. Add real screenshots once there's something worth showing (§9).
+- **Computer Builds & Repairs** — proof for Local Tech Help. Not one engagement — a running total across many people (friends, family, and paying clients), so `client` is omitted entirely rather than naming or anonymizing one. `result`/`metrics` report the one owner-confirmed count (11 desktops built) rather than a narrative client outcome. `images` omitted — no build photos on hand yet; add real ones once they exist (§9).
+- **Echo Realms** — proof for Roblox Development, alongside Fuse Factory. A personal project: modular/reusable systems for enemy AI (with attack telegraphing so players can react), zone-based spawning, phase-structured bosses, and weighted loot tables. Technically playable but light on content and currently **on hold** — a game at this scope is hard to build solo. Do not write it up as finished or content-complete. `result`/`images` intentionally omitted, same reasoning as Fuse Factory.
+- **This Website** — proof for Websites, and the one entry that's `featured: true` alongside Restaurant Sales Parser, since it's a live example of the work in front of the visitor right now. No external client (it's the owner's own business site), so `client` is omitted. `result` is omitted — the site has no launched traffic yet to report a number against.
+- **OrangeCheasy (YouTube)** — the first portfolio entry with `services: []`. Video editing and channel growth aren't sellable service lines, so it's tagged with `skills` (plain, non-colour chips) instead of a service badge, uses `icon` for the fallback thumbnail tile, and links out via `externalLink` to the real channel (youtube.com/orangecheasy). `result`/`metrics` report the one owner-confirmed number: 300 → 2,000 subscribers in 3 months.
 
 Write client case studies as **problem → solution → result**, not as feature lists. A small-business owner does not care that it uses `pandas`; they care that Monday morning went from two hours to five minutes. Put the stack in a sidebar for the technical readers.
 

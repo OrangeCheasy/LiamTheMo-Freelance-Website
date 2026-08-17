@@ -32,7 +32,25 @@ export interface Project {
   slug: string;
   title: string;
   client?: string; // omit or anonymize if not cleared
-  services: ServiceSlug[]; // enables cross-linking from service pages
+  /**
+   * Enables cross-linking from service pages. Empty for portfolio-only work
+   * that doesn't map to a sellable service line (e.g. video editing) — use
+   * `skills` instead for what that work demonstrates.
+   */
+  services: ServiceSlug[];
+  /**
+   * Freeform tags shown in place of service chips when `services` is empty.
+   * Plain (non-colour) chips on purpose — §9.2's identity colours are
+   * reserved for the five real service lines, not skills that aren't for
+   * sale.
+   */
+  skills?: string[];
+  /** Emoji for the fallback thumbnail tile when there's no image and `services` is empty (so there's no service colour/icon to fall back to). Ignored otherwise. */
+  icon?: string;
+  /** An off-site destination for the work itself (e.g. a YouTube channel) — rendered as a link on the case study page. */
+  externalLink?: { href: string; label: string };
+  /** A small identity image (e.g. a channel/profile picture) shown next to the title on the case study page — separate from the `images` gallery below the fold. */
+  avatar?: { src: string; alt: string };
   summary: string; // one sentence, outcome-focused
   problem: string;
   solution: string;
@@ -52,6 +70,25 @@ export interface Project {
     srcDark?: string;
     alt: string;
     caption?: string;
+    /**
+     * Real pixel dimensions of the asset. Both default to 1536x1024 (3:2) —
+     * the studio-standard crop used by the existing case study screenshots —
+     * so this is only needed when a real, uncropped asset (e.g. a YouTube
+     * banner) has a different shape. The case study gallery uses these to
+     * size the image box, so a mismatched value here will visibly stretch
+     * the image.
+     */
+    width?: number;
+    height?: number;
+    /**
+     * How `images[0]` fits the 3:2 portfolio card thumbnail box (ignored for
+     * the rest of the gallery, which sizes itself from `width`/`height`
+     * instead). Defaults to `"cover"` — fill the box, cropping evenly.
+     * `"contain"` shows the whole image letterboxed instead, for a source
+     * whose aspect ratio is too extreme to crop into 3:2 without losing the
+     * point of the image (e.g. a wide banner would lose its logo text).
+     */
+    fit?: "cover" | "contain";
   }[];
   featured: boolean;
 }
@@ -68,7 +105,7 @@ export interface Project {
  * `--color-service-*` tokens in globals.css if either changes.
  *
  * TODO: this duplicates data that now exists elsewhere. `services.ts` holds the
- * same five titles and icons, and `ServiceCard.tsx` holds the same five chip
+ * same five titles and icons, and `ServiceTriage.tsx` holds the same five chip
  * classes, so there are several places this display metadata can drift. They
  * agree today.
  * Reconciling means deriving this from `services.ts` — which cannot live in

@@ -12,9 +12,18 @@ export interface NavLink {
   label: string;
 }
 
-/** Primary navigation. `/contact` is deliberately absent — it is the CTA. */
+/**
+ * Primary navigation. `/contact` is deliberately absent — it is the CTA.
+ *
+ * "Home" is a deliberate duplicate of the logo's own link (owner call, once
+ * the `/services` overview page was removed — the triage widget on the home
+ * page is now the de facto services index, so there needed to be a way back
+ * to it from `mainNav` besides the logo). `/services/[slug]` pages still
+ * exist and are still linked from the footer's `serviceNav` and the triage
+ * widget; only the index page is gone.
+ */
 export const mainNav: readonly NavLink[] = [
-  { href: "/services", label: "Services" },
+  { href: "/", label: "Home" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/about", label: "About" },
 ];

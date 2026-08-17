@@ -68,22 +68,54 @@ export default async function ProjectPage({
           </Link>
 
           <div className="mt-5 flex flex-wrap gap-2">
-            {project.services.map((serviceSlug) => (
-              <span
-                key={serviceSlug}
-                className={`rounded-full px-2.5 py-1 text-small font-medium text-accent-fill-ink ${SERVICE_META[serviceSlug].chipClass}`}
-              >
-                {SERVICE_META[serviceSlug].title}
-              </span>
-            ))}
+            {project.services.length > 0
+              ? project.services.map((serviceSlug) => (
+                  <span
+                    key={serviceSlug}
+                    className={`rounded-full px-2.5 py-1 text-small font-medium text-accent-fill-ink ${SERVICE_META[serviceSlug].chipClass}`}
+                  >
+                    {SERVICE_META[serviceSlug].title}
+                  </span>
+                ))
+              : project.skills?.map((skill) => (
+                  <span
+                    key={skill}
+                    className="rounded-full border border-line px-2.5 py-1 text-small text-ink-muted"
+                  >
+                    {skill}
+                  </span>
+                ))}
           </div>
 
-          <h1 className="mt-4 max-w-[24ch] text-h1 text-ink">
-            {project.title}
-          </h1>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            {project.avatar ? (
+              <Image
+                src={project.avatar.src}
+                alt={project.avatar.alt}
+                width={56}
+                height={56}
+                className="h-14 w-14 shrink-0 rounded-full border border-line object-cover"
+              />
+            ) : null}
+            <h1 className="max-w-[24ch] text-h1 text-ink">{project.title}</h1>
+          </div>
           <p className="mt-4 max-w-[56ch] text-body text-ink-muted">
             {project.summary}
           </p>
+
+          {project.externalLink ? (
+            <a
+              href={project.externalLink.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center text-small font-semibold text-accent underline underline-offset-4 hover:text-accent-hover"
+            >
+              {project.externalLink.label}
+              <span aria-hidden="true" className="ml-1">
+                ↗
+              </span>
+            </a>
+          ) : null}
         </div>
       </section>
 
@@ -152,22 +184,22 @@ export default async function ProjectPage({
                   {project.images.map((image) => (
                     <figure
                       key={image.src}
-                      className="overflow-hidden rounded-xl border border-line"
+                      className="self-start overflow-hidden rounded-xl border border-line"
                     >
                       {image.srcDark ? (
                         <>
                           <Image
                             src={image.src}
                             alt={image.alt}
-                            width={1536}
-                            height={1024}
+                            width={image.width ?? 1536}
+                            height={image.height ?? 1024}
                             className="theme-light-only h-auto w-full"
                           />
                           <Image
                             src={image.srcDark}
                             alt={image.alt}
-                            width={1536}
-                            height={1024}
+                            width={image.width ?? 1536}
+                            height={image.height ?? 1024}
                             className="theme-dark-only h-auto w-full"
                           />
                         </>
@@ -175,8 +207,8 @@ export default async function ProjectPage({
                         <Image
                           src={image.src}
                           alt={image.alt}
-                          width={1536}
-                          height={1024}
+                          width={image.width ?? 1536}
+                          height={image.height ?? 1024}
                           className="h-auto w-full"
                         />
                       )}
@@ -214,21 +246,25 @@ export default async function ProjectPage({
               once build order step 3 exists; Service.relatedProjects already
               anticipates it.
             */}
-            <Eyebrow as="h2" className="mt-10">
-              Related services
-            </Eyebrow>
-            <ul className="mt-4 flex flex-col gap-2.5">
-              {project.services.map((serviceSlug) => (
-                <li key={serviceSlug}>
-                  <Link
-                    href={`/services/${serviceSlug}`}
-                    className="text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
-                  >
-                    {SERVICE_META[serviceSlug].title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {project.services.length > 0 ? (
+              <>
+                <Eyebrow as="h2" className="mt-10">
+                  Related services
+                </Eyebrow>
+                <ul className="mt-4 flex flex-col gap-2.5">
+                  {project.services.map((serviceSlug) => (
+                    <li key={serviceSlug}>
+                      <Link
+                        href={`/services/${serviceSlug}`}
+                        className="text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
+                      >
+                        {SERVICE_META[serviceSlug].title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
           </aside>
         </div>
       </section>
