@@ -12,7 +12,6 @@
   architectural cost.
 */
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -110,25 +109,20 @@ export default function Navbar() {
   }
 
   return (
-    <header
-      ref={headerRef}
-      className="sticky top-0 z-50 border-b border-border bg-surface"
-    >
+    <header ref={headerRef} className="sticky top-0 z-50 bg-bg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
+        {/*
+          Mockup mark: "lm" set in the display face, no icon graphic — replaces
+          the old spelled-out wordmark + icon.svg placeholder. aria-label keeps
+          the accessible name as the full site name; a screen reader shouldn't
+          announce two meaningless letters.
+        */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-accent"
+          aria-label={SITE_NAME}
+          className="font-display text-2xl font-bold tracking-tight text-accent"
         >
-          {/* Placeholder mark (public/icon.svg) — swap once the real logo exists. */}
-          <Image
-            src="/icon.svg"
-            alt=""
-            width={28}
-            height={28}
-            unoptimized
-            className="rounded-md"
-          />
-          {SITE_NAME}
+          lm
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-6 md:flex">
