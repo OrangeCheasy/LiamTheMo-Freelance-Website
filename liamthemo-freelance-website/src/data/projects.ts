@@ -100,9 +100,17 @@ export const projects: Project[] = [
       alt: "OrangeCheasy YouTube channel profile picture, a cartoon wedge of cheese.",
     },
     // images[0] drives the portfolio card thumbnail (ProjectCard reads
-    // images[0]). Banner deliberately omitted — owner call, not just the
-    // one screenshot on its own.
+    // images[0]) — the banner goes first on purpose. It's ~6:1, far too wide
+    // to crop into the 3:2 card box without losing the logo text, so
+    // `fit: "contain"` shows it whole, letterboxed, instead of cropped.
     images: [
+      {
+        src: "/portfolio/youtube/banner.webp",
+        alt: "OrangeCheasy YouTube channel banner artwork.",
+        width: 2276,
+        height: 377,
+        fit: "contain",
+      },
       {
         src: "/portfolio/youtube/channel.webp",
         alt: "The OrangeCheasy YouTube channel page, showing 2.06k subscribers and the video grid.",

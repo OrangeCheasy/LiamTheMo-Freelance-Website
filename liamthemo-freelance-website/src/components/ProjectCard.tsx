@@ -33,6 +33,7 @@ export default function ProjectCard({ project }: { project: Project }) {
   const primaryService = project.services[0]
     ? SERVICE_META[project.services[0]]
     : undefined;
+  const fitClass = thumb?.fit === "contain" ? "object-contain" : "object-cover";
 
   return (
     <li>
@@ -40,8 +41,13 @@ export default function ProjectCard({ project }: { project: Project }) {
         href={`/portfolio/${project.slug}`}
         className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface transition-colors hover:border-accent"
       >
-        {/* 3:2 to match the 1440x960 thumbnail source size — full image, no crop. */}
-        <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-line">
+        {/*
+          3:2 to match the 1440x960 thumbnail source size — full image, no
+          crop — for the common case. bg-surface-muted is only visible when
+          `thumb.fit === "contain"` letterboxes an image whose aspect ratio
+          is too extreme to crop into 3:2 (e.g. a wide banner).
+        */}
+        <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-line bg-surface-muted">
           {thumb ? (
             thumb.srcDark ? (
               <>
@@ -58,14 +64,14 @@ export default function ProjectCard({ project }: { project: Project }) {
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  className="theme-fill-light object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  className={`theme-fill-light ${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
                 />
                 <Image
                   src={thumb.srcDark}
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  className="theme-fill-dark object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  className={`theme-fill-dark ${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
                 />
               </>
             ) : (
@@ -74,7 +80,7 @@ export default function ProjectCard({ project }: { project: Project }) {
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                className={`${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
               />
             )
           ) : primaryService ? (

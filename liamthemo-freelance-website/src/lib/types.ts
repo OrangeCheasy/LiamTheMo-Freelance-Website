@@ -80,6 +80,15 @@ export interface Project {
      */
     width?: number;
     height?: number;
+    /**
+     * How `images[0]` fits the 3:2 portfolio card thumbnail box (ignored for
+     * the rest of the gallery, which sizes itself from `width`/`height`
+     * instead). Defaults to `"cover"` — fill the box, cropping evenly.
+     * `"contain"` shows the whole image letterboxed instead, for a source
+     * whose aspect ratio is too extreme to crop into 3:2 without losing the
+     * point of the image (e.g. a wide banner would lose its logo text).
+     */
+    fit?: "cover" | "contain";
   }[];
   featured: boolean;
 }
