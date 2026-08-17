@@ -11,12 +11,12 @@ import { projects } from "@/data/projects";
 */
 
 export const metadata: Metadata = {
-  title: "Portfolio",
+  title: "Projects",
   description:
     "Real automation, spreadsheet and Roblox work — the problem, what was built, and what changed.",
   openGraph: {
     type: "website",
-    title: "Portfolio",
+    title: "Projects",
     description:
       "Real automation, spreadsheet and Roblox work — the problem, what was built, and what changed.",
   },
@@ -29,7 +29,7 @@ export default function PortfolioPage() {
         <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
           <Eyebrow>Real work</Eyebrow>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <h1 className="max-w-[20ch] text-h1 text-text">Portfolio</h1>
+            <h1 className="max-w-[20ch] text-h1 text-text">Projects</h1>
             <span className="rounded-full border border-border px-2.5 py-1 text-small font-medium text-text-muted">
               WIP
             </span>

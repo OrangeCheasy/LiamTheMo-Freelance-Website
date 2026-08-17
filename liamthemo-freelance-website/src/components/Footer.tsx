@@ -27,7 +27,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link
               href="/"
-              className="font-display text-lg font-semibold tracking-tight text-text"
+              className="font-display text-lg font-semibold tracking-tight text-accent"
             >
               {SITE_NAME}
             </Link>
@@ -64,13 +64,23 @@ export default function Footer() {
               Site
             </Eyebrow>
             <ul className="mt-4 flex flex-col gap-2.5">
-              {mainNav.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className={linkClasses}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {/*
+                mainNav's own "Services" entry is dropped here on purpose —
+                it's a same-page anchor that exists so header visitors have a
+                way in besides the triage widget; the "Services" column right
+                next to this one already lists all five real service pages,
+                so repeating a second, differently-behaved "Services" link
+                would read as a bug, not a shortcut.
+              */}
+              {mainNav
+                .filter((link) => link.href !== "/#services")
+                .map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className={linkClasses}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
               <li>
                 {/* TODO: add a direct contact email once decided (CLAUDE.md §15). */}
                 <Link href={CTA.href} className={linkClasses}>

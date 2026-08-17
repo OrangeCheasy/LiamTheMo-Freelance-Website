@@ -117,7 +117,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link
           href="/"
-          className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-text"
+          className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-accent"
         >
           {/* Placeholder mark (public/icon.svg) — swap once the real logo exists. */}
           <Image
@@ -138,8 +138,9 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
-                  // The active rule uses the dusty tone, not the pastel — a
-                  // pastel hairline on white is invisible (see globals.css).
+                  // isActive() never matches "/#services" — usePathname()
+                  // never carries a hash fragment, so that link intentionally
+                  // never shows as current. It isn't a distinct page.
                   className={`relative text-small transition-colors hover:text-text ${
                     isActive(link.href)
                       ? "font-medium text-text after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-accent after:content-['']"

@@ -13,18 +13,25 @@ export interface NavLink {
 }
 
 /**
- * Primary navigation. `/contact` is deliberately absent — it is the CTA.
+ * Primary navigation (CLAUDE.md §15 Phase 1). `/contact` is deliberately
+ * absent — it is the CTA, not a plain nav item.
  *
- * "Home" is a deliberate duplicate of the logo's own link (owner call, once
- * the `/services` overview page was removed — the triage widget on the home
- * page is now the de facto services index, so there needed to be a way back
- * to it from `mainNav` besides the logo). `/services/[slug]` pages still
- * exist and are still linked from the footer's `serviceNav` and the triage
- * widget; only the index page is gone.
+ * "Home" is gone: Services returning to the nav gives a second way back to
+ * the home page besides the logo, so the redundant explicit link is no
+ * longer needed.
+ *
+ * "Services" anchors to a section that doesn't exist yet — it's owner-planned
+ * for Phase 2 (home page rebuild), landing after "featured projects". The
+ * href is written for that section now (`/#services`) so nothing here needs
+ * to change when it ships; until then this link just lands on the home page
+ * with no scroll, which is a harmless no-op rather than a broken link.
+ * `/services/[slug]` pages still exist and are still linked from the
+ * footer's `serviceNav` and the triage widget — only the index page is gone,
+ * and stays gone; the plan is a home page section, not a rebuilt index.
  */
 export const mainNav: readonly NavLink[] = [
-  { href: "/", label: "Home" },
-  { href: "/portfolio", label: "Portfolio" },
+  { href: "/#services", label: "Services" },
+  { href: "/portfolio", label: "Projects" },
   { href: "/about", label: "About" },
 ];
 

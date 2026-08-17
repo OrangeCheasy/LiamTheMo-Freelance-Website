@@ -3,7 +3,7 @@ import { ogImageContentType, ogImageSize, renderOgImage } from "@/lib/og";
 
 export const size = ogImageSize;
 export const contentType = ogImageContentType;
-export const alt = "LiamTheMo portfolio case study";
+export const alt = "LiamTheMo project case study";
 
 // Mirrors the page's own generateStaticParams (src/app/portfolio/[slug]/page.tsx)
 // — see the same note in src/app/services/[slug]/opengraph-image.tsx.
@@ -20,12 +20,12 @@ export default async function Image({
   const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
-    return renderOgImage({ title: "Portfolio", description: "" });
+    return renderOgImage({ title: "Projects", description: "" });
   }
 
   return renderOgImage({
     title: project.title,
     description: project.summary,
-    badge: { label: "Portfolio", color: "#ff6a1a" },
+    badge: { label: "Projects", color: "#ff6a1a" },
   });
 }

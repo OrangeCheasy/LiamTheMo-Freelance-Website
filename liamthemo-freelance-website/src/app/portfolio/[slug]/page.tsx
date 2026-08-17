@@ -64,7 +64,7 @@ export default async function ProjectPage({
             href="/portfolio"
             className="text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
           >
-            ← Portfolio
+            ← Projects
           </Link>
 
           <div className="mt-5 flex flex-wrap gap-2">
