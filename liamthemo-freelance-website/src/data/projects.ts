@@ -31,7 +31,7 @@ export const projects: Project[] = [
     // client: omitted — this is the owner's own business site.
     services: ["websites"],
     summary:
-      "The business's own site — a live example of the same kind of build offered to clients: a data-driven services and portfolio system on a fast, low-cost stack.",
+      "The website for my portfolio and business — a live example of the same kind of build offered to clients: a data-driven services and portfolio system on a fast, low-cost stack.",
     problem:
       "The business needed a site that gets a visitor to the right service quickly, ends every page with a path to the quote form, and doubles as a portfolio for both prospective clients and potential employers — without needing a new page written by hand every time a service or project is added.",
     solution:
