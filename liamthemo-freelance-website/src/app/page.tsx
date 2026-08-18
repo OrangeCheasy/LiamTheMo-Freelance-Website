@@ -3,6 +3,7 @@ import Link from "next/link";
 import CTASection from "@/components/CTASection";
 import FeaturedWork from "@/components/FeaturedWork";
 import HeroArt from "@/components/HeroArt";
+import ServicesSection from "@/components/ServicesSection";
 import { projects } from "@/data/projects";
 
 /*
@@ -10,27 +11,31 @@ import { projects } from "@/data/projects";
   searchParams or an uncached fetch, so it prerenders at build time and is served
   from the assets binding without invoking the Worker (CLAUDE.md §4.1).
 
-  NO TRIAGE WIDGET. Owner call, overriding §7/§14 as currently written —
-  those sections call the triage widget "not up for removal" and list
-  removing it as the first "don't" in the working agreement. Removed anyway,
-  to match the mockup's flow (Hero → Featured Work → About → CTA) while the
-  site is being recreated to spec before further changes layer on top.
-  CLAUDE.md §7/§14 have been updated to reflect this rather than left
-  contradicting actual practice. The IA gap this opens — no way from the home
-  page to a specific service without already knowing its slug — is real and
-  temporary: the owner's plan is a "Services" section here later (the header
-  nav's `/#services` anchor, added in Phase 1, is already wired for it).
+  Flow: Hero → Featured Work → Services → About → CTA. The Services section
+  (`ServicesSection.tsx`) restores the symptom-worded triage cards that were
+  cut in Phase 2, on the owner's instruction — it is the section §7 said was
+  planned, and it closes the IA gap that removal opened: the home page can
+  once again route a visitor to a specific service without them knowing its
+  slug. The header nav no longer links to it (that item is now "Home"), so
+  the section is reached by scrolling, or by any `/#services` link.
 */
 
 export const metadata: Metadata = {
-  title: "I build tools that save you time",
+  // The browser tab (owner call, 2026-08-18). There is no title template in
+  // layout.tsx, so this string is exactly what the tab shows — no site-name
+  // suffix is appended.
+  title: "Hi, I'm Liam",
   description:
     "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses. Tell me the problem and I'll quote the work.",
+  // The link embed (owner call, 2026-08-18): hero copy, matching both the page
+  // itself and the generated OG image in src/app/opengraph-image.tsx. The three
+  // are meant to read as one thing, so a change to the hero is a change to all
+  // three.
   openGraph: {
     type: "website",
-    title: "I build tools that save you time",
+    title: "Hi, I'm Liam. I design and build digital experiences.",
     description:
-      "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses.",
+      "Custom automation, spreadsheets, websites, and technology solutions for individuals and small businesses.",
   },
   // Still noindex, but for a THIRD reason now — the previous two (placeholder
   // content, then 404ing triage destinations) are both resolved: services,
@@ -166,6 +171,14 @@ export default function Home() {
           <FeaturedWork projects={projects} />
         </div>
       </section>
+
+      {/*
+        Owner call, 2026-08-17: the Services section §7 said was planned.
+        Lands after Featured Work and anchors `#services`, which is where the
+        header nav's old `/#services` item pointed before it was relabelled
+        "Home".
+      */}
+      <ServicesSection />
 
       {/*
         Owner override, 2026-08-17: the three-virtue trio (§9.6's named

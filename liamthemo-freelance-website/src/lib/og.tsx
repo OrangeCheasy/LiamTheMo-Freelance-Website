@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { warmGlowImage } from "@/lib/glow";
 
 /*
   Shared renderer behind every opengraph-image.tsx in the app (CLAUDE.md §9,
@@ -25,6 +26,15 @@ import { ImageResponse } from "next/og";
   it's a static, non-interactive marketing image, not a live page element, so
   §9.2's "orange only on clickables" rule (written for the site's UI) doesn't
   govern a logo mark the way it governs an in-page decoration.
+
+  THE GLOW (2026-08-18, owner request).
+  Same warm top-left corner glow the site's panels and service cards carry, from
+  the same warmGlowImage() — an embed that looks like the page it links to.
+  Two things differ from a browser: it is spelled in rgba rather than
+  color-mix (satori implements neither color-mix nor CSS custom properties),
+  and it is a positioned layer rather than a second background image, because
+  satori's multi-background support is not something to bet a build on. It
+  sits above the dot grid and below the text.
 */
 
 export const ogImageSize = { width: 1200, height: 630 };
@@ -93,13 +103,35 @@ export async function renderOgImage({
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
+          position: "relative",
           backgroundColor: "#0b0a0a",
           backgroundImage:
             "radial-gradient(circle, #2a2626 1.5px, transparent 1.5px)",
           backgroundSize: "28px 28px",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            backgroundImage: warmGlowImage({ format: "rgba" }),
+          }}
+        />
+
+        {/* position: relative on both content blocks — the glow layer above is
+            absolutely positioned, so without it they would paint underneath. */}
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -125,6 +157,7 @@ export async function renderOgImage({
 
         <div
           style={{
+            position: "relative",
             display: "flex",
             flexDirection: "column",
             gap: "24px",

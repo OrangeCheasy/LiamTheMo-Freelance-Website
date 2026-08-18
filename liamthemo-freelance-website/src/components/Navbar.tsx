@@ -104,7 +104,11 @@ export default function Navbar() {
     return () => query.removeEventListener("change", onChange);
   }, [open]);
 
+  // "/" is special-cased: every pathname starts with it, so the prefix test
+  // would light up the Home link on every page. Home is current only on the
+  // home page itself.
   function isActive(href: string) {
+    if (href === "/") return pathname === "/";
     return pathname === href || pathname.startsWith(`${href}/`);
   }
 
@@ -132,9 +136,7 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
-                  // isActive() never matches "/#services" — usePathname()
-                  // never carries a hash fragment, so that link intentionally
-                  // never shows as current. It isn't a distinct page.
+
                   className={`relative text-small transition-colors hover:text-text ${
                     isActive(link.href)
                       ? "font-medium text-text after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:bg-accent after:content-['']"

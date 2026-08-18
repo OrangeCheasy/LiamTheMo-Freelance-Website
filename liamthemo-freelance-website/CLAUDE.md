@@ -39,7 +39,7 @@ Submissions route through email routing, Discord webhooks, and the on-site form,
 
 Judge every change against these, in order:
 
-1. **Does a non-technical visitor find their own problem within one screen of scrolling?** This was the triage widget's job; it was removed from the home page in Phase 2 (§7) and nothing replaces it yet. Currently failing — the planned home-page "Services" section is what's meant to cover this.
+1. **Does a non-technical visitor find their own problem within one screen of scrolling?** This is the home page's Services section (`ServicesSection.tsx`, §7) — the symptom-worded triage cards, restored after their Phase 2 removal. Passing again as of 2026-08-17.
 2. **Does the work look impressive?** Real screenshots and project art, shown large. This is the portfolio half earning its keep.
 3. **Does every page end with a path to the form?**
 4. **Does it load fast on a phone on mobile data?** A dark, image-heavy design makes this harder. See §12.
@@ -215,11 +215,15 @@ Case studies are **problem → solution → result**. Stack goes in a sidebar fo
 
 ## 7. Service routing on the home page
 
-**Superseded.** This section originally specified the triage widget (`ServiceTriage.tsx`, "What can I help you with?" — six symptom-worded cards) and called it out in the strongest terms in this document: "the highest-converting element on the site," "not up for removal." It was removed from the home page anyway, by explicit owner instruction, during Phase 2 — see the note at the top of `src/app/page.tsx`. The component is deleted, not just unused.
+**Restored, as `ServicesSection.tsx`.** This section originally specified the triage widget (`ServiceTriage.tsx`, "What can I help you with?" — six symptom-worded cards). It was removed from the home page during Phase 2 by explicit owner instruction, then restored on 2026-08-17 — also by owner instruction — as the home page's "Services" section. Same mechanic, same six options, same discipline; it sits after Featured Work rather than directly under the hero, and it is a plain container section rather than a full-bleed band, matching the rest of the rebuilt home page.
 
-**Why it was removed:** to match the approved mockup's flow (Hero → Featured Work → About → closing CTA) while the site is being recreated to spec before further changes layer on top, rather than to abandon symptom-based routing as a concept.
+**Why it came back:** removing it left the home page with no way to reach a specific service without already knowing its slug. That gap is now closed.
 
-**What replaces it:** not built yet. The plan is a "Services" section on the home page, after Featured Work — the header nav's "Services" item (`/#services`, added Phase 1) already anchors there in anticipation. Until that section exists, there is a real, acknowledged gap: nothing on the home page routes a confused visitor to a specific service. If that section revives symptom-worded cards, keep the discipline the original widget was built on — labels describe the visitor's symptom ("I retype the same numbers every week"), never the service name ("Python Scripting"), and a first-class "not sure what I need" option, since a meaningful share of good leads land there. `/contact?topic=unsure` still works if linked to; nothing currently links to it.
+**The discipline it is built on, which any edit must keep:** labels describe the visitor's symptom ("I retype the same numbers every week"), never the service name ("Python Scripting"); the "I'm not sure what I need" option is the one that reaches the form directly, at `/contact?topic=unsure`, since a meaningful share of good leads land there.
+
+**2026-08-18, owner call:** that option used to be a full-width row with an accent border, and this paragraph called it "first-class rather than a fallback at the end of the list." It is now the sixth card in an even grid of six, marked only by its accent-tinted chip and by sitting last. The emphasis is gone; the wording above is corrected rather than left describing a page that no longer exists. The labels-are-symptoms rule is untouched and still absolute — the same pass tightened the copy's register ("I have a repetitive task" → "I repeat the same task every week") without letting any label become a service name.
+
+**How it is reached:** by scrolling the home page, or by any link to `/#services` — the section owns that anchor. The header nav item that used to point at it now reads "Home" and points at `/` (owner call, 2026-08-17), so the header is no longer one of those links; see §14.
 
 ---
 
@@ -261,6 +265,8 @@ The redesign source of truth is the approved homepage mockup. Where this documen
 
 **Neutrals are warm-tinted on purpose.** Pure grey next to orange reads dead and cheap. Do not "clean up" these values to neutral greys.
 
+The five service identity hues carry a `-tint` variant each (`--color-service-*-tint`), derived from the base hue with `color-mix` rather than hardcoded. The full-strength pastels were drawn for a light UI and read as stickers on this background; chips sitting on a dark surface use the tint. The one deliberate hardcoded colour in the codebase is the glow's `#ff3a00` in `src/lib/glow.ts` — an owner colour choice for a single effect, kept local rather than promoted to a token nothing else would use.
+
 Set `color-scheme: dark` on `:root` so browser-rendered UI — form controls, scrollbars, autofill backgrounds — matches. Without it, autofilled inputs render with a white background that looks broken against the dark surface.
 
 Because there is no light theme, tokens may be used directly and confidently. Do not add conditional theme logic, `dark:` variants, or a `data-theme` attribute "for later." If a light theme is ever wanted, it is a deliberate future project, not something to scaffold for now.
@@ -273,6 +279,8 @@ Orange marks **actions and current state**. Nothing else.
 - Section labels, dividers, body copy, card borders at rest, decorative flourishes: **not** accent.
 
 If orange appears on something that cannot be clicked, it's wrong. This discipline is what makes the mockup look designed rather than decorated — orange everywhere looks like a Bootstrap theme.
+
+**One standing exception: the small label above a section heading.** The mockup sets those in accent ("About Me", and by extension "Services"), and §9 makes the mockup authoritative where it and this document disagree. The home page shipped that way in Phase 2 and the service pages followed in R3, so the pairing — accent micro-label, then a neutral `text-h2` — is now the site-wide convention for section headers. Nothing else non-interactive gets accent: not dividers, not body copy, not card borders at rest, not decorative marks.
 
 ### 9.3 Type
 
@@ -287,6 +295,8 @@ If orange appears on something that cannot be clicked, it's wrong. This discipli
 - Cards: `--surface`, 1px `--border`, radius 12–16px.
 - Depth comes from **contrast and warm glow**, not drop shadows. A soft radial `--accent-dim` behind a focal element beats a black box-shadow, which disappears on dark backgrounds anyway.
 - Hover: border shifts toward accent, subtle lift, glow appears. Under 200ms.
+
+**The warm corner glow is one shared implementation**, `warmGlow()` in `src/lib/glow.ts` — the closing CTA panel and the home page's service cards both call it, with the ellipse and peak opacity varied per element. Its stop list traces a fitted exponential falloff derived from the mockup; the derivation is written up in that file. Do not hand-write a second radial gradient for a new element, and do not "simplify" the stop list to two stops — the curve is what makes a low peak opacity read as depth instead of a flat wash. Since a gradient's colour stops cannot be transitioned, hover strength is a second glow layer faded in over the resting one rather than an animated gradient.
 
 ### 9.5 Motion
 
@@ -394,7 +404,7 @@ feature branch → npm run dev → npm run preview
 - Flag when a visual choice threatens the performance budget **before** building it.
 
 **Don't:**
-- Drop Services from the nav. (The triage widget itself was removed in Phase 2 by explicit owner override — see §7 — so this no longer says "or weaken the triage widget"; it isn't there to weaken.)
+- Weaken the home page's Services section (§7) — it is how a visitor who doesn't know what the work is called finds it. (This used to read "Don't drop Services from the nav"; the owner replaced that nav item with "Home" on 2026-08-17, so the section itself now carries the whole job.)
 - Rewire the form delivery pipeline.
 - Assume Vercel. No `@vercel/*`, no Vercel env var names, no `runtime = "edge"`.
 - Reach for KV, D1, R2, or Durable Objects. A portfolio with a contact form needs none of them.
@@ -413,8 +423,8 @@ The site is live and working. **This is a restyle of a functioning site, not a r
 
 0. Dark-only tokens and fonts; remove the existing theme toggle and any light-theme code — ship with existing layout intact
 1. Navbar + Footer restyle (Services returns to nav, toggle gone)
-2. Home: hero, then featured work grid, then a short about section, then closing CTA (the triage widget originally specified here was removed by owner override — see §7)
-3. Services index + detail template
+2. Home: hero, then featured work grid, then the Services section, then a short about section, then closing CTA (the triage cards were cut here by owner override, then restored on 2026-08-17 — see §7)
+3. Services detail template — restyled 2026-08-17 to the home page's rhythm (container sections, accent micro-labels, triage-card surfaces); `problems` promoted to the page's focal block on an accent-dim glow panel, deliverables and process paired in one row below it. **There is no services index and none is planned** — §7's home-page Services section replaced it, so that half of this step is closed rather than outstanding. Data, routing, `generateStaticParams` and `dynamicParams` were untouched; all five pages verified still prerendered (● SSG) after the restyle.
 4. Portfolio index + case study template
 5. Contact page restyle — **form logic and delivery untouched**
 6. About
