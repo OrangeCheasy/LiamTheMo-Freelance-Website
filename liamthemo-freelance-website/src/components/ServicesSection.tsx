@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { warmGlow } from "@/lib/glow";
 
 /*
   The home page "Services" section (CLAUDE.md §7) — symptom-worded triage
@@ -15,19 +16,27 @@ import Link from "next/link";
   state, so there is nothing left for a client bundle to do.
 
   COLOUR.
-  The cards are neutral surfaces with a hairline border; orange stays the only
-  action colour (§9.2). The service hues appear ONLY as the fill behind each
-  emoji chip, which is identity marking on a non-interactive sub-element —
-  never the affordance itself, never a border, never text. Emoji are
-  aria-hidden: the written label carries the meaning, so the glyph is
-  decoration and its contrast against the pastel chip is not an accessibility
-  bar.
+  Orange stays the only action colour (§9.2). The service hues appear ONLY as
+  the fill behind each emoji chip, which is identity marking on a
+  non-interactive sub-element — never the affordance itself, never a border,
+  never text. Emoji are aria-hidden: the written label carries the meaning, so
+  the glyph is decoration and its contrast against the chip is not an
+  accessibility bar.
 
   LABELS.
   Every label is a SYMPTOM in the visitor's words, never a service name
-  ("Python Scripting" is exactly what these must not say) — the same
+  ("Process Automation" is exactly what these must not say) — the same
   discipline as `problems` in src/data/services.ts. Hints are drawn from the
   service table in §1, not invented.
+
+  2026-08-18 restyle, on owner instruction: the cards carry the same warm
+  corner glow as the "Let's work together" panel at rest, the pastel chips are
+  toned into the dark palette, and the copy was tightened. The wording brief
+  was "more professional", which in most hands means renaming these to service
+  names — that would invert §7 and fail §2's first success criterion, so the
+  owner picked the register change instead: same first-person symptoms, harder
+  edges. "I have a repetitive task" became "I repeat the same task every week";
+  nothing became "Process Automation".
 */
 
 interface TriageOption {
@@ -41,50 +50,57 @@ interface TriageOption {
 
 const options: readonly TriageOption[] = [
   {
-    label: "I have a repetitive task",
-    hint: "Reports, File processing, Data entry",
+    label: "I repeat the same task every week",
+    hint: "Recurring reports, file processing, data entry",
     href: "/services/automation",
     emoji: "🔄",
-    chipClass: "bg-service-automation",
+    chipClass: "bg-service-automation-tint",
   },
   {
-    label: "I need help with data or Excel",
-    hint: "Spreadsheets, Dashboards, Trackers",
+    label: "My spreadsheets have outgrown me",
+    hint: "Spreadsheets, dashboards, and performance trackers",
     href: "/services/excel-data",
     emoji: "📊",
-    chipClass: "bg-service-excel",
+    chipClass: "bg-service-excel-tint",
   },
   {
-    label: "My computer or technology isn't working",
-    hint: "Setups, Repairs, Printers, Wi-Fi, Backups, Hardware, Software",
+    label: "My computer or network keeps failing",
+    hint: "Setup, repairs, printers, Wi-Fi, and backups",
     href: "/services/local-tech-help",
     emoji: "🖥️",
-    chipClass: "bg-service-local",
+    chipClass: "bg-service-local-tint",
   },
   {
-    label: "I need a website",
-    hint: "Small-business sites, Landing pages, Menus",
+    label: "My business needs a proper website",
+    hint: "Small-business sites, landing pages, and menus",
     href: "/services/websites",
     emoji: "🌐",
-    chipClass: "bg-service-websites",
+    chipClass: "bg-service-websites-tint",
   },
   {
-    label: "I need Roblox development",
-    hint: "Luau scripting, Gameplay and UI systems",
+    // §11 allows technical language for this audience, and it is the register
+    // they use themselves — "we" because a Roblox enquiry is almost always a
+    // team rather than one person.
+    label: "We need a developer on our Roblox game",
+    hint: "Luau scripting, gameplay, UI, and DataStore systems",
     href: "/services/roblox",
     emoji: "🎮",
-    chipClass: "bg-service-roblox",
+    chipClass: "bg-service-roblox-tint",
   },
 ];
 
 /*
   Not in the array above, and that is the point. §7 calls this a first-class
-  option rather than a fallback, so it gets its own row at full width and the
-  accent tint, which reads as more prominent than the five neutral cards — not
-  as the leftover at the end of a list. It is also the only option that reaches
-  the quote form directly, hence the topic in the href; the five service
-  options pass their topic through one hop later, from each service page's own
-  CTA.
+  option rather than a fallback, so it gets its own row at full width and a
+  stronger glow, which reads as more prominent than the five cards — not as the
+  leftover at the end of a list. It is also the only option that reaches the
+  quote form directly, hence the topic in the href; the five service options
+  pass their topic through one hop later, from each service page's own CTA.
+
+  The label is deliberately the one that was NOT tightened in the 2026-08-18
+  copy pass. Someone who does not know what they need is the visitor least
+  likely to recognise a sharpened phrase, and §7 names this option as where a
+  meaningful share of good leads land.
 */
 const unsure = {
   label: "I'm not sure what I need",
@@ -93,26 +109,60 @@ const unsure = {
   emoji: "❓",
 } as const;
 
-// §9.4: hover is a border shift, a subtle lift, and a glow — not just a
-// colour change. accent-dim (not a hard black shadow, which disappears on a
-// dark background) is what §9.4 names for exactly this.
+/*
+  The glow, at rest, on every card — the owner's request was that these match
+  the "Let's work together" panel, so both call the same warmGlow() (see
+  src/lib/glow.ts for where the curve comes from).
+
+  Two numbers differ from the panel's defaults, and both follow from the
+  cards being a different shape. The ellipse is sized up (the panel is one wide
+  short band; a card is roughly a third of that width, so the same visual
+  falloff needs a larger percentage of its own box), and the peak is dialled
+  back to 14% — the panel's 32% is a single focal element on the page, whereas
+  six cards at that strength would read as an orange grid and drown the section
+  heading. Hover adds the rest as a separate overlay, which is what makes the
+  transition possible at all: color-mix percentages inside a gradient cannot be
+  animated, but the opacity of a layer sitting on top of one can.
+*/
+const CARD_GLOW = warmGlow({ size: "70% 95%", peak: 14 });
+const CARD_GLOW_HOVER = warmGlow({ size: "70% 95%", peak: 26, base: "transparent" });
+
+// The "not sure" row is wider than a card and needs the panel's own proportions
+// back, plus a little more strength than the five above it.
+const UNSURE_GLOW = warmGlow({ size: "40% 60%", peak: 20 });
+const UNSURE_GLOW_HOVER = warmGlow({ size: "40% 60%", peak: 34, base: "transparent" });
+
+// §9.4: hover is a border shift, a subtle lift and a glow — not just a colour
+// change, and under 200ms. globals.css already neutralises the movement under
+// prefers-reduced-motion.
 const cardBase =
-  "group flex h-full items-center gap-4 rounded-xl border p-5 transition-all duration-200 hover:-translate-y-0.5";
+  "group relative flex h-full items-center gap-4 overflow-hidden rounded-2xl border p-5 " +
+  "transition-all duration-200 hover:-translate-y-0.5";
 
 const chipBase =
-  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg";
+  "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg";
 
 // aria-hidden: it is a visual affordance cue, and a link already announces
-// itself as a link. globals.css already neutralises the motion under
-// prefers-reduced-motion.
+// itself as a link.
 function Arrow() {
   return (
     <span
       aria-hidden="true"
-      className="ml-auto self-center pl-2 text-text-muted transition-transform group-hover:translate-x-0.5"
+      className="relative ml-auto self-center pl-2 text-text-muted transition-all group-hover:translate-x-0.5 group-hover:text-accent"
     >
       →
     </span>
+  );
+}
+
+/** The hover half of the glow, faded in over the resting one. */
+function GlowOverlay({ background }: { background: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+      style={{ background }}
+    />
   );
 }
 
@@ -139,12 +189,15 @@ export default function ServicesSection() {
           <li key={option.href}>
             <Link
               href={option.href}
-              className={`${cardBase} border-border bg-surface-2 hover:border-accent hover:shadow-[0_0_28px_var(--color-accent-dim)]`}
+              className={`${cardBase} border-border hover:border-accent`}
+              style={{ background: CARD_GLOW }}
             >
+              <GlowOverlay background={CARD_GLOW_HOVER} />
+
               <span aria-hidden="true" className={`${chipBase} ${option.chipClass}`}>
                 {option.emoji}
               </span>
-              <span className="min-w-0">
+              <span className="relative min-w-0">
                 <span className="block font-medium text-text">{option.label}</span>
                 <span className="mt-1 block text-small text-text-muted">
                   {option.hint}
@@ -157,18 +210,21 @@ export default function ServicesSection() {
 
         <li className="sm:col-span-2 lg:col-span-3">
           {/*
-            Accent survives here — unlike the neutral cards above, this entire
-            block is the clickable target, so the tint marks it as the
-            highlighted option rather than decorating something inert (§9.2).
+            The accent border survives here — unlike the five cards above, this
+            whole block is the clickable target, so the marking sits on the
+            affordance itself rather than decorating something inert (§9.2).
           */}
           <Link
             href={unsure.href}
-            className={`${cardBase} border-accent bg-accent-dim hover:bg-surface-2 hover:shadow-[0_0_32px_var(--color-accent-dim)]`}
+            className={`${cardBase} border-accent hover:shadow-[0_0_32px_var(--color-accent-dim)]`}
+            style={{ background: UNSURE_GLOW }}
           >
+            <GlowOverlay background={UNSURE_GLOW_HOVER} />
+
             <span aria-hidden="true" className={`${chipBase} bg-accent-dim`}>
               {unsure.emoji}
             </span>
-            <span className="min-w-0">
+            <span className="relative min-w-0">
               <span className="block font-medium text-text">{unsure.label}</span>
               <span className="mt-1 block text-small text-text-muted">
                 {unsure.hint}

@@ -40,6 +40,23 @@
   --color-service-local: #b8d7ff;
   --color-service-roblox: #ebc6ec;
 
+  /*
+    Tinted versions of the five hues, for identity chips that sit on a dark
+    surface. The pastels above were drawn for a light UI: at full strength on
+    --surface they read as bright stickers stuck onto the page, which is the
+    one thing on the home page that looked pasted in rather than designed.
+    Mixed down to a fifth, the hue still identifies the service at a glance
+    but sits in the molten-dark palette instead of fighting it.
+
+    Derived from the hue tokens rather than hardcoded, so recolouring a
+    service is still a one-line change.
+  */
+  --color-service-automation-tint: color-mix(in srgb, var(--color-service-automation) 20%, transparent);
+  --color-service-excel-tint: color-mix(in srgb, var(--color-service-excel) 20%, transparent);
+  --color-service-websites-tint: color-mix(in srgb, var(--color-service-websites) 20%, transparent);
+  --color-service-local-tint: color-mix(in srgb, var(--color-service-local) 20%, transparent);
+  --color-service-roblox-tint: color-mix(in srgb, var(--color-service-roblox) 20%, transparent);
+
   /* --- Type ------------------------------------------------------------ */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;

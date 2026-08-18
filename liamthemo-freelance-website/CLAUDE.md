@@ -263,6 +263,8 @@ The redesign source of truth is the approved homepage mockup. Where this documen
 
 **Neutrals are warm-tinted on purpose.** Pure grey next to orange reads dead and cheap. Do not "clean up" these values to neutral greys.
 
+The five service identity hues carry a `-tint` variant each (`--color-service-*-tint`), derived from the base hue with `color-mix` rather than hardcoded. The full-strength pastels were drawn for a light UI and read as stickers on this background; chips sitting on a dark surface use the tint. The one deliberate hardcoded colour in the codebase is the glow's `#ff3a00` in `src/lib/glow.ts` — an owner colour choice for a single effect, kept local rather than promoted to a token nothing else would use.
+
 Set `color-scheme: dark` on `:root` so browser-rendered UI — form controls, scrollbars, autofill backgrounds — matches. Without it, autofilled inputs render with a white background that looks broken against the dark surface.
 
 Because there is no light theme, tokens may be used directly and confidently. Do not add conditional theme logic, `dark:` variants, or a `data-theme` attribute "for later." If a light theme is ever wanted, it is a deliberate future project, not something to scaffold for now.
@@ -291,6 +293,8 @@ If orange appears on something that cannot be clicked, it's wrong. This discipli
 - Cards: `--surface`, 1px `--border`, radius 12–16px.
 - Depth comes from **contrast and warm glow**, not drop shadows. A soft radial `--accent-dim` behind a focal element beats a black box-shadow, which disappears on dark backgrounds anyway.
 - Hover: border shifts toward accent, subtle lift, glow appears. Under 200ms.
+
+**The warm corner glow is one shared implementation**, `warmGlow()` in `src/lib/glow.ts` — the closing CTA panel and the home page's service cards both call it, with the ellipse and peak opacity varied per element. Its stop list traces a fitted exponential falloff derived from the mockup; the derivation is written up in that file. Do not hand-write a second radial gradient for a new element, and do not "simplify" the stop list to two stops — the curve is what makes a low peak opacity read as depth instead of a flat wash. Since a gradient's colour stops cannot be transitioned, hover strength is a second glow layer faded in over the resting one rather than an animated gradient.
 
 ### 9.5 Motion
 
