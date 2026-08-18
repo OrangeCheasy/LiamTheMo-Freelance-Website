@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CTASection from "@/components/CTASection";
-import Eyebrow from "@/components/Eyebrow";
 import { commonFaqs, getService, serviceSlugs } from "@/data/services";
+import { SERVICE_META } from "@/lib/types";
 
 /*
   The detail template. Every one of the five pages is this file — there is no
@@ -18,6 +18,29 @@ import { commonFaqs, getService, serviceSlugs } from "@/data/services";
   would be rendered on demand — meaning any crawler or scanner hitting made-up
   URLs could invoke the Worker and burn request quota against the daily cap.
   With it false, anything not in generateStaticParams is a static 404.
+
+  PHASE R3 RESTYLE — presentation only.
+  Data, routing, generateStaticParams and dynamicParams are untouched. What
+  changed is the rhythm: these pages were built before the home page was
+  rebuilt, so they still used full-bleed `border-t bg-surface` bands at
+  py-16/py-20 and the Eyebrow rule, while the home page moved to plain
+  max-w-6xl containers, an accent micro-label above each heading, and the card
+  treatment the triage cards use. Two rhythms on one site reads as two sites,
+  so this file now follows the home page.
+
+  ACCENT ON SECTION LABELS.
+  §9.2 says section labels are not accent. The home page ships them in accent
+  anyway ("About Me", "Services"), because the mockup does and §9 makes the
+  mockup authoritative where the two disagree. Matching the home page is the
+  point of this phase, so the labels here are accent too — noted rather than
+  done quietly, since it is §9.2 being overridden by §9's own precedence rule.
+
+  ROBLOX.
+  §11 allows technical language on that page only, and it is already there, in
+  the data (DataStore, session locking, Luau, Rojo). This template renders it
+  verbatim, and every heading below is register-neutral so the same framing
+  works for a restaurant owner and for a studio. Roblox-specific framing copy
+  would need a new field on Service, not a per-slug branch in this file.
 */
 
 export const dynamicParams = false;
@@ -62,6 +85,12 @@ function StepNumber({ n }: { n: number }) {
   );
 }
 
+// The label above each section heading — the home page's "About Me" / "Services"
+// pairing. See the accent note at the top of this file.
+function SectionLabel({ children }: { children: string }) {
+  return <p className="text-small font-medium text-accent">{children}</p>;
+}
+
 export default async function ServiceDetailPage({
   params,
 }: PageProps<"/services/[slug]">) {
@@ -76,85 +105,115 @@ export default async function ServiceDetailPage({
 
   return (
     <>
-      <section className="mx-auto max-w-6xl px-5 pt-16 pb-12 sm:px-8 sm:pt-20 sm:pb-16">
-        <span aria-hidden="true" className="block text-4xl">
+      <section className="mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
+        {/*
+          The service's identity hue on the same chip the home page's triage
+          cards use, so arriving from that section lands on a visibly matching
+          page. SERVICE_META rather than a third copy of the colour map — it
+          already feeds the OG images and the project cards. The glyph still
+          comes from the data, so `icon` stays the single source of truth for
+          which emoji a service uses.
+        */}
+        <span
+          aria-hidden="true"
+          className={`flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${SERVICE_META[service.slug].chipClass}`}
+        >
           {service.icon}
         </span>
-        <h1 className="mt-4 max-w-[20ch] text-h1 text-text">{service.title}</h1>
+        <h1 className="mt-5 max-w-[20ch] text-h1 text-text">{service.title}</h1>
         <p className="mt-4 max-w-[52ch] text-body text-text-muted">
           {service.tagline}
         </p>
       </section>
 
       {/*
-        Problems first, immediately under the hero. §6 calls this the field that
-        makes a non-technical visitor recognise themselves, so it gets the most
-        valuable position on the page — ahead of what I deliver and how I work,
-        both of which only matter once they think it is about them.
+        Problems, immediately under the heading and carrying the most visual
+        weight on the page. §6 calls this the field that makes a non-technical
+        visitor recognise themselves; deliverables and process only matter once
+        they believe the page is about them, so those follow and share a row.
+
+        The prominence is built from a glow panel, a step up the type scale and
+        card contrast — deliberately not from accent, because none of this is
+        clickable (§9.2). §9.4 names this exact treatment: a soft radial
+        accent-dim behind a focal element, which is how CTASection's panel works
+        too. Tokens only, no literal hex.
       */}
       <section
         aria-labelledby="problems-heading"
-        className="border-t border-border bg-surface"
+        className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
       >
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-          <Eyebrow>Sound familiar?</Eyebrow>
-          <h2
-            id="problems-heading"
-            className="mt-3 max-w-[24ch] text-h2 text-text"
-          >
-            If any of these are you, this is the right page
-          </h2>
-          <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-            {service.problems.map((problem) => (
-              <li
-                key={problem}
-                className="rounded-xl border border-border bg-surface-2 p-5 text-body text-text"
-              >
-                &ldquo;{problem}&rdquo;
-              </li>
-            ))}
-          </ul>
+        <div className="relative overflow-hidden rounded-2xl bg-surface p-6 sm:p-10">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_0%_0%,var(--color-accent-dim),transparent_70%)]"
+          />
+
+          <div className="relative">
+            <SectionLabel>Sound familiar?</SectionLabel>
+            <h2
+              id="problems-heading"
+              className="mt-2 max-w-[24ch] text-h2 text-text"
+            >
+              If any of these are you, this is the right page
+            </h2>
+
+            {/*
+              text-h3 rather than text-body: one step up the scale is what makes
+              this the focal block without reaching for colour. Quoted, because
+              these are the visitor's own words rather than a feature list.
+            */}
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+              {service.problems.map((problem) => (
+                <li
+                  key={problem}
+                  className="rounded-xl border border-border bg-surface-2 p-5 text-h3 text-text"
+                >
+                  &ldquo;{problem}&rdquo;
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
-      <section
-        aria-labelledby="deliverables-heading"
-        className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20"
-      >
-        <Eyebrow>What you get</Eyebrow>
-        <h2
-          id="deliverables-heading"
-          className="mt-3 max-w-[24ch] text-h2 text-text"
-        >
-          What you actually receive
-        </h2>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-          {service.deliverables.map((item) => (
-            <li key={item} className="flex gap-3">
-              {/* Decorative bullet, not clickable — neutral, not accent (§9.2). */}
-              <span
-                aria-hidden="true"
-                className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-text-muted"
-              />
-              <span className="text-body text-text">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/*
+        Deliverables and process share one row on desktop. Stacked, they read as
+        two more full-weight sections competing with the problems block above;
+        side by side they read as the supporting detail they are, and the page
+        loses about a screen of scrolling.
+      */}
+      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-2 lg:gap-14">
+        <section aria-labelledby="deliverables-heading">
+          <SectionLabel>What you get</SectionLabel>
+          <h2
+            id="deliverables-heading"
+            className="mt-2 max-w-[24ch] text-h2 text-text"
+          >
+            What you actually receive
+          </h2>
+          <ul className="mt-6 flex flex-col gap-4">
+            {service.deliverables.map((item) => (
+              <li key={item} className="flex gap-3">
+                {/* Decorative bullet, not clickable — neutral, not accent (§9.2). */}
+                <span
+                  aria-hidden="true"
+                  className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-text-muted"
+                />
+                <span className="text-body text-text">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      <section
-        aria-labelledby="process-heading"
-        className="border-t border-border bg-surface"
-      >
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-          <Eyebrow>How it works</Eyebrow>
+        <section aria-labelledby="process-heading">
+          <SectionLabel>How it works</SectionLabel>
           <h2
             id="process-heading"
-            className="mt-3 max-w-[24ch] text-h2 text-text"
+            className="mt-2 max-w-[24ch] text-h2 text-text"
           >
             From first message to finished
           </h2>
-          <ol className="mt-8 flex flex-col gap-5">
+          <ol className="mt-6 flex flex-col gap-5">
             {service.process.map((step, index) => (
               <li key={step} className="flex items-start gap-4">
                 <StepNumber n={index + 1} />
@@ -162,8 +221,8 @@ export default async function ServiceDetailPage({
               </li>
             ))}
           </ol>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/*
         Service-specific questions first, then the policies shared by every
@@ -172,13 +231,13 @@ export default async function ServiceDetailPage({
       */}
       <section
         aria-labelledby="faq-heading"
-        className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20"
+        className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
       >
-        <Eyebrow>Questions</Eyebrow>
-        <h2 id="faq-heading" className="mt-3 max-w-[24ch] text-h2 text-text">
+        <SectionLabel>Questions</SectionLabel>
+        <h2 id="faq-heading" className="mt-2 max-w-[24ch] text-h2 text-text">
           Before you get in touch
         </h2>
-        <div className="mt-8 flex max-w-[70ch] flex-col">
+        <div className="mt-6 flex max-w-[70ch] flex-col">
           {faqs.map((faq) => (
             <details
               key={faq.q}
@@ -204,18 +263,18 @@ export default async function ServiceDetailPage({
       </section>
 
       {/*
-        `service.relatedProjects` is populated but nothing renders it yet, and
-        that is correct rather than unfinished. The Project data does not exist
-        until build order step 4, and stubbing placeholder entries to fill the
-        space would put invented work on the site (§10). Step 4 adds projects.ts
-        and the section that reads it; the slugs are already waiting.
+        `service.relatedProjects` is populated and, now that projects.ts exists,
+        resolvable — but rendering it is new content rather than a restyle, so
+        it stays out of this phase and is flagged to the owner as its own pass.
       */}
 
       <CTASection
         title={`Tell me about your ${service.title.toLowerCase()} problem`}
-        // No /services index to send this to — see the equivalent note in
-        // src/app/portfolio/page.tsx.
-        secondary={{ href: "/", label: "See other services" }}
+        // There is still no /services index (§7 — the home page's Services
+        // section replaced it), but that section now owns the #services anchor,
+        // so this lands on the list of services rather than at the top of the
+        // home page the way it used to.
+        secondary={{ href: "/#services", label: "See other services" }}
         topic={service.slug}
       />
     </>

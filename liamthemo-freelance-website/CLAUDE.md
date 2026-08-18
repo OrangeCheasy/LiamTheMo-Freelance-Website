@@ -276,6 +276,8 @@ Orange marks **actions and current state**. Nothing else.
 
 If orange appears on something that cannot be clicked, it's wrong. This discipline is what makes the mockup look designed rather than decorated — orange everywhere looks like a Bootstrap theme.
 
+**One standing exception: the small label above a section heading.** The mockup sets those in accent ("About Me", and by extension "Services"), and §9 makes the mockup authoritative where it and this document disagree. The home page shipped that way in Phase 2 and the service pages followed in R3, so the pairing — accent micro-label, then a neutral `text-h2` — is now the site-wide convention for section headers. Nothing else non-interactive gets accent: not dividers, not body copy, not card borders at rest, not decorative marks.
+
 ### 9.3 Type
 
 - One heading face with character, one highly legible body face. Self-host via `next/font` — no external font CDN, which adds a render-blocking third-party request.
@@ -416,7 +418,7 @@ The site is live and working. **This is a restyle of a functioning site, not a r
 0. Dark-only tokens and fonts; remove the existing theme toggle and any light-theme code — ship with existing layout intact
 1. Navbar + Footer restyle (Services returns to nav, toggle gone)
 2. Home: hero, then featured work grid, then the Services section, then a short about section, then closing CTA (the triage cards were cut here by owner override, then restored on 2026-08-17 — see §7)
-3. Services index + detail template
+3. Services detail template — restyled 2026-08-17 to the home page's rhythm (container sections, accent micro-labels, triage-card surfaces); `problems` promoted to the page's focal block on an accent-dim glow panel, deliverables and process paired in one row below it. **There is no services index and none is planned** — §7's home-page Services section replaced it, so that half of this step is closed rather than outstanding. Data, routing, `generateStaticParams` and `dynamicParams` were untouched; all five pages verified still prerendered (● SSG) after the restyle.
 4. Portfolio index + case study template
 5. Contact page restyle — **form logic and delivery untouched**
 6. About
