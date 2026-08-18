@@ -90,17 +90,21 @@ const options: readonly TriageOption[] = [
 ];
 
 /*
-  Not in the array above, and that is the point. §7 calls this a first-class
-  option rather than a fallback, so it gets its own row at full width and a
-  stronger glow, which reads as more prominent than the five cards — not as the
-  leftover at the end of a list. It is also the only option that reaches the
-  quote form directly, hence the topic in the href; the five service options
-  pass their topic through one hop later, from each service page's own CTA.
+  Kept out of the array above because it is the one option that reaches the
+  quote form directly — the five service options pass their topic through one
+  hop later, from each service page's own CTA — and because it has no service
+  hue to chip.
+
+  OWNER CALL, 2026-08-18: it is now the same size as the other five, with no
+  accent border, making an even grid of six. That drops the emphasis §7 asks
+  for — it calls this "a first-class option rather than a fallback", because a
+  real share of good leads arrive not knowing what they need. What still marks
+  it: the accent-tinted chip, and last position, which is where someone who did
+  not recognise themselves in the five above is looking by then.
 
   The label is deliberately the one that was NOT tightened in the 2026-08-18
   copy pass. Someone who does not know what they need is the visitor least
-  likely to recognise a sharpened phrase, and §7 names this option as where a
-  meaningful share of good leads land.
+  likely to recognise a sharpened phrase.
 */
 const unsure = {
   label: "I'm not sure what I need",
@@ -124,23 +128,28 @@ const unsure = {
   transition possible at all: color-mix percentages inside a gradient cannot be
   animated, but the opacity of a layer sitting on top of one can.
 */
-const CARD_GLOW = warmGlow({ size: "70% 95%", peak: 14 });
-const CARD_GLOW_HOVER = warmGlow({ size: "70% 95%", peak: 26, base: "transparent" });
-
-// The "not sure" row is wider than a card and needs the panel's own proportions
-// back, plus a little more strength than the five above it.
-const UNSURE_GLOW = warmGlow({ size: "40% 60%", peak: 20 });
-const UNSURE_GLOW_HOVER = warmGlow({ size: "40% 60%", peak: 34, base: "transparent" });
+const CARD_SIZE: [number, number] = [70, 95];
+const CARD_GLOW = warmGlow({ size: CARD_SIZE, peak: 14 });
+const CARD_GLOW_HOVER = warmGlow({
+  size: CARD_SIZE,
+  peak: 26,
+  base: "transparent",
+});
 
 // §9.4: hover is a border shift, a subtle lift and a glow — not just a colour
 // change, and under 200ms. globals.css already neutralises the movement under
 // prefers-reduced-motion.
+// px-5 py-3.5 rather than a square p-5: owner call, 2026-08-18 — six cards of
+// two text lines each was a tall block, and the horizontal padding is what
+// keeps the label off the chip, so only the vertical half needed to give.
 const cardBase =
-  "group relative flex h-full items-center gap-4 overflow-hidden rounded-2xl border p-5 " +
+  "group relative flex h-full items-center gap-3.5 overflow-hidden rounded-2xl border px-5 py-3.5 " +
   "transition-all duration-200 hover:-translate-y-0.5";
 
+// Shrunk with the padding — a 44px chip inside a shorter card would set the
+// card's height on its own and undo the change.
 const chipBase =
-  "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg";
+  "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-base";
 
 // aria-hidden: it is a visual affordance cue, and a link already announces
 // itself as a link.
@@ -208,18 +217,16 @@ export default function ServicesSection() {
           </li>
         ))}
 
-        <li className="sm:col-span-2 lg:col-span-3">
-          {/*
-            The accent border survives here — unlike the five cards above, this
-            whole block is the clickable target, so the marking sits on the
-            affordance itself rather than decorating something inert (§9.2).
-          */}
+        <li>
+          {/* Same card as the five above it, down to the glow — the accent
+              border and the full-width row it used to get were dropped by owner
+              call (see the note on `unsure`). Only the chip still marks it. */}
           <Link
             href={unsure.href}
-            className={`${cardBase} border-accent hover:shadow-[0_0_32px_var(--color-accent-dim)]`}
-            style={{ background: UNSURE_GLOW }}
+            className={`${cardBase} border-border hover:border-accent`}
+            style={{ background: CARD_GLOW }}
           >
-            <GlowOverlay background={UNSURE_GLOW_HOVER} />
+            <GlowOverlay background={CARD_GLOW_HOVER} />
 
             <span aria-hidden="true" className={`${chipBase} bg-accent-dim`}>
               {unsure.emoji}

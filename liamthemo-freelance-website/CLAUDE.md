@@ -219,7 +219,9 @@ Case studies are **problem → solution → result**. Stack goes in a sidebar fo
 
 **Why it came back:** removing it left the home page with no way to reach a specific service without already knowing its slug. That gap is now closed.
 
-**The discipline it is built on, which any edit must keep:** labels describe the visitor's symptom ("I retype the same numbers every week"), never the service name ("Python Scripting"); the "I'm not sure what I need" option is first-class rather than a fallback at the end of the list, since a meaningful share of good leads land there, and it is the one option that reaches the form directly, at `/contact?topic=unsure`.
+**The discipline it is built on, which any edit must keep:** labels describe the visitor's symptom ("I retype the same numbers every week"), never the service name ("Python Scripting"); the "I'm not sure what I need" option is the one that reaches the form directly, at `/contact?topic=unsure`, since a meaningful share of good leads land there.
+
+**2026-08-18, owner call:** that option used to be a full-width row with an accent border, and this paragraph called it "first-class rather than a fallback at the end of the list." It is now the sixth card in an even grid of six, marked only by its accent-tinted chip and by sitting last. The emphasis is gone; the wording above is corrected rather than left describing a page that no longer exists. The labels-are-symptoms rule is untouched and still absolute — the same pass tightened the copy's register ("I have a repetitive task" → "I repeat the same task every week") without letting any label become a service name.
 
 **How it is reached:** by scrolling the home page, or by any link to `/#services` — the section owns that anchor. The header nav item that used to point at it now reads "Home" and points at `/` (owner call, 2026-08-17), so the header is no longer one of those links; see §14.
 

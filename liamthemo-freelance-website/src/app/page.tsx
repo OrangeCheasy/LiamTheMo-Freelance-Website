@@ -21,22 +21,21 @@ import { projects } from "@/data/projects";
 */
 
 export const metadata: Metadata = {
-  // The browser tab, and only the browser tab (owner call, 2026-08-18). There
-  // is no title template in layout.tsx, so this string is exactly what the tab
-  // shows — no site-name suffix is appended.
-  //
-  // openGraph.title below deliberately keeps the outcome line instead of
-  // following this one: a link pasted into Discord or a search result renders
-  // that field, and "Hi, I'm Liam" tells a stranger deciding whether to click
-  // nothing about what the site does (§11).
+  // The browser tab (owner call, 2026-08-18). There is no title template in
+  // layout.tsx, so this string is exactly what the tab shows — no site-name
+  // suffix is appended.
   title: "Hi, I'm Liam",
   description:
     "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses. Tell me the problem and I'll quote the work.",
+  // The link embed (owner call, 2026-08-18): hero copy, matching both the page
+  // itself and the generated OG image in src/app/opengraph-image.tsx. The three
+  // are meant to read as one thing, so a change to the hero is a change to all
+  // three.
   openGraph: {
     type: "website",
-    title: "I build tools that save you time",
+    title: "Hi, I'm Liam. I design and build digital experiences.",
     description:
-      "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses.",
+      "Custom automation, spreadsheets, websites, and technology solutions for individuals and small businesses.",
   },
   // Still noindex, but for a THIRD reason now — the previous two (placeholder
   // content, then 404ing triage destinations) are both resolved: services,

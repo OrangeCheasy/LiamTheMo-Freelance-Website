@@ -47,13 +47,18 @@ const FALLOFF = [1, 0.607, 0.368, 0.223, 0.135, 0.082, 0.05] as const;
  */
 const GLOW_COLOUR = "#ff3a00";
 
+/** The same colour as channel values, for renderers that cannot parse hex in
+    color-mix() — see `format` below. */
+const GLOW_RGB = "255, 58, 0";
+
 interface WarmGlowOptions {
   /**
-   * Ellipse radii as a CSS `<size>` pair, relative to the element. Defaults to
-   * the fitted panel figure; a smaller element wants a proportionally larger
-   * pair to keep the falloff reading the same way across its own width.
+   * Ellipse radii, as percentages of the element's own width and height.
+   * Defaults to the fitted panel figure; a smaller element wants a
+   * proportionally larger pair to keep the falloff reading the same way across
+   * its own width.
    */
-  size?: string;
+  size?: [number, number];
   /** Opacity at the corner, as a percentage. The panel's fitted value is 32. */
   peak?: number;
   /**
@@ -62,20 +67,68 @@ interface WarmGlowOptions {
    * whatever is already there.
    */
   base?: string;
+  /**
+   * How the gradient is spelled, for the renderer that will read it.
+   *
+   * `color-mix` (default) is what the browser gets: one colour constant, and
+   * Lightning CSS emits an 8-digit-hex fallback for browsers without
+   * color-mix support.
+   *
+   * `rgba` is for the Open Graph images, which render through satori rather
+   * than a browser. Satori implements neither color-mix() nor CSS custom
+   * properties, and — the part that actually bit — it clamps colour stops to
+   * 100%, so the stops this curve places from 0% to 400% all collapsed onto
+   * the ellipse boundary and rendered as a hard-edged disc rather than a glow.
+   *
+   * The fix is geometric rather than a different curve: multiply the radii by
+   * SATORI_SCALE and divide every stop position by it. A stop at position p of
+   * radius r sits at the same absolute distance as one at p/4 of radius 4r, so
+   * the rendered result is identical while every stop lands inside the range
+   * satori honours. The browser path is left alone, since browsers extrapolate
+   * past 100% correctly.
+   */
+  format?: "color-mix" | "rgba";
 }
 
-/** Builds the `background` shorthand for a top-left warm glow. */
-export function warmGlow({
-  size = "32% 52%",
+/** See `format` — the factor that pulls every stop under satori's 100% ceiling. */
+const SATORI_SCALE = 4;
+
+/**
+ * Just the gradient, with no colour painted behind it. Use this where the
+ * background colour is set separately — `backgroundImage` in the OG images,
+ * for one.
+ */
+export function warmGlowImage({
+  size = [32, 52],
   peak = 32,
-  base = "var(--color-surface)",
-}: WarmGlowOptions = {}): string {
+  format = "color-mix",
+}: Omit<WarmGlowOptions, "base"> = {}): string {
+  const scale = format === "rgba" ? SATORI_SCALE : 1;
+  const [radiusX, radiusY] = size;
+
   const stops = FALLOFF.map((factor, index) => {
     // Rounded to one decimal so the generated string stays readable in
     // devtools, and so it matches the values this replaced byte for byte.
     const opacity = Math.round(peak * factor * 10) / 10;
-    return `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent) ${index * 50}%`;
+    const colour =
+      format === "rgba"
+        ? `rgba(${GLOW_RGB}, ${opacity / 100})`
+        : `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent)`;
+    return `${colour} ${(index * 50) / scale}%`;
   });
 
-  return `radial-gradient(ellipse ${size} at 0% 0%, ${stops.join(", ")}, transparent 400%), ${base}`;
+  const transparent = format === "rgba" ? `rgba(${GLOW_RGB}, 0)` : "transparent";
+
+  return (
+    `radial-gradient(ellipse ${radiusX * scale}% ${radiusY * scale}% at 0% 0%, ` +
+    `${stops.join(", ")}, ${transparent} ${400 / scale}%)`
+  );
+}
+
+/** Builds the `background` shorthand for a top-left warm glow. */
+export function warmGlow({
+  base = "var(--color-surface)",
+  ...options
+}: WarmGlowOptions = {}): string {
+  return `${warmGlowImage(options)}, ${base}`;
 }
