@@ -39,7 +39,7 @@ Submissions route through email routing, Discord webhooks, and the on-site form,
 
 Judge every change against these, in order:
 
-1. **Does a non-technical visitor find their own problem within one screen of scrolling?** This was the triage widget's job; it was removed from the home page in Phase 2 (§7) and nothing replaces it yet. Currently failing — the planned home-page "Services" section is what's meant to cover this.
+1. **Does a non-technical visitor find their own problem within one screen of scrolling?** This is the home page's Services section (`ServicesSection.tsx`, §7) — the symptom-worded triage cards, restored after their Phase 2 removal. Passing again as of 2026-08-17.
 2. **Does the work look impressive?** Real screenshots and project art, shown large. This is the portfolio half earning its keep.
 3. **Does every page end with a path to the form?**
 4. **Does it load fast on a phone on mobile data?** A dark, image-heavy design makes this harder. See §12.
@@ -215,11 +215,13 @@ Case studies are **problem → solution → result**. Stack goes in a sidebar fo
 
 ## 7. Service routing on the home page
 
-**Superseded.** This section originally specified the triage widget (`ServiceTriage.tsx`, "What can I help you with?" — six symptom-worded cards) and called it out in the strongest terms in this document: "the highest-converting element on the site," "not up for removal." It was removed from the home page anyway, by explicit owner instruction, during Phase 2 — see the note at the top of `src/app/page.tsx`. The component is deleted, not just unused.
+**Restored, as `ServicesSection.tsx`.** This section originally specified the triage widget (`ServiceTriage.tsx`, "What can I help you with?" — six symptom-worded cards). It was removed from the home page during Phase 2 by explicit owner instruction, then restored on 2026-08-17 — also by owner instruction — as the home page's "Services" section. Same mechanic, same six options, same discipline; it sits after Featured Work rather than directly under the hero, and it is a plain container section rather than a full-bleed band, matching the rest of the rebuilt home page.
 
-**Why it was removed:** to match the approved mockup's flow (Hero → Featured Work → About → closing CTA) while the site is being recreated to spec before further changes layer on top, rather than to abandon symptom-based routing as a concept.
+**Why it came back:** removing it left the home page with no way to reach a specific service without already knowing its slug. That gap is now closed.
 
-**What replaces it:** not built yet. The plan is a "Services" section on the home page, after Featured Work — the header nav's "Services" item (`/#services`, added Phase 1) already anchors there in anticipation. Until that section exists, there is a real, acknowledged gap: nothing on the home page routes a confused visitor to a specific service. If that section revives symptom-worded cards, keep the discipline the original widget was built on — labels describe the visitor's symptom ("I retype the same numbers every week"), never the service name ("Python Scripting"), and a first-class "not sure what I need" option, since a meaningful share of good leads land there. `/contact?topic=unsure` still works if linked to; nothing currently links to it.
+**The discipline it is built on, which any edit must keep:** labels describe the visitor's symptom ("I retype the same numbers every week"), never the service name ("Python Scripting"); the "I'm not sure what I need" option is first-class rather than a fallback at the end of the list, since a meaningful share of good leads land there, and it is the one option that reaches the form directly, at `/contact?topic=unsure`.
+
+**How it is reached:** by scrolling the home page, or by any link to `/#services` — the section owns that anchor. The header nav item that used to point at it now reads "Home" and points at `/` (owner call, 2026-08-17), so the header is no longer one of those links; see §14.
 
 ---
 
@@ -394,7 +396,7 @@ feature branch → npm run dev → npm run preview
 - Flag when a visual choice threatens the performance budget **before** building it.
 
 **Don't:**
-- Drop Services from the nav. (The triage widget itself was removed in Phase 2 by explicit owner override — see §7 — so this no longer says "or weaken the triage widget"; it isn't there to weaken.)
+- Weaken the home page's Services section (§7) — it is how a visitor who doesn't know what the work is called finds it. (This used to read "Don't drop Services from the nav"; the owner replaced that nav item with "Home" on 2026-08-17, so the section itself now carries the whole job.)
 - Rewire the form delivery pipeline.
 - Assume Vercel. No `@vercel/*`, no Vercel env var names, no `runtime = "edge"`.
 - Reach for KV, D1, R2, or Durable Objects. A portfolio with a contact form needs none of them.
@@ -413,7 +415,7 @@ The site is live and working. **This is a restyle of a functioning site, not a r
 
 0. Dark-only tokens and fonts; remove the existing theme toggle and any light-theme code — ship with existing layout intact
 1. Navbar + Footer restyle (Services returns to nav, toggle gone)
-2. Home: hero, then featured work grid, then a short about section, then closing CTA (the triage widget originally specified here was removed by owner override — see §7)
+2. Home: hero, then featured work grid, then the Services section, then a short about section, then closing CTA (the triage cards were cut here by owner override, then restored on 2026-08-17 — see §7)
 3. Services index + detail template
 4. Portfolio index + case study template
 5. Contact page restyle — **form logic and delivery untouched**

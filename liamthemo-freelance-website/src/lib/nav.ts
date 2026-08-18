@@ -14,27 +14,24 @@ export interface NavLink {
  * Primary navigation (CLAUDE.md §15 Phase 1). `/contact` is deliberately
  * absent — it is the CTA, not a plain nav item.
  *
- * "Home" is gone: Services returning to the nav gives a second way back to
- * the home page besides the logo, so the redundant explicit link is no
- * longer needed.
+ * "Home" replaces the "Services" item, on the owner's instruction. Label and
+ * destination move together: an item reading "Home" that scrolled partway
+ * down the page would be a lie, so the href is a plain `/` rather than the
+ * `/#services` this slot used to carry.
  *
- * "Services" anchors to a section that doesn't exist yet — it's owner-planned
- * for Phase 2 (home page rebuild), landing after "featured projects". The
- * href is written for that section now (`/#services`) so nothing here needs
- * to change when it ships; until then this link just lands on the home page
- * with no scroll, which is a harmless no-op rather than a broken link.
- * `/services/[slug]` pages still exist — the index page is gone and stays
- * gone (the plan is a home page section, not a rebuilt index) — and are
- * still reachable via each portfolio case study's "Related services" links
- * and the sitemap. The home page's own former way in, the triage widget,
- * was removed per an explicit owner call — see the note atop page.tsx.
+ * The home page's Services section still exists and still owns the
+ * `#services` anchor (see `ServicesSection.tsx`) — it is reached by scrolling
+ * now rather than from the header. `/services/[slug]` pages are linked from
+ * that section, from each portfolio case study's "Related services" links,
+ * and from the sitemap; there is still no `/services` index page and none is
+ * planned.
  *
  * The old `serviceNav` export (all five service links, for a footer column)
  * is gone along with that column — see the mockup-fidelity note atop
  * Footer.tsx for why removing it isn't a regression.
  */
 export const mainNav: readonly NavLink[] = [
-  { href: "/#services", label: "Services" },
+  { href: "/", label: "Home" },
   { href: "/portfolio", label: "Projects" },
   { href: "/about", label: "About" },
 ];
