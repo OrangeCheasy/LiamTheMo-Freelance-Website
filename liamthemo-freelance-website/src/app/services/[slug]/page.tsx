@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CTASection from "@/components/CTASection";
 import { commonFaqs, getService, serviceSlugs } from "@/data/services";
+import { warmGlow } from "@/lib/glow";
 import { SERVICE_META } from "@/lib/types";
 
 /*
@@ -134,21 +135,25 @@ export default async function ServiceDetailPage({
 
         The prominence is built from a glow panel, a step up the type scale and
         card contrast — deliberately not from accent, because none of this is
-        clickable (§9.2). §9.4 names this exact treatment: a soft radial
-        accent-dim behind a focal element, which is how CTASection's panel works
-        too. Tokens only, no literal hex.
+        clickable (§9.2). §9.4 names this exact treatment: a soft radial glow
+        behind a focal element.
+
+        The glow is `warmGlow()` at its panel defaults — the same call the
+        closing CTA makes, so the two panels are the same treatment at two
+        sizes rather than two gradients that merely resemble each other (owner
+        request, 2026-08-18). It replaced a simpler two-stop accent-dim radial,
+        which read as a flat wash next to the CTA's fitted falloff. No hover
+        layer here: nothing in this panel is clickable.
       */}
       <section
         aria-labelledby="problems-heading"
         className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
       >
-        <div className="relative overflow-hidden rounded-2xl bg-surface p-6 sm:p-10">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_0%_0%,var(--color-accent-dim),transparent_70%)]"
-          />
-
-          <div className="relative">
+        <div
+          className="overflow-hidden rounded-2xl p-6 sm:p-10"
+          style={{ background: warmGlow() }}
+        >
+          <div>
             <SectionLabel>Sound familiar?</SectionLabel>
             <h2
               id="problems-heading"
