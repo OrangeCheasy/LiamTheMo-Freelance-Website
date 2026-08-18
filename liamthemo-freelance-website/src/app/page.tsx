@@ -21,7 +21,15 @@ import { projects } from "@/data/projects";
 */
 
 export const metadata: Metadata = {
-  title: "I build tools that save you time",
+  // The browser tab, and only the browser tab (owner call, 2026-08-18). There
+  // is no title template in layout.tsx, so this string is exactly what the tab
+  // shows — no site-name suffix is appended.
+  //
+  // openGraph.title below deliberately keeps the outcome line instead of
+  // following this one: a link pasted into Discord or a search result renders
+  // that field, and "Hi, I'm Liam" tells a stranger deciding whether to click
+  // nothing about what the site does (§11).
+  title: "Hi, I'm Liam",
   description:
     "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses. Tell me the problem and I'll quote the work.",
   openGraph: {
