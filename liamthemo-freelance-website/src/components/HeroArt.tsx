@@ -216,6 +216,22 @@ export default function HeroArt({ className = "" }: { className?: string }) {
           >
             <TitleBar title="page.tsx" />
             <div className="flex">
+              {/*
+                ACTIVITY RAIL. The vertical strip of tool icons down the far
+                left of the mockup's editor, active item marked by an accent
+                bar on its leading edge. Drawn as bars rather than real icons:
+                at this size a 5px glyph is mud, and the rail's job in the
+                composition is to be recognisably an editor chrome element,
+                which its rhythm does on its own.
+              */}
+              <ul className="flex w-[7%] shrink-0 flex-col items-center gap-[5px] border-r border-border bg-surface-2 py-1.5">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <li
+                    key={i}
+                    className={`h-[3px] w-[3px] rounded-[1px] ${i === 0 ? "bg-accent" : "bg-code-punct"}`}
+                  />
+                ))}
+              </ul>
               {/* File tree. Real filenames from src/app and src/components. */}
               {/* Real paths from this repo, indented to their real depth —
                   the previous version indented every entry after the second,
@@ -244,7 +260,7 @@ export default function HeroArt({ className = "" }: { className?: string }) {
                 ))}
               </ul>
 
-              <pre className="min-w-0 flex-1 overflow-hidden px-2 py-1.5 font-mono text-[0.4rem] leading-[1.65]">
+              <pre className="min-w-0 flex-1 overflow-hidden px-1.5 py-1.5 font-mono text-[0.4rem] leading-[1.65]">
                 {CODE.map((line) => (
                   <div key={line.n} className="flex gap-2 whitespace-pre">
                     <span className="w-2 shrink-0 text-right text-code-punct">
@@ -260,6 +276,26 @@ export default function HeroArt({ className = "" }: { className?: string }) {
                   </div>
                 ))}
               </pre>
+
+              {/*
+                MINIMAP. The compressed page-shape strip down the right edge.
+                Its bar widths are derived from the real code above rather than
+                random — each line's own token text length sets its bar, so the
+                minimap actually mirrors the file it sits beside, the way a
+                real one does.
+              */}
+              <div className="hidden w-[9%] shrink-0 flex-col gap-[2px] border-l border-border bg-surface px-1 py-1.5 sm:flex">
+                {CODE.map((line) => {
+                  const len = line.tokens.reduce((n, t) => n + t[1].length, 0);
+                  return (
+                    <span
+                      key={line.n}
+                      className="h-[1px] rounded-[1px] bg-code-punct"
+                      style={{ width: `${Math.min(100, len * 1.6)}%` }}
+                    />
+                  );
+                })}
+              </div>
             </div>
             {/* Status bar — the detail that makes it read as an editor. */}
             <div className="flex items-center justify-between border-t border-border bg-surface-2 px-2 py-1 text-[0.38rem] leading-none text-code-punct">
@@ -274,7 +310,35 @@ export default function HeroArt({ className = "" }: { className?: string }) {
             style={{ boxShadow: panelShadow(55) }}
           >
             <TitleBar title="Resolve — orangecheasy" />
-            <div className="relative aspect-[16/10] w-full">
+            <div className="flex">
+              {/*
+                MEDIA POOL. The grid of source clips top-left of the mockup's
+                Resolve window. Tinted blocks rather than real images — they
+                are 12px tall, and six more image requests to render six
+                smudges would be a bad trade against §12's budget.
+              */}
+              <div className="grid w-[20%] shrink-0 grid-cols-2 gap-[2px] border-r border-border bg-surface p-1">
+                {[
+                  "bg-accent-dim",
+                  "bg-surface-2",
+                  "bg-surface-2",
+                  "bg-accent-dim",
+                  "bg-surface-2",
+                  "bg-surface-2",
+                ].map((tint, i) => (
+                  // Mostly dark, two warm. The first pass gave all six a
+                  // service hue and they read as a swatch palette rather than
+                  // as clips — in the mockup the pool is nearly black with a
+                  // couple of frames catching the orange footage, which is
+                  // what makes it recede behind the preview beside it.
+                  <span
+                    key={i}
+                    className={`aspect-[4/3] rounded-[1px] border border-border ${tint}`}
+                  />
+                ))}
+              </div>
+
+              <div className="relative min-w-0 flex-1 aspect-[16/10]">
               {/*
                 Real project art, not a stand-in: this is the OrangeCheasy
                 cover already in the bundle, so the panel shows actual work and
@@ -291,15 +355,38 @@ export default function HeroArt({ className = "" }: { className?: string }) {
                 sizes="(max-width: 1023px) 0px, 14rem"
                 className="object-cover"
               />
+              </div>
             </div>
+
+            {/*
+              TRANSPORT ROW. The strip of playback controls under the preview.
+              Same reasoning as the activity rail — dots, not glyphs, because
+              the rhythm is what reads at this size.
+            */}
+            <div className="flex items-center justify-center gap-[5px] border-t border-border bg-surface-2 py-[3px]">
+              {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <span
+                  key={i}
+                  className={`h-[3px] w-[3px] rounded-full ${i === 3 ? "bg-accent" : "bg-code-punct"}`}
+                />
+              ))}
+            </div>
+
             {/* Timecode + a timeline of clips, built from tokens. */}
             <div className="border-t border-border bg-surface px-1.5 py-1 font-mono text-[0.4rem] leading-none text-text-muted">
               01:00:24:12
             </div>
-            <div className="space-y-[3px] bg-surface-2 px-1.5 pb-1.5 pt-1">
+            {/*
+              TIMELINE. Four tracks now, not two — the mockup runs four to five
+              and two read as a progress bar rather than an edit. relative so
+              the playhead can sit over them.
+            */}
+            <div className="relative space-y-[3px] bg-surface-2 px-1.5 pb-1.5 pt-1">
               {[
-                [["w-[38%]", "bg-service-roblox"], ["w-[26%]", "bg-service-websites"], ["w-[18%]", "bg-accent"]],
-                [["w-[22%]", "bg-service-excel"], ["w-[46%]", "bg-service-local"]],
+                [["w-[30%]", "bg-service-roblox"], ["w-[22%]", "bg-service-websites"], ["w-[14%]", "bg-accent"]],
+                [["w-[18%]", "bg-service-excel"], ["w-[40%]", "bg-service-local"]],
+                [["w-[12%]", "bg-service-websites"], ["w-[28%]", "bg-service-roblox"], ["w-[20%]", "bg-service-excel"]],
+                [["w-[44%]", "bg-service-local"], ["w-[16%]", "bg-accent"]],
               ].map((track, i) => (
                 <div key={i} className="flex gap-[3px]">
                   {track.map(([w, bg], j) => (
@@ -315,6 +402,10 @@ export default function HeroArt({ className = "" }: { className?: string }) {
                   ))}
                 </div>
               ))}
+              {/* Playhead. Red rather than accent on purpose: it is the one
+                  element in this panel that is a real editor convention, and
+                  making it orange would read as brand colour instead. */}
+              <span className="pointer-events-none absolute inset-y-0 left-[38%] w-px bg-danger" />
             </div>
           </div>
 
@@ -325,18 +416,45 @@ export default function HeroArt({ className = "" }: { className?: string }) {
           >
             <TitleBar title="liamthemo.com" />
             <div className="flex">
-              <ul className="w-[38%] shrink-0 space-y-[3px] border-r border-border bg-surface px-1.5 py-1.5">
-                {["Header", "Hero", "Featured Work", "Services", "About Me", "Footer"].map(
-                  (layer) => (
+              {/*
+                PAGES above LAYERS, which is what the mockup's panel actually
+                shows — it was rendering only the layer list before, so the
+                panel read as a generic sidebar rather than a design tool. The
+                page names are the site's real routes and the layer names its
+                real home page sections; §11's "never invent" covers set
+                dressing too.
+              */}
+              <div className="w-[38%] shrink-0 border-r border-border bg-surface px-1.5 py-1.5">
+                <p className="text-[0.34rem] font-semibold uppercase leading-[1.6] tracking-[0.08em] text-code-punct">
+                  Pages
+                </p>
+                <ul className="mt-[2px] space-y-[2px]">
+                  {["Home", "Projects", "About", "Contact"].map((page) => (
                     <li
-                      key={layer}
-                      className="truncate text-[0.38rem] leading-[1.5] text-code-punct"
+                      key={page}
+                      className={`truncate text-[0.38rem] leading-[1.5] ${page === "Home" ? "text-text" : "text-code-punct"}`}
                     >
-                      {layer}
+                      {page}
                     </li>
-                  ),
-                )}
-              </ul>
+                  ))}
+                </ul>
+
+                <p className="mt-[5px] text-[0.34rem] font-semibold uppercase leading-[1.6] tracking-[0.08em] text-code-punct">
+                  Layers
+                </p>
+                <ul className="mt-[2px] space-y-[2px]">
+                  {["Header", "Hero", "Featured Work", "About Me", "Footer"].map(
+                    (layer) => (
+                      <li
+                        key={layer}
+                        className="truncate text-[0.38rem] leading-[1.5] text-code-punct"
+                      >
+                        {layer}
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </div>
               {/* The site's own hero, in miniature and in the real tokens. */}
               <div className="min-w-0 flex-1 px-1.5 py-1.5">
                 <p className="text-[0.42rem] font-semibold leading-[1.35] text-text">
