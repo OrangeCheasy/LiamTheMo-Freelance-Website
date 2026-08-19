@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import CoverArt from "@/components/CoverArt";
 import type { Project } from "@/lib/types";
 
 /*
@@ -12,47 +12,51 @@ import type { Project } from "@/lib/types";
   where a visitor is comparing several projects and needs the text to tell
   them apart before clicking.
 
-  Every `featured` project is required to carry `images[0]` — see the filter
-  below — so a project flagged featured without cover art fails silently
-  rather than breaking the grid; CLAUDE.md §6 already requires cover art for
-  a featured entry, so this is a defensive check, not the primary guard.
+  COVER, NOT images[0]. This used to filter out any project without
+  `images[0]` — a defensive check that had become a silent content bug: a
+  project marked `featured` with no art simply vanished from the home page
+  with nothing to indicate it. `cover` is required now (§6), so every
+  featured project renders, and the filter is gone with it.
+
+  Because the caption sits outside the card, the cover is the only thing
+  naming the project here — so unlike ProjectCard, the accessible name has to
+  come from somewhere. It comes from the link's aria-label; the image's own
+  alt text stays as written for the image branch, and the tile branch is
+  aria-hidden, so the label is what makes all three cards announce
+  consistently.
 
   BELOW THE FOLD, LAZY, DELIBERATELY UNLIKE THE HERO. This section renders
-  after the hero, so `loading="lazy"` (next/image's default
-  once `priority` is absent, made explicit here so a future edit can't
-  silently drop it) keeps these three images out of the critical request path
-  entirely — they don't compete with the LCP element for bandwidth.
+  after the hero, so CoverArt's default (`loading="lazy"`, no `priority`)
+  keeps these three out of the critical request path entirely — they don't
+  compete with the LCP element for bandwidth.
 */
 
 export default function FeaturedWork({ projects }: { projects: Project[] }) {
-  const featured = projects.filter(
-    (project) => project.featured && project.images?.[0],
-  );
+  const featured = projects.filter((project) => project.featured);
 
   return (
     <ul className="grid gap-6 sm:grid-cols-3">
-      {featured.map((project) => {
-        const cover = project.images![0];
-        return (
-          <li key={project.slug}>
-            <Link
-              href={`/portfolio/${project.slug}`}
-              className="group block overflow-hidden rounded-xl border border-border transition-all duration-200 hover:border-accent hover:shadow-[0_0_28px_var(--color-accent-dim)]"
-            >
-              <div className="relative aspect-[3/2] w-full overflow-hidden">
-                <Image
-                  src={cover.src}
-                  alt={cover.alt}
-                  fill
-                  loading="lazy"
-                  sizes="(min-width: 640px) 33vw, 100vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                />
-              </div>
-            </Link>
-          </li>
-        );
-      })}
+      {featured.map((project) => (
+        <li key={project.slug}>
+          <Link
+            href={`/portfolio/${project.slug}`}
+            aria-label={`${project.title} — view project`}
+            // Explicit property list, not `transition-all` — see the note on
+            // the same line in ProjectCard: `all` animates the focus ring.
+            className="group block overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] duration-200 hover:border-accent hover:shadow-[0_0_28px_var(--color-accent-dim)]"
+          >
+            <div className="relative aspect-[3/2] w-full overflow-hidden">
+              <CoverArt
+                project={project}
+                // Three across from sm up, one below — the grid never goes
+                // two-wide, so there is no middle breakpoint to describe.
+                sizes="(min-width: 640px) 33vw, 100vw"
+                imageClassName="transition-transform duration-300 group-hover:scale-[1.03]"
+              />
+            </div>
+          </Link>
+        </li>
+      ))}
     </ul>
   );
 }

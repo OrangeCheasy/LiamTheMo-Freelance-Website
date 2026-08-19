@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { SITE_NAME } from "@/lib/nav";
 
 /*
@@ -33,15 +34,26 @@ export default function Footer() {
   return (
     <footer className="border-t border-border bg-bg">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-        <div>
+        {/*
+          Mark and copyright on one line, the mockup's arrangement (owner call)
+          — they used to be stacked, with the line sitting under the mark. The
+          mark is the real "lm" ligature in --color-logo now, the same
+          component and the same colour as the header, which is what the two
+          not matching came down to.
+
+          items-center rather than baseline: the mark is a graphic with no
+          text baseline to align to, so centring it on the copyright line is
+          the only alignment that stays right as either one changes size.
+        */}
+        <div className="flex items-center gap-3.5">
           <Link
             href="/"
             aria-label={SITE_NAME}
-            className="font-display text-2xl font-bold tracking-tight text-accent"
+            className="shrink-0 text-logo transition-colors hover:text-accent-hover"
           >
-            lm
+            <Logo className="h-5 w-auto" />
           </Link>
-          <p className="mt-2 text-small text-text-muted">
+          <p className="text-small text-text-muted">
             © {year} {SITE_NAME}. All rights reserved.
           </p>
         </div>

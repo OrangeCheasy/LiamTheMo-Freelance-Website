@@ -13,10 +13,48 @@
   --color-surface-2: #1c1919; /* hover states, nested surfaces */
   --color-border: #2a2626; /* hairline, low contrast */
   --color-text: #f5f3f1; /* warm white */
+  /*
+    The middle rung of the text ladder, added for the hero (owner call): the
+    mockup sets "I design and build digital experiences." dimmer than the
+    white line above it and clearly brighter than the paragraph below, and
+    there was no token between --text and --text-muted to express that.
+
+    Sampled from the mockup at #bfbfbf, then re-tinted warm rather than used
+    literally — §9.1 is explicit that pure grey next to orange reads dead and
+    cheap. This sits at the same relative luminance as the mockup's grey
+    (~191) while staying on the warm axis the other neutrals use, which puts
+    it about 36% of the way from --text-muted to --text.
+
+    Contrast on --bg is roughly 10.6:1, so it passes AA for body copy as well
+    as headings (§10).
+  */
+  --color-text-secondary: #c3beba;
   --color-text-muted: #a8a19c;
   --color-accent: #ff6a1a;
   --color-accent-hover: #ff8340;
   --color-accent-dim: rgb(255 106 26 / 12%); /* glow, tints, focus rings */
+
+  /*
+    The brand mark's own orange, sampled from the owner-supplied artwork at
+    public/tab/lm-icon.png. Deliberately NOT --color-accent: the two are
+    different oranges, and the header/footer logo was rendering in the accent,
+    which is why it did not match the supplied logo file. Accent stays the UI
+    action colour (§9.2); this is used by the "lm" mark alone.
+  */
+  --color-logo: #f75701;
+
+  /*
+    Deep brown, laid over the closing CTA panel at low opacity to mute it
+    (owner call). Sampled from the new mockup, where that panel is far darker
+    and browner than the glow alone produces: its field reads #100c09 and even
+    its brightest corner only reaches #201008, against a much hotter orange in
+    the build this replaced.
+
+    An overlay rather than a darker base colour, because it has to sit ABOVE
+    the gradient — muting the orange is the point, and a base underneath it
+    cannot do that. See CTASection.tsx for the layer order.
+  */
+  --color-panel-brown: #3a2008;
 
   /*
     Not in §9.1 — form validation (QuoteForm, §8) still needs a colour
@@ -27,6 +65,26 @@
   */
   --color-danger: #ff6b6b;
   --color-danger-dim: rgb(255 107 107 / 14%);
+
+  /*
+    Syntax colours for the hero's editor panel (HeroArt.tsx), which renders a
+    real code sample as DOM rather than shipping a picture of one. They are
+    here rather than inline in the component because §9.1 allows no hardcoded
+    hex in a component, and a five-colour palette is exactly the kind of thing
+    that drifts if it lives in JSX.
+
+    Scope: decorative illustration only. These are not UI colours and nothing
+    interactive may use them — the same rule the service identity hues run on
+    (§9.2). Tuned warm so the panel sits inside the molten palette instead of
+    importing a stock editor theme; the one cool note is `tag`, which the
+    mockup's editor also has and which is what stops the block reading as a
+    wash of orange.
+  */
+  --color-code-keyword: #ff8f5e;
+  --color-code-string: #d8c98a;
+  --color-code-tag: #9fc9f0;
+  --color-code-attr: #c9b6e8;
+  --color-code-punct: #6f6763;
 
   /*
     Service identity hues (CLAUDE.md §1's five service lines) — untouched by

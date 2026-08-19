@@ -1,12 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
+import CoverArt from "@/components/CoverArt";
 import type { Project } from "@/lib/types";
 import { SERVICE_META } from "@/lib/types";
 
 /*
-  One card per case study on /portfolio (CLAUDE.md §5, §14 step 4).
+  One card per case study on /portfolio (CLAUDE.md §5, §15 step 4).
 
-  Server component: a card is a link, a thumbnail, a heading and a sentence,
+  Server component: a card is a link, a cover, a heading and a sentence,
   nothing interactive beyond navigation.
 
   The service/skill badges are plain outlined chips (owner call: no colour on
@@ -17,68 +17,59 @@ import { SERVICE_META } from "@/lib/types";
   & Python", so the badge is the only thing conveying that and must stay in
   the accessible name.
 
-  Thumbnail: a real screenshot when `project.images[0]` exists (§9 — real
-  screenshots beat any illustration). When a project has no screenshot yet
-  (e.g. Fuse Factory, still in development), we do not invent one — §10
-  forbids fabricated content, and that extends to images. Instead the
-  thumbnail falls back to a pastel tile in the project's first service colour
-  with that service's icon, reusing the same identity system as the chip
-  below it rather than a stock illustration. A project with no service line
-  at all (e.g. a portfolio-only piece tagged with `skills` instead) falls
-  back further, to a neutral tile using `project.icon`.
+  The cover is `CoverArt`, shared with the home page's featured grid — see
+  that file for why the tile fallback is a design rather than a placeholder.
 */
 
-export default function ProjectCard({ project }: { project: Project }) {
-  const thumb = project.images?.[0];
-  const primaryService = project.services[0]
-    ? SERVICE_META[project.services[0]]
-    : undefined;
-  const fitClass = thumb?.fit === "contain" ? "object-contain" : "object-cover";
+export default function ProjectCard({
+  project,
+  priority = false,
+}: {
+  project: Project;
+  /** Above the fold on the index. See the note in src/app/portfolio/page.tsx. */
+  priority?: boolean;
+}) {
+  const labels =
+    project.services.length > 0
+      ? project.services.map((slug) => SERVICE_META[slug].title)
+      : (project.skills ?? []);
 
   return (
     <li>
       <Link
         href={`/portfolio/${project.slug}`}
-        className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface transition-colors hover:border-accent"
+        // An explicit property list rather than `transition-all` (§10, §12).
+        // `all` includes outline-width, outline-color and outline-offset, so
+        // the global :focus-visible ring animated in over 200ms — a keyboard
+        // user saw a 3px white ring (the initial values) fade into the 2px
+        // accent one instead of the accent ring appearing at once. Caught by
+        // tabbing the page, which is exactly why §12 asks for that rather
+        // than reading the code. These three are all the hover actually
+        // needs.
+        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_0_28px_var(--color-accent-dim)]"
       >
         {/*
-          3:2 to match the 1440x960 thumbnail source size — full image, no
-          crop — for the common case. bg-surface-2 is only visible when
-          `thumb.fit === "contain"` letterboxes an image whose aspect ratio
-          is too extreme to crop into 3:2 (e.g. a wide banner).
+          3:2, matching the 1536x1024 cover sources — full image, no crop, for
+          the common case. bg-surface-2 shows only where a `contain` cover
+          letterboxes.
         */}
         <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-border bg-surface-2">
-          {thumb ? (
-            <Image
-              src={thumb.src}
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-              className={`${fitClass} transition-transform duration-300 group-hover:scale-[1.03]`}
-            />
-          ) : primaryService ? (
-            <div
-              aria-hidden="true"
-              className={`flex h-full w-full items-center justify-center text-5xl ${primaryService.chipClass}`}
-            >
-              {primaryService.icon}
-            </div>
-          ) : (
-            <div
-              aria-hidden="true"
-              className="flex h-full w-full items-center justify-center bg-surface-2 text-5xl"
-            >
-              {project.icon ?? "📁"}
-            </div>
-          )}
+          <CoverArt
+            project={project}
+            priority={priority}
+            // The heading, summary and chips below already say all of this.
+            decorative
+            // Three up at lg, two at sm, one below. The index container is
+            // max-w-6xl (1152px), so a third of it is ~360px — 33vw is the
+            // right hint and never over-fetches on a phone.
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            imageClassName="transition-transform duration-300 group-hover:scale-[1.03]"
+          />
         </div>
 
         <div className="flex flex-1 flex-col p-6">
           <div className="flex flex-wrap gap-2">
-            {(project.services.length > 0
-              ? project.services.map((slug) => SERVICE_META[slug].title)
-              : (project.skills ?? [])
-            ).map((label) => (
+            {labels.map((label) => (
               <span
                 key={label}
                 className="rounded-full border border-border px-2.5 py-1 text-small text-text-muted"

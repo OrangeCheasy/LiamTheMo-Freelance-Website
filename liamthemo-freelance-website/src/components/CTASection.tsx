@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { warmGlow } from "@/lib/glow";
+import GlowBorder from "@/components/GlowBorder";
+import { warmPanel } from "@/lib/glow";
 import { CTA } from "@/lib/nav";
 import type { ServiceSlug } from "@/lib/types";
 
@@ -30,7 +31,7 @@ import type { ServiceSlug } from "@/lib/types";
 interface CTASectionProps {
   title?: string;
   description?: string;
-  /** Overrides the shared CTA.label ("Contact now") for this one instance —
+  /** Overrides the shared CTA.label ("Contact Me") for this one instance —
       only the home page needs "Get In Touch" to match the mockup. */
   ctaLabel?: string;
   /** Optional second, lower-commitment destination. */
@@ -42,6 +43,16 @@ interface CTASectionProps {
    * pass — every other CTASection usage stays generic.
    */
   topic?: ServiceSlug;
+  /**
+   * Drop the top gap because this sits directly under the section above it.
+   *
+   * The home page uses it: the mockup runs About straight into "Let's Work
+   * Together" with barely a gap, and two full section paddings stacked put
+   * roughly twice that between them. Every other page keeps the normal
+   * rhythm, where the CTA is a distinct closing block rather than part of
+   * what precedes it.
+   */
+  tight?: boolean;
 }
 
 export default function CTASection({
@@ -50,12 +61,15 @@ export default function CTASection({
   ctaLabel,
   secondary,
   topic,
+  tight = false,
 }: CTASectionProps) {
   const ctaHref = topic ? `${CTA.href}?topic=${topic}` : CTA.href;
 
   return (
     <section aria-labelledby="cta-heading" className="bg-bg">
-      <div className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
+      <div
+        className={`mx-auto max-w-6xl px-5 pb-6 sm:px-8 sm:pb-8 ${tight ? "pt-0" : "pt-6 sm:pt-8"}`}
+      >
         {/*
           Warm gradient panel, anchored top-left, fading into the surface
           tone — §9.4's "soft radial glow beats a black box-shadow" applied to
@@ -69,19 +83,54 @@ export default function CTASection({
           the first time either was touched. The default arguments reproduce
           what was inline here byte for byte, so this panel is unchanged.
         */}
+        {/*
+          THREE BACKGROUND LAYERS, and the order is the whole point. CSS
+          paints the first layer on top, so this reads: deep-brown overlay,
+          then the warm glow, then the page-dark base underneath.
+
+          The brown has to be ABOVE the gradient. The owner's note was that
+          this panel looked brighter and more orange than the mockup, and
+          sampling the mockup bears it out — its field is #100c09 and its
+          brightest corner only #201008, where the old build ran the glow at
+          peak 32 over --color-surface and landed several times hotter. A
+          darker base alone cannot fix that, because the glow is painted on
+          top of the base; only a layer over the glow mutes the orange.
+
+          Peak dropped 32 -> 14 for the same reason. That number was fitted
+          from the PREVIOUS mockup (the derivation is still in glow.ts and
+          still correct for the panels that use the default); this panel is
+          simply darker in the new one. Every other warmGlow() caller is
+          untouched — the change is an argument here, not a new default.
+        */}
         <div
-          className="flex flex-col gap-4 rounded-2xl px-6 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:pt-5 sm:pb-4"
-          style={{ background: warmGlow() }}
+          className="relative flex flex-col gap-4 rounded-2xl px-6 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:pt-5 sm:pb-4"
+          style={{
+            background: warmPanel({ peak: 14 }),
+          }}
         >
+          {/* The lit edge — see GlowBorder.tsx. Shared with the service
+              cards, which the owner asked to carry the same treatment. */}
+          <GlowBorder />
+
           <div>
             <h2 id="cta-heading" className="max-w-[26ch] text-h3 text-text">
               {title}
             </h2>
-            {/* whitespace-pre-line: lets a caller force a line break with a
-                literal \n (the home page's two-sentence version does) while
-                every other caller's plain string renders exactly as before —
-                no \n present, nothing changes. */}
-            <p className="mt-1.5 max-w-[48ch] whitespace-pre-line text-small text-text-muted">
+            {/*
+              whitespace-pre-line stays so a caller can still force a break
+              with a literal \n, though no caller does any more — the home
+              page's version used to and now runs as one line (owner call).
+
+              max-w raised 48ch -> 70ch for that: at 48ch the home page's
+              sentence wrapped no matter what the string did. 70ch is still a
+              real measure rather than "no limit", so a longer description on
+              another page cannot run the full width of the panel.
+
+              font-light is the "thinner" the owner asked for. Inter is loaded
+              as a variable font (see layout.tsx), so weight 300 is a real
+              instance here, not a browser-synthesised fake.
+            */}
+            <p className="mt-1.5 max-w-[70ch] whitespace-pre-line text-small font-light text-text-muted">
               {description}
             </p>
           </div>
