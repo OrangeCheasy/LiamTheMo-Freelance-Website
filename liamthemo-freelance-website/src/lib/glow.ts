@@ -157,3 +157,34 @@ export function warmGlow({
 }: WarmGlowOptions = {}): string {
   return `${warmGlowImage(options)}, ${base}`;
 }
+
+/**
+ * The deep-brown overlay laid over a warm panel, at the low opacity the
+ * mockup's closing CTA implies. color-mix keeps the colour a token (§9.1)
+ * rather than respelling it as an rgba() literal at each call site.
+ */
+const PANEL_TINT =
+  "color-mix(in srgb, var(--color-panel-brown) 16%, transparent)";
+
+/**
+ * The full molten-panel treatment: deep-brown overlay, then the warm glow,
+ * then a dark base.
+ *
+ * THE LAYER ORDER IS THE POINT. CSS paints the first background layer on top,
+ * so the brown sits ABOVE the gradient and mutes it. That is what makes the
+ * panel read as deep and warm rather than bright orange — sampling the
+ * mockup's closing CTA gives a field of #100c09 and a brightest corner of only
+ * #201008, far darker than the glow produces on its own. A darker base cannot
+ * achieve it, because the glow is painted on top of the base.
+ *
+ * Shared by the closing CTA panel and the home page's service cards, which the
+ * owner asked to match. They previously differed: the CTA had the brown and
+ * the cards did not, so "the same glow" was two different treatments. One
+ * function means they cannot drift again (§9.4).
+ */
+export function warmPanel({
+  base = "var(--color-bg)",
+  ...options
+}: WarmGlowOptions = {}): string {
+  return `linear-gradient(${PANEL_TINT}, ${PANEL_TINT}), ${warmGlowImage(options)}, ${base}`;
+}

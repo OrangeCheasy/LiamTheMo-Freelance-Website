@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { warmGlow } from "@/lib/glow";
+import GlowBorder from "@/components/GlowBorder";
+import { warmGlowImage, warmPanel } from "@/lib/glow";
 
 /*
   The home page "Services" section (CLAUDE.md §7) — symptom-worded triage
@@ -129,12 +130,25 @@ const unsure = {
   animated, but the opacity of a layer sitting on top of one can.
 */
 const CARD_SIZE: [number, number] = [70, 95];
-const CARD_GLOW = warmGlow({ size: CARD_SIZE, peak: 14 });
-const CARD_GLOW_HOVER = warmGlow({
-  size: CARD_SIZE,
-  peak: 26,
-  base: "transparent",
-});
+
+/*
+  Owner call: match the closing CTA panel exactly. These used to call
+  warmGlow() over --color-surface while the CTA had gained the deep-brown
+  overlay and a dark base, so "the same glow" had quietly become two different
+  treatments — the cards read brighter and more orange than the panel they
+  were supposed to match. Both now call warmPanel(), which is that treatment,
+  so they cannot diverge again.
+*/
+const CARD_GLOW = warmPanel({ size: CARD_SIZE, peak: 14 });
+
+/*
+  The hover half, faded in over the resting one — a gradient's colour stops
+  cannot be transitioned, so strength has to come from a second layer's
+  opacity. Still warmGlowImage() rather than warmPanel() on purpose: this
+  overlay only adds light on top of what is already there, and re-applying the
+  brown tint and the base would paint over the card underneath it.
+*/
+const CARD_GLOW_HOVER = warmGlowImage({ size: CARD_SIZE, peak: 26 });
 
 // §9.4: hover is a border shift, a subtle lift and a glow — not just a colour
 // change, and under 200ms. globals.css already neutralises the movement under
@@ -142,8 +156,11 @@ const CARD_GLOW_HOVER = warmGlow({
 // px-5 py-3.5 rather than a square p-5: owner call, 2026-08-18 — six cards of
 // two text lines each was a tall block, and the horizontal padding is what
 // keeps the label off the chip, so only the vertical half needed to give.
+// `border` is gone: the lit edge is a GlowBorder now, matching the CTA panel
+// (owner call). A flat hairline underneath it would show through wherever the
+// glow border has faded out, which is most of the card.
 const cardBase =
-  "group relative flex h-full items-center gap-3.5 overflow-hidden rounded-2xl border px-5 py-3.5 " +
+  "group relative flex h-full items-center gap-3.5 overflow-hidden rounded-2xl px-5 py-3.5 " +
   "transition-all duration-200 hover:-translate-y-0.5";
 
 // Shrunk with the padding — a 44px chip inside a shorter card would set the
@@ -185,22 +202,48 @@ export default function ServicesSection() {
     >
       {/* Same label-then-heading rhythm as the About Me section below. */}
       <p className="text-small font-medium text-accent">Services</p>
-      <h2 id="services-heading" className="mt-2 max-w-[20ch] text-h2 text-text">
+      {/*
+        Same type sizes as the About Me section (owner call): the heading at
+        text-body/semibold rather than text-h2, and the standfirst below it at
+        text-small. The two sections sit next to each other on the home page
+        and were opening at different scales — About's heading is deliberately
+        small so it sits in line with the three virtue titles beside it, and
+        this one was still full section-heading size.
+
+        Still an <h2> with the same id, so `aria-labelledby` and the document
+        outline are unchanged; only the drawn size moved.
+      */}
+      <h2
+        id="services-heading"
+        className="mt-2 max-w-[24ch] text-h3 text-text"
+      >
         What can I help you with?
       </h2>
-      <p className="mt-4 max-w-[52ch] text-body text-text-muted">
+      <p className="mt-3 max-w-[52ch] text-small text-text-muted">
         Pick whichever sounds closest. You do not need to know what the work is
         called.
       </p>
 
-      <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {options.map((option) => (
           <li key={option.href}>
             <Link
               href={option.href}
-              className={`${cardBase} border-border hover:border-accent`}
+              className={cardBase}
               style={{ background: CARD_GLOW }}
             >
+              <GlowBorder size={CARD_SIZE} peak={70} />
+              {/* The hover half of the edge, same trick as the fill overlay:
+                  a gradient border cannot be transitioned, so a brighter one
+                  fades in over the resting one. This is what keeps §9.4s
+                  "border shifts toward accent on hover" — the flat
+                  hover:border-accent it replaced could not survive the move
+                  to a gradient edge. */}
+              <GlowBorder
+                size={CARD_SIZE}
+                peak={100}
+                className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              />
               <GlowOverlay background={CARD_GLOW_HOVER} />
 
               <span aria-hidden="true" className={`${chipBase} ${option.chipClass}`}>
@@ -223,10 +266,22 @@ export default function ServicesSection() {
               call (see the note on `unsure`). Only the chip still marks it. */}
           <Link
             href={unsure.href}
-            className={`${cardBase} border-border hover:border-accent`}
+            className={cardBase}
             style={{ background: CARD_GLOW }}
           >
-            <GlowOverlay background={CARD_GLOW_HOVER} />
+            <GlowBorder size={CARD_SIZE} peak={70} />
+              {/* The hover half of the edge, same trick as the fill overlay:
+                  a gradient border cannot be transitioned, so a brighter one
+                  fades in over the resting one. This is what keeps §9.4s
+                  "border shifts toward accent on hover" — the flat
+                  hover:border-accent it replaced could not survive the move
+                  to a gradient edge. */}
+              <GlowBorder
+                size={CARD_SIZE}
+                peak={100}
+                className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              />
+              <GlowOverlay background={CARD_GLOW_HOVER} />
 
             <span aria-hidden="true" className={`${chipBase} bg-accent-dim`}>
               {unsure.emoji}

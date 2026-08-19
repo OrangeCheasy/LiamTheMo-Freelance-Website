@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { warmGlowImage } from "@/lib/glow";
+import GlowBorder from "@/components/GlowBorder";
+import { warmPanel } from "@/lib/glow";
 import { CTA } from "@/lib/nav";
 import type { ServiceSlug } from "@/lib/types";
 
@@ -42,15 +43,17 @@ interface CTASectionProps {
    * pass — every other CTASection usage stays generic.
    */
   topic?: ServiceSlug;
+  /**
+   * Drop the top gap because this sits directly under the section above it.
+   *
+   * The home page uses it: the mockup runs About straight into "Let's Work
+   * Together" with barely a gap, and two full section paddings stacked put
+   * roughly twice that between them. Every other page keeps the normal
+   * rhythm, where the CTA is a distinct closing block rather than part of
+   * what precedes it.
+   */
+  tight?: boolean;
 }
-
-/**
- * The deep-brown overlay, at the low opacity the mockup's panel implies.
- * Expressed with color-mix so the colour itself stays a token (§9.1) rather
- * than being respelled as an rgba() literal here.
- */
-const PANEL_TINT =
-  "color-mix(in srgb, var(--color-panel-brown) 16%, transparent)";
 
 export default function CTASection({
   title = "Tell me what you're trying to get done",
@@ -58,12 +61,15 @@ export default function CTASection({
   ctaLabel,
   secondary,
   topic,
+  tight = false,
 }: CTASectionProps) {
   const ctaHref = topic ? `${CTA.href}?topic=${topic}` : CTA.href;
 
   return (
     <section aria-labelledby="cta-heading" className="bg-bg">
-      <div className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
+      <div
+        className={`mx-auto max-w-6xl px-5 pb-6 sm:px-8 sm:pb-8 ${tight ? "pt-0" : "pt-6 sm:pt-8"}`}
+      >
         {/*
           Warm gradient panel, anchored top-left, fading into the surface
           tone — §9.4's "soft radial glow beats a black box-shadow" applied to
@@ -99,41 +105,12 @@ export default function CTASection({
         <div
           className="relative flex flex-col gap-4 rounded-2xl px-6 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:pt-5 sm:pb-4"
           style={{
-            background: `linear-gradient(${PANEL_TINT}, ${PANEL_TINT}), ${warmGlowImage({ peak: 14 })}, var(--color-bg)`,
+            background: warmPanel({ peak: 14 }),
           }}
         >
-          {/*
-            THE GLOWING BORDER (owner call). The same fitted falloff as the
-            panel fill behind it, run at a much higher peak so it reads as a
-            lit edge rather than a wash — brightest at the top-left corner the
-            glow originates from, gone by the opposite corner. That is the
-            point: a flat 1px border would contradict §9.4's "depth comes from
-            contrast and warm glow, not hard edges", whereas a border that
-            fades with the same curve is the glow's own outline.
-
-            Drawn as a masked ring rather than a `border`, because a border
-            takes a single colour and this one is a gradient: the element is
-            filled edge to edge with the gradient, then masked so only its
-            1px padding survives. `mask-composite: exclude` (and the -webkit-
-            spelling for Safari) is what subtracts the middle.
-
-            Not accent-coloured by accident — the glow colour is the one
-            documented exception in glow.ts, and this panel is a surface, not
-            a control, so §9.2 is not in play.
-          */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-2xl"
-            style={{
-              padding: "1px",
-              backgroundImage: warmGlowImage({ peak: 95 }),
-              WebkitMask:
-                "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-              WebkitMaskComposite: "xor",
-              mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-              maskComposite: "exclude",
-            }}
-          />
+          {/* The lit edge — see GlowBorder.tsx. Shared with the service
+              cards, which the owner asked to carry the same treatment. */}
+          <GlowBorder />
 
           <div>
             <h2 id="cta-heading" className="max-w-[26ch] text-h3 text-text">

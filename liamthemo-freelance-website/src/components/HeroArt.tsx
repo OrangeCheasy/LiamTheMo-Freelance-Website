@@ -66,6 +66,42 @@ const TOKEN_CLASS: Record<string, string> = {
   "": "text-text-secondary",
 };
 
+/*
+  Panel lighting, shared by all three screens (Phase 1).
+
+  Three effects in one box-shadow list:
+
+  1. RIM LIGHT — `inset 0 -1px` picks out the bottom edge, the one facing the
+     backlight below. In the mockup this is the clearest cue that the devices
+     are lit by something rather than merely drawn: their near-bottom edges
+     catch a hot orange line while their tops stay black.
+  2. CONTACT SHADOW — tight, dark and barely offset, so the panel looks like
+     it is resting on something. The wide soft shadow already here does depth;
+     it does not do contact, and a panel with only the wide one reads as a
+     sticker laid on the background.
+  3. AMBIENT DROP — the existing wide falloff, kept.
+  4. SCREEN BLOOM — a wide, very low-opacity warm halo around the whole panel,
+     standing in for the light a lit screen throws onto what surrounds it. Kept
+     deliberately faint: §9.6 rules out neon, and the moment this is legible as
+     a ring rather than felt as air around the panel it has gone too far.
+
+  `rim` varies per panel because the backlight is centred low: the video panel
+  sits closest to it and catches the most, the editor sits highest and catches
+  least. A uniform rim would flatten the depth this exists to create.
+*/
+function panelShadow(rim: number): string {
+  return [
+    // Bezel: a cool top highlight opposite the warm bottom rim. Two lit
+    // edges of different temperature is what reads as thickness — one alone
+    // reads as a coloured border.
+    "inset 0 1px 0 0 rgba(255,255,255,0.07)",
+    `inset 0 -1px 0 0 color-mix(in srgb, var(--color-accent) ${rim}%, transparent)`,
+    "0 2px 6px rgba(0,0,0,0.75)",
+    "0 18px 40px rgba(0,0,0,0.6)",
+    `0 0 28px color-mix(in srgb, var(--color-accent) ${Math.round(rim / 6)}%, transparent)`,
+  ].join(", ");
+}
+
 /* A panel's chrome: the three dots and a title, shared by all three screens so
    they read as one family of windows rather than three unrelated boxes. */
 function TitleBar({ title }: { title: string }) {
@@ -88,44 +124,96 @@ export default function HeroArt({ className = "" }: { className?: string }) {
       className={`relative aspect-[4/3] w-full max-w-[30rem] ${className}`}
     >
       {/*
-        The same warm falloff the CTA panel and the service cards use
-        (src/lib/glow.ts), sized wide and low and pinned behind everything —
-        this is the render's rim light, rebuilt from the curve that is already
-        the site's one glow implementation rather than a second gradient that
-        merely resembles it. blur-2xl softens the stop banding that shows when
-        a gradient this large is painted flat.
-      */}
-      {/*
-        The rim light. Same fitted falloff as every other glow on the site —
-        only the origin moves (§9.4), to sit low and behind the panels so the
-        warmth reads as coming from under the screens the way the render's did.
+        THE BACKLIGHT. A wide, soft warm pool sitting at the base of the
+        panels, as if a light source were behind the setup at desk level.
 
-        The mask is doing real work, not polish. The falloff's stop list runs
-        out to 400% of the ellipse radius, which at any radius large enough to
-        light the whole composition lands well outside this box — so the
-        gradient was still a few percent opaque where the element ended, and
-        clipped into a faintly visible rectangle across the hero. Feathering
-        the element itself is what removes that edge; lowering the peak only
-        made the rectangle dimmer.
+        THIS IS A BLOOM, NOT A LINE, and the distinction is the whole reason
+        the previous attempt failed. Scanning the mockup row by row turns up a
+        sharp single-row peak at the desk line, and a crisp 3px rule was built
+        from it — which looked wrong immediately, because that row is the
+        desk/wall seam sitting INSIDE a much broader soft pool, not the effect
+        itself. Measuring the pool instead: it spans x 790..1180 of a 920px-
+        wide art region and holds strength over roughly 46px vertically, so it
+        is a wide flat ellipse centred near half width and 82% height, with
+        half-max radii of about 21% by 6%.
+
+        Radii here are those half-max figures divided by 0.85, because
+        warmGlow's fitted curve is at 0.368 of peak by one radius and about
+        half by 0.85 of it — so the ellipse has to be slightly larger than the
+        measurement to put the measured falloff in the right place.
+
+        Same warmGlowImage() every other glow on the site uses; only the origin
+        and the radii differ (§9.4).
+
+        TIGHT AND HOT, NOT WIDE AND SOFT. The first pass ran peak 72 over
+        radii [26, 9] under blur-2xl and read as a diffuse haze across the
+        lower half rather than as a light source — the mockup's pool is
+        intense and localised, and stacking a 40px blur on a gradient that is
+        already soft threw away the only definition it had. Peak up, radii in,
+        blur down one step.
       */}
       <div
-        className="pointer-events-none absolute inset-x-[-18%] bottom-[-8%] top-[4%] -z-10 blur-2xl [mask-image:radial-gradient(ellipse_58%_48%_at_50%_74%,black_35%,transparent_82%)]"
+        className="pointer-events-none absolute inset-0 -z-10 blur-xl"
         style={{
           backgroundImage: warmGlowImage({
-            size: [58, 42],
-            peak: 58,
-            at: "50% 74%",
+            size: [21, 7.5],
+            peak: 98,
+            at: "48% 84%",
           }),
         }}
       />
 
+      {/*
+        THE DESK PLANE (Phase 2).
+
+        A surface for the panels to stand on, and — more to the point — a
+        surface for the backlight to bounce off. Phase 1's bloom was tamer
+        than the mockup's partly because the mockup's light lands on a desk
+        that throws it back; ours had nothing to reflect from, so all it could
+        do was sit in empty space.
+
+        Two layers. The tone gradient lifts the surface fractionally at the
+        horizon and recedes to nothing toward the viewer, which is what gives
+        the impression of a plane rather than a band. Over it sits a second
+        warm glow anchored to the TOP edge of this box — that is the
+        reflection: same light, directly below its source, dimmer and blurred,
+        spreading downward the way a reflection on a matte surface does.
+
+        Deliberately no horizon rule. The mockup has a visible desk/wall seam
+        and drawing one is tempting, but a bright horizontal line across the
+        hero is exactly what was tried and rejected earlier; the tone change
+        between plane and background carries the edge on its own.
+      */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[16%] overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, color-mix(in srgb, var(--color-surface) 85%, transparent), transparent 88%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-45 blur-lg"
+          style={{
+            backgroundImage: warmGlowImage({
+              size: [21, 42],
+              peak: 70,
+              at: "48% 0%",
+            }),
+          }}
+        />
+      </div>
+
       {/* The stage. perspective on the parent + preserve-3d here is what lets
           the three panels sit at different yaws and actually overlap in depth
           instead of looking like three flat rectangles stacked by z-index. */}
-      <div className="absolute inset-0 [perspective:1200px]">
+      <div className="absolute inset-0 [perspective:1000px]">
         <div className="relative h-full w-full [transform-style:preserve-3d]">
           {/* ---- Editor, centre back: the largest panel, faces front ---- */}
-          <div className="absolute left-[16%] top-[4%] w-[74%] overflow-hidden rounded-md border border-border bg-bg shadow-[0_18px_40px_rgba(0,0,0,0.55)] [transform:rotateX(4deg)_rotateY(-6deg)]">
+          <div
+            className="absolute left-[16%] top-[2%] w-[74%] overflow-hidden rounded-md border border-border bg-bg [transform:rotateX(6deg)_rotateY(-9deg)]"
+            style={{ boxShadow: panelShadow(26) }}
+          >
             <TitleBar title="page.tsx" />
             <div className="flex">
               {/* File tree. Real filenames from src/app and src/components. */}
@@ -181,7 +269,10 @@ export default function HeroArt({ className = "" }: { className?: string }) {
           </div>
 
           {/* ---- Video editor, front left: turned inward ---- */}
-          <div className="absolute bottom-[10%] left-0 w-[46%] overflow-hidden rounded-md border border-border bg-bg shadow-[0_18px_40px_rgba(0,0,0,0.6)] [transform:rotateX(4deg)_rotateY(11deg)_translateZ(60px)]">
+          <div
+            className="absolute bottom-[17%] left-0 w-[46%] overflow-hidden rounded-md border border-border bg-bg [transform:rotateX(6deg)_rotateY(14deg)_translateZ(80px)]"
+            style={{ boxShadow: panelShadow(55) }}
+          >
             <TitleBar title="Resolve — orangecheasy" />
             <div className="relative aspect-[16/10] w-full">
               {/*
@@ -228,7 +319,10 @@ export default function HeroArt({ className = "" }: { className?: string }) {
           </div>
 
           {/* ---- Design tool, right: turned inward the other way ---- */}
-          <div className="absolute bottom-[4%] right-0 w-[36%] overflow-hidden rounded-md border border-border bg-bg shadow-[0_18px_40px_rgba(0,0,0,0.6)] [transform:rotateX(4deg)_rotateY(-15deg)_translateZ(40px)]">
+          <div
+            className="absolute bottom-[15%] right-0 w-[36%] overflow-hidden rounded-md border border-border bg-bg [transform:rotateX(6deg)_rotateY(-18deg)_translateZ(60px)]"
+            style={{ boxShadow: panelShadow(48) }}
+          >
             <TitleBar title="liamthemo.com" />
             <div className="flex">
               <ul className="w-[38%] shrink-0 space-y-[3px] border-r border-border bg-surface px-1.5 py-1.5">
@@ -282,7 +376,7 @@ export default function HeroArt({ className = "" }: { className?: string }) {
           {/* Bottom-left, floating clear of every panel. It sat on top of the
               video preview before, which made the mark read as a watermark
               stamped on the artwork rather than a badge in front of it. */}
-          <div className="absolute bottom-[1%] left-[6%] flex h-6 w-6 items-center justify-center rounded-lg border border-border bg-surface text-logo shadow-[0_6px_18px_rgba(0,0,0,0.6)] [transform:translateZ(120px)]">
+          <div className="absolute bottom-[6%] left-[6%] flex h-6 w-6 items-center justify-center rounded-lg border border-border bg-surface text-logo shadow-[0_6px_18px_rgba(0,0,0,0.6)] [transform:translateZ(120px)]">
             <Logo className="h-2 w-auto" />
           </div>
         </div>

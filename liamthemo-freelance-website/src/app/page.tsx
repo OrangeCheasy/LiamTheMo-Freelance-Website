@@ -73,22 +73,26 @@ const virtues: {
   {
     title: "Clean Code",
     description: "I write maintainable, scalable, and efficient code.",
-    // < / >  — the slash spans the full height, past both chevrons.
+    // < >  — two chevrons, no slash (owner call).
     //
-    // HEAVIER STROKE THAN THE OTHER TWO, and that is the fix rather than a
-    // slip. Matching bounding boxes was not enough: three open strokes cover
-    // far less area than a closed ring or a filled-corner square, so at a
-    // shared 1.75 weight this glyph rendered ~30% less ink than its
-    // neighbours and read as the small one no matter how far the box was
-    // pushed out. Measured by rasterising all three and counting inked
-    // pixels — 2768 for this against 3619 for the ring — then raising only
-    // this one's weight until they matched (3616 at 2.45).
-    strokeWidth: 2.45,
+    // HEAVIER STROKE THAN THE OTHER TWO, and that is deliberate rather than a
+    // slip. Open strokes cover far less area than a closed ring or a
+    // filled-corner square, so at the shared 1.75 weight this glyph read as
+    // the small one however far its box was pushed out. Sized by rasterising
+    // all three and counting inked pixels rather than by eye: the ring is
+    // 3619 in a 96x96 box, and these chevrons land at 3290 in 91x89 — a
+    // little under on both, which is right, because a glyph this open reads
+    // slightly larger than its ink count suggests.
+    //
+    // Dropping the slash cost about a third of the ink the three-stroke
+    // version had, so the weight went up again with it (2.45 -> 3.0) and the
+    // chevrons grew taller to hold the same box. Past ~3.2 they start to read
+    // chunky next to the pen and the ring.
+    strokeWidth: 3.0,
     icon: (
       <>
-        <path d="M8.8 5.8 4.0 12l4.8 6.2" />
-        <path d="M15.2 5.8 20.0 12l-4.8 6.2" />
-        <path d="M13.5 4.2 10.5 19.8" />
+        <path d="M9.4 4.6 4.4 12l5.0 7.4" />
+        <path d="M14.6 4.6 19.6 12l-5.0 7.4" />
       </>
     ),
   },
@@ -242,6 +246,7 @@ export default function Home() {
             <HeroArt className="hidden lg:block" />
           </div>
         </div>
+
       </section>
 
       <section
@@ -250,13 +255,17 @@ export default function Home() {
       >
         <div className="flex items-baseline justify-between gap-4">
           {/*
-            text-body, not text-h2: measured the mockup directly — "Featured
-            Work"'s cap-height matches the hero description paragraph's
-            cap-height exactly (13px each, native mockup scale). It's still
-            an <h2> semantically, and still bold in the display face via the
-            global h1-h4 rule in globals.css — just not big.
+            text-h3 — one size for every white section heading on this page,
+            set by "Let's Work Together" in the closing CTA (owner call).
+
+            Supersedes the measurement note that used to live here: this was
+            text-body because "Featured Work"'s cap-height in the mockup
+            matched the hero paragraph's exactly. That is still true of the
+            mockup, but the owner has since levelled all of these to one size,
+            and a page where every section opens at the same scale beats one
+            that reproduces four different mockup measurements.
           */}
-          <h2 id="featured-work-heading" className="text-body text-text">
+          <h2 id="featured-work-heading" className="text-h3 text-text">
             Featured Work
           </h2>
           <Link
@@ -321,17 +330,38 @@ export default function Home() {
           {/* mt-2 — the same label-to-content gap the Services section uses
               between "Services" and "What can I help you with?" (owner call),
               so the two sections open on an identical rhythm. */}
-          <div className="mt-2 grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-0">
-            <div className="lg:pr-12">
+          {/*
+            COLUMN WIDTHS ARE SOLVED, NOT GUESSED. At text-h3 two strings set
+            the whole layout, and they pull against each other: "Designer.
+            Developer. Problem Solver." measures 350px, and "Thoughtful
+            Design" measures 177px and needs its icon and gap beside it. The
+            row is 1088px, so with equal virtue columns the constraint is
+
+                (1088 - 350 - p) / 3 - 2p  >=  177 + icon + gap
+
+            which caps p at about 16px with a 22px icon — no headroom. Taking
+            the icon to 20px and its gap to 8px makes the requirement 205px
+            and lets p be 14px with 8px to spare, which is what is set here.
+
+            p is the SAME 14px on all four columns, deliberately: that puts
+            28px around every divider, the intro one included, so the rules
+            sit evenly rather than one gap reading wider than the rest. The
+            first virtue's old `first:pl-8` is gone for the same reason — it
+            made the first gap 60px against 28px everywhere else.
+
+            22.75rem is 364px: the 350px heading plus its own 14px.
+          */}
+          <div className="mt-2 grid gap-10 lg:grid-cols-[minmax(0,22.75rem)_1fr] lg:gap-0">
+            <div className="lg:pr-3.5">
               {/*
-                Sized to match the virtue titles exactly (owner call), not
-                stepped down from text-h2 by eye — they are peers on one row
-                now, so they share one set of classes. Still an <h2>: it is
-                the section's heading and the three below it are <h3>s, and
-                that relationship is what a screen reader reads, independent
-                of how large either one is drawn.
+                Matches the virtue titles exactly (owner call) — they are
+                peers on one row, so they share one set of classes and moved
+                together when everything levelled to text-h3. Still an <h2>:
+                it is the section's heading and the three beside it are
+                <h3>s, and that relationship is what a screen reader reads,
+                independent of how large either is drawn.
               */}
-              <h2 className="text-body font-semibold text-text">
+              <h2 className="text-h3 text-text">
                 Designer. Developer. Problem Solver.
               </h2>
               {/* text-small, matching the three virtue descriptions beside it
@@ -358,18 +388,16 @@ export default function Home() {
             */}
             <div className="grid gap-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border lg:border-l lg:border-border">
               {virtues.map((virtue) => (
-                // px-6, not more: the three titles have to each sit on one
-                // line for the descriptions below them to start at the same
-                // height, and "Thoughtful Design" is the one that decides how
-                // much padding the column can afford.
-                <div key={virtue.title} className="sm:px-6 lg:first:pl-9">
+                // 14px a side, matching the intro column — see the note on
+                // the grid above for why that exact number.
+                <div key={virtue.title} className="sm:px-3.5">
                   {/*
                     Icon beside the title on one line, not stacked above it in
                     a ring. The ring was the single biggest reason this section
                     read as busy: it drew a hard accent circle around every
                     item and pushed the title down a row for no gain.
                   */}
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     <svg
                       aria-hidden="true"
                       viewBox="0 0 24 24"
@@ -378,11 +406,11 @@ export default function Home() {
                       strokeWidth={virtue.strokeWidth ?? 1.75}
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="h-[1.35rem] w-[1.35rem] shrink-0 text-accent"
+                      className="h-5 w-5 shrink-0 text-accent"
                     >
                       {virtue.icon}
                     </svg>
-                    <h3 className="text-body font-semibold text-text">
+                    <h3 className="text-h3 text-text">
                       {virtue.title}
                     </h3>
                   </div>
@@ -411,6 +439,8 @@ export default function Home() {
         title="Let's Work Together"
         description="Have a project in mind or just want to say hi? I'd love to hear from you."
         ctaLabel="Get In Touch"
+        // Runs straight on from About, the way the mockup groups them.
+        tight
       />
 
       {/*
