@@ -1,6 +1,5 @@
 import Link from "next/link";
-import GlowBorder from "@/components/GlowBorder";
-import { warmGlowImage, warmPanel } from "@/lib/glow";
+import { EDGE_PEAK, warmEdgeBloom, warmEdgeImage, warmGlowImage } from "@/lib/glow";
 
 /*
   The home page "Services" section (CLAUDE.md §7) — symptom-worded triage
@@ -115,69 +114,215 @@ const unsure = {
 } as const;
 
 /*
-  The glow, at rest, on every card — the owner's request was that these match
-  the "Let's work together" panel, so both call the same warmGlow() (see
-  src/lib/glow.ts for where the curve comes from).
+  THE CARD SURFACE, REFITTED TO THE SERVICES MOCKUP (owner call).
 
-  Two numbers differ from the panel's defaults, and both follow from the
-  cards being a different shape. The ellipse is sized up (the panel is one wide
-  short band; a card is roughly a third of that width, so the same visual
-  falloff needs a larger percentage of its own box), and the peak is dialled
-  back to 14% — the panel's 32% is a single focal element on the page, whereas
-  six cards at that strength would read as an orange grid and drown the section
-  heading. Hover adds the rest as a separate overlay, which is what makes the
-  transition possible at all: color-mix percentages inside a gradient cannot be
-  animated, but the opacity of a layer sitting on top of one can.
+  What changed and why. These cards used to call warmPanel() at peak 14 with a
+  GlowBorder ringing all four sides, so that they matched the closing CTA panel
+  exactly — that was the previous owner call, and the note it replaced said the
+  two "cannot diverge again". The services mockup diverges them deliberately,
+  and the pixels are unambiguous about it:
+
+    top edge      rgb(242,106,2)   — accent, near full strength
+    left edge     rgb(49,38,37)    \
+    right edge    rgb(41,43,43)     >  --color-border, flat and neutral
+    bottom edge   rgb(36,36,38)    /
+
+  So the lit ring is gone: three sides are an ordinary hairline and only the
+  top is lit. The CTA panel is untouched and keeps warmPanel() — the cards are
+  simply their own treatment again.
+
+  NO BROWN TINT EITHER. warmPanel() lays --color-panel-brown over the gradient
+  at 16%, which is what made the live cards read muddy next to the mockup. The
+  mockup's card bottom samples (9,9,11) against a section background of (7,7,9)
+  — neutral, barely lifted, no warmth left down there at all. That is a plain
+  base with the glow above it, not warmPanel() — see the fill note below for
+  the grey that replaced the brown.
 */
-const CARD_SIZE: [number, number] = [70, 95];
 
 /*
-  Owner call: match the closing CTA panel exactly. These used to call
-  warmGlow() over --color-surface while the CTA had gained the deep-brown
-  overlay and a dark base, so "the same glow" had quietly become two different
-  treatments — the cards read brighter and more orange than the panel they
-  were supposed to match. Both now call warmPanel(), which is that treatment,
-  so they cannot diverge again.
+  The fill wash, fitted rather than guessed — median warmth (R-B) down a clear
+  strip of card 1, against its own base:
+
+     3% down  20      31% down  10      59% down   2
+    12% down  17      40% down   7      73% down   0
+    22% down  13      49% down   4
+
+  ln(warmth) against depth is a straight line, so the same exponential the rest
+  of glow.ts assumes holds here too; the vertical e-fold works out at 24% of
+  the card's height, about 38px.
+
+  OWNER CALLS on the three things the fit alone would not have given:
+
+  A CIRCLE, NOT AN ELLIPSE, CENTRED ON THE EDGE'S BRIGHT POINT. The fit gives
+  an ellipse peaking 45% across — wide, shallow, and its own thing. What was
+  asked for is a round pool of light hanging directly under the brightest part
+  of the lit top edge, so the two read as one source. Hence `radius` rather
+  than `size`, and `at: EDGE_PEAK% 0%` rather than a number of its own.
+
+  THE 70px IS CHOSEN, NOT FITTED, and the distinction matters because the two
+  numbers here look like they should agree and do not. FALLOFF places its
+  e-fold at exactly one radius, so honouring the measured 38px would mean
+  radius: 38px — a tight bright disc against the top edge, which is the
+  opposite of the soft pool being asked for. 70px is the compromise: the card
+  bottom still goes dark the way the mockup's does, while the pool stays wide
+  enough across the card to read as a round glow rather than a hotspot. A
+  circle cannot have both the mockup ellipse's tight vertical falloff and its
+  much wider horizontal spread; this splits the difference. The fitted figure
+  stays written down because it still describes that ellipse.
+
+  SAME ORANGE AS THE LIT EDGE, AND THAT ORANGE IS GLOW_COLOUR — an owner call
+  that overrides the mockup rather than following it, so it is worth being
+  straight about. Solving the mockup's brightest fill pixel, rgb(32,17,12) over
+  a card base of about rgb(9,9,11), for the alpha that reproduces its red:
+
+    --color-accent at 9.3%   predicts G 18.1, B 12.4   against actual 17, 12
+    #d63f00        at 11.2%  predicts G 15.1, B  9.8   against actual 17, 12
+
+  The two channels not used to fit it come out closer on --color-accent, so the
+  mockup's own fill is the brighter orange. Both this and the edge above it ran
+  that way for a pass — and next to the "Let's work together" panel, which is
+  #d63f00, the cards read as a second, lighter light source. The owner asked
+  for one colour across all three. #d63f00 it is; nothing here passes `colour`
+  any more, and the default is the point.
+
+  PEAK 10 SURVIVES THE SWITCH. #d63f00 carries R-B = 214 against accent's 229,
+  so the alpha needed to hit the mockup's warmth of 20 through a 15% grey moves
+  only from 9.3% to 10.6% — inside the rounding this was already using.
+
+  MUCH DIMMER THAN THE LINE IS NOT THE SAME AS FAINT. An earlier pass ran this
+  at peak 6 under a 55% grey and the glow vanished: "much dimmer" describes the
+  fill against the *line* it spills from, which is the same colour at full
+  strength, not against whatever the fill happened to be before.
+
+  THE GREY IS GENUINELY LOW-OPACITY, 15%. Its job is to knock the sharpness off
+  the orange and lift the card a touch off the page, not to mute it — the
+  mockup's card body sits only ~2 levels above its section background. Same
+  layer-order trick as warmPanel()'s brown: CSS paints the first background
+  layer on top, so the grey sits over the gradient rather than under it.
 */
-const CARD_GLOW = warmPanel({ size: CARD_SIZE, peak: 14 });
+const CARD_TINT = "color-mix(in srgb, var(--color-surface) 15%, transparent)";
+const CARD_GLOW_OPTIONS = {
+  radius: "70px",
+  // EDGE_PEAK, not a number typed out here: the owner's ask was that this be
+  // centred on the brightest point of the lit edge, so it reads as that edge
+  // spilling downward rather than as a second light source beside it. Sharing
+  // the constant is what keeps that true if the peak ever moves.
+  at: `${EDGE_PEAK}% 0%`,
+};
+const CARD_GLOW =
+  `linear-gradient(${CARD_TINT}, ${CARD_TINT}), ` +
+  `${warmGlowImage({ ...CARD_GLOW_OPTIONS, peak: 10 })}, var(--color-bg)`;
 
 /*
   The hover half, faded in over the resting one — a gradient's colour stops
   cannot be transitioned, so strength has to come from a second layer's
-  opacity. Still warmGlowImage() rather than warmPanel() on purpose: this
-  overlay only adds light on top of what is already there, and re-applying the
-  brown tint and the base would paint over the card underneath it.
+  opacity. warmGlowImage() rather than the full stack above: this overlay only
+  adds light on top of what is already there, and re-applying the grey and the
+  base would paint over the card underneath it.
 */
-const CARD_GLOW_HOVER = warmGlowImage({ size: CARD_SIZE, peak: 26 });
+const CARD_GLOW_HOVER = warmGlowImage({ ...CARD_GLOW_OPTIONS, peak: 22 });
 
-// §9.4: hover is a border shift, a subtle lift and a glow — not just a colour
-// change, and under 200ms. globals.css already neutralises the movement under
-// prefers-reduced-motion.
-// px-5 py-3.5 rather than a square p-5: owner call, 2026-08-18 — six cards of
-// two text lines each was a tall block, and the horizontal padding is what
-// keeps the label off the chip, so only the vertical half needed to give.
-// `border` is gone: the lit edge is a GlowBorder now, matching the CTA panel
-// (owner call). A flat hairline underneath it would show through wherever the
-// glow border has faded out, which is most of the card.
+/*
+  GRID, NOT A FLEX ROW. The mockup stacks the hint underneath the title and
+  indents it to the title's left edge, past the chip — a flex row of
+  [chip, text, arrow] cannot do that, because there the chip and the text block
+  are siblings and the hint lives inside the second one.
+
+  Three columns and two rows: the chip takes column 1 of the title's row, so it
+  centres against the title rather than against the whole card (measured: the
+  mockup's chip sits ~26px above each card's vertical centre, which is title
+  centre, not card centre); the hint takes column 2 of the second row, which is
+  what puts its left edge under the title's; and the arrow spans both rows in
+  column 3, staying near the card's centre where the mockup keeps it.
+
+  py-5 rather than the py-3.5 these carried: the mockup's cards come out ~157px
+  tall at this width against the 129px these were rendering, and the vertical
+  padding is where that whole difference sits.
+
+  `border` is back, and flat — see the surface note above for the samples that
+  put an ordinary hairline on three of the four sides.
+*/
 const cardBase =
-  "group relative flex h-full items-center gap-3.5 overflow-hidden rounded-2xl px-5 py-3.5 " +
+  "group relative grid h-full grid-cols-[auto_1fr_auto] gap-x-3.5 " +
+  "rounded-2xl border border-border px-5 py-5 " +
   "transition-all duration-200 hover:-translate-y-0.5";
 
-// Shrunk with the padding — a 44px chip inside a shorter card would set the
-// card's height on its own and undo the change.
 const chipBase =
-  "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-base";
+  "relative col-start-1 row-start-1 flex h-10 w-10 shrink-0 items-center " +
+  "justify-center self-center rounded-lg text-base";
 
-// aria-hidden: it is a visual affordance cue, and a link already announces
-// itself as a link.
-function Arrow() {
+/*
+  The lit top edge itself.
+
+  ASYMMETRIC INSET — left-2, right-4. The mockup insets both ends by the 16px
+  corner radius, which is the tangent point: exactly where the top edge stops
+  being straight. Owner call to start it further left than that, so the left
+  end now runs 8px into the corner arc, where the border has curved about 2px
+  away from it. That tiny overhang is deliberate and reads as the light
+  wrapping the corner rather than stopping short of it. The right end keeps the
+  tangent inset, where it no longer matters — warmEdgeImage() has faded to
+  nothing by then.
+
+  -top-px, AND THE CARD IS NOT overflow-hidden. Both follow from the same
+  thing: an absolutely positioned child is laid out against the padding box, so
+  at top-0 this sat *below* the card's own 1px top border and left a grey
+  hairline drawn over the light (measured: rgb(42,38,38) directly above the
+  orange). Pulling it up by that 1px puts it on the border row instead, where
+  the mockup has it. Clipping had to go with it — overflow-hidden cropped the
+  bloom to the card, so nothing glowed above the line at all, against the
+  mockup's clear rise over the 5px above it. The fill still respects the
+  corners without it, since a background is clipped by border-radius anyway;
+  only the hover overlay needed its own rounded-2xl to keep square corners from
+  poking out.
+
+  The bloom is a box-shadow rather than a blurred duplicate element: the mockup
+  carries it about 5px above the line and 4px below, near enough symmetric,
+  which is what a centred shadow spread already does, and it costs one property
+  instead of a second positioned span.
+*/
+function TopEdge({ className = "" }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className="relative ml-auto self-center pl-2 text-text-muted transition-all group-hover:translate-x-0.5 group-hover:text-accent"
+      className={`pointer-events-none absolute -top-px left-4 right-4 h-px ${className}`}
+      style={{
+        backgroundImage: warmEdgeImage(),
+        boxShadow: warmEdgeBloom(),
+      }}
+    />
+  );
+}
+
+/*
+  DRAWN, NOT THE "→" GLYPH, and accent at rest rather than muted.
+
+  Both come off the mockup, where this is a solid orange arrow on all six cards
+  — roughly 20px across with a ~2px stroke and an open chevron head. The glyph
+  this replaces rendered at the body font's own hairline weight and only
+  reached accent on hover, so it read as a faint grey tick beside a lit card
+  rather than as the card's affordance. An SVG is what lets the weight be set
+  at all; the character's is whatever Inter draws.
+
+  §9.2 is satisfied rather than bent: this is the action cue inside a link,
+  which is exactly what the rule reserves orange for.
+
+  aria-hidden, because a link already announces itself as a link.
+*/
+function Arrow() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="relative col-start-3 row-span-2 row-start-1 ml-2 h-5 w-5 shrink-0 self-center text-accent transition-transform duration-200 group-hover:translate-x-0.5"
     >
-      →
-    </span>
+      <path d="M4.5 12h14" />
+      <path d="M12.5 6l6 6-6 6" />
+    </svg>
   );
 }
 
@@ -186,9 +331,50 @@ function GlowOverlay({ background }: { background: string }) {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       style={{ background }}
     />
+  );
+}
+
+/*
+  One card, so the six service options and the "not sure" one cannot drift
+  apart. They were two near-identical copies of this markup before, already
+  differing by a stray indent, which is the drift a shared component prevents.
+*/
+function TriageCard({
+  href,
+  label,
+  hint,
+  emoji,
+  chipClass,
+}: {
+  href: string;
+  label: string;
+  hint: string;
+  emoji: string;
+  chipClass: string;
+}) {
+  return (
+    <Link href={href} className={cardBase} style={{ background: CARD_GLOW }}>
+      <GlowOverlay background={CARD_GLOW_HOVER} />
+      <TopEdge />
+      {/* The hover half of the edge, same trick as the fill overlay: a
+          gradient cannot be transitioned, so a brighter copy fades in over
+          the resting one. */}
+      <TopEdge className="opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+
+      <span aria-hidden="true" className={`${chipBase} ${chipClass}`}>
+        {emoji}
+      </span>
+      <span className="relative col-start-2 row-start-1 min-w-0 font-medium text-text">
+        {label}
+      </span>
+      <span className="relative col-start-2 row-start-2 mt-1 min-w-0 text-small text-text-muted">
+        {hint}
+      </span>
+      <Arrow />
+    </Link>
   );
 }
 
@@ -213,10 +399,7 @@ export default function ServicesSection() {
         Still an <h2> with the same id, so `aria-labelledby` and the document
         outline are unchanged; only the drawn size moved.
       */}
-      <h2
-        id="services-heading"
-        className="mt-2 max-w-[24ch] text-h3 text-text"
-      >
+      <h2 id="services-heading" className="mt-2 max-w-[24ch] text-h3 text-text">
         What can I help you with?
       </h2>
       <p className="mt-3 max-w-[52ch] text-small text-text-muted">
@@ -227,73 +410,15 @@ export default function ServicesSection() {
       <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {options.map((option) => (
           <li key={option.href}>
-            <Link
-              href={option.href}
-              className={cardBase}
-              style={{ background: CARD_GLOW }}
-            >
-              <GlowBorder size={CARD_SIZE} peak={70} />
-              {/* The hover half of the edge, same trick as the fill overlay:
-                  a gradient border cannot be transitioned, so a brighter one
-                  fades in over the resting one. This is what keeps §9.4s
-                  "border shifts toward accent on hover" — the flat
-                  hover:border-accent it replaced could not survive the move
-                  to a gradient edge. */}
-              <GlowBorder
-                size={CARD_SIZE}
-                peak={100}
-                className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-              />
-              <GlowOverlay background={CARD_GLOW_HOVER} />
-
-              <span aria-hidden="true" className={`${chipBase} ${option.chipClass}`}>
-                {option.emoji}
-              </span>
-              <span className="relative min-w-0">
-                <span className="block font-medium text-text">{option.label}</span>
-                <span className="mt-1 block text-small text-text-muted">
-                  {option.hint}
-                </span>
-              </span>
-              <Arrow />
-            </Link>
+            <TriageCard {...option} />
           </li>
         ))}
 
         <li>
-          {/* Same card as the five above it, down to the glow — the accent
-              border and the full-width row it used to get were dropped by owner
-              call (see the note on `unsure`). Only the chip still marks it. */}
-          <Link
-            href={unsure.href}
-            className={cardBase}
-            style={{ background: CARD_GLOW }}
-          >
-            <GlowBorder size={CARD_SIZE} peak={70} />
-              {/* The hover half of the edge, same trick as the fill overlay:
-                  a gradient border cannot be transitioned, so a brighter one
-                  fades in over the resting one. This is what keeps §9.4s
-                  "border shifts toward accent on hover" — the flat
-                  hover:border-accent it replaced could not survive the move
-                  to a gradient edge. */}
-              <GlowBorder
-                size={CARD_SIZE}
-                peak={100}
-                className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-              />
-              <GlowOverlay background={CARD_GLOW_HOVER} />
-
-            <span aria-hidden="true" className={`${chipBase} bg-accent-dim`}>
-              {unsure.emoji}
-            </span>
-            <span className="relative min-w-0">
-              <span className="block font-medium text-text">{unsure.label}</span>
-              <span className="mt-1 block text-small text-text-muted">
-                {unsure.hint}
-              </span>
-            </span>
-            <Arrow />
-          </Link>
+          {/* Only the accent-tinted chip and last position mark this one now —
+              see the note on `unsure` for the owner call that dropped the
+              accent border and the full-width row it used to get. */}
+          <TriageCard {...unsure} chipClass="bg-accent-dim" />
         </li>
       </ul>
     </section>

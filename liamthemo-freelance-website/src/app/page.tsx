@@ -73,26 +73,29 @@ const virtues: {
   {
     title: "Clean Code",
     description: "I write maintainable, scalable, and efficient code.",
-    // < >  — two chevrons, no slash (owner call).
+    // < / >  — the slash runs past both chevrons, top-right to bottom-left.
     //
-    // HEAVIER STROKE THAN THE OTHER TWO, and that is deliberate rather than a
-    // slip. Open strokes cover far less area than a closed ring or a
-    // filled-corner square, so at the shared 1.75 weight this glyph read as
-    // the small one however far its box was pushed out. Sized by rasterising
-    // all three and counting inked pixels rather than by eye: the ring is
-    // 3619 in a 96x96 box, and these chevrons land at 3290 in 91x89 — a
-    // little under on both, which is right, because a glyph this open reads
-    // slightly larger than its ink count suggests.
+    // THE SPACING IS MEASURED, NOT EYEBALLED. The first pass at restoring the
+    // slash kept the chevrons where the slashless version had left them, and
+    // the three strokes collided: the perpendicular distance from the slash to
+    // the nearest chevron arm was 1.97 units against a 2.45 stroke, so the
+    // glyph rendered as one fused blob rather than three marks. Chevrons
+    // widened (apex 4.0 -> 3.0) and arms shortened to clear it; the slash and
+    // the arms now sit 0.67 units apart at their closest, which survives the
+    // 20px render.
     //
-    // Dropping the slash cost about a third of the ink the three-stroke
-    // version had, so the weight went up again with it (2.45 -> 3.0) and the
-    // chevrons grew taller to hold the same box. Past ~3.2 they start to read
-    // chunky next to the pen and the ring.
-    strokeWidth: 3.0,
+    // HEAVIER STROKE THAN THE OTHER TWO, and that is deliberate. Open strokes
+    // cover far less area than a closed ring or a filled-corner square, so at
+    // the shared 1.75 this glyph read as the small one however far its box was
+    // pushed out. Sized by rasterising all three at 96x96 and counting inked
+    // pixels: ring 2042, pen 2391, this 1860 at w=2.3 — deliberately a little
+    // under, because a glyph this open reads larger than its ink count says.
+    strokeWidth: 2.3,
     icon: (
       <>
-        <path d="M9.4 4.6 4.4 12l5.0 7.4" />
-        <path d="M14.6 4.6 19.6 12l-5.0 7.4" />
+        <path d="M7.4 6.8 3 12l4.4 5.2" />
+        <path d="M16.6 6.8 21 12l-4.4 5.2" />
+        <path d="M14.5 3.4 9.5 20.6" />
       </>
     ),
   },

@@ -112,6 +112,34 @@ interface WarmGlowOptions {
    * an option on the shared one instead of a copy with different numbers.
    */
   at?: string;
+  /**
+   * Overrides GLOW_COLOUR for this one call. Taking the note on that constant
+   * at its word: "if a single surface ever needs its own glow colour, pass it
+   * rather than forking the constant."
+   *
+   * The home page's service cards are that surface. Owner call: their fill is
+   * the same orange as the lit top edge — --color-accent — rather than the
+   * deeper #d63f00 every other glow uses, so the card reads as light spilling
+   * from its own edge instead of as a second, differently-coloured source.
+   *
+   * `format: "rgba"` ignores this: that path exists for satori, which cannot
+   * resolve a CSS custom property, so it stays on the literal channel values.
+   */
+  colour?: string;
+  /**
+   * Draw a true circle of this radius instead of an ellipse, and ignore
+   * `size`.
+   *
+   * WHY IT CANNOT JUST BE A `size` WITH TWO EQUAL NUMBERS: those percentages
+   * are per-axis — 50% of the element's width and 50% of its height — so equal
+   * values on a box that is not square still give an ellipse. A circle needs a
+   * single length, which is what this takes.
+   *
+   * Owner call, for the service cards: their fill is a round pool of light
+   * centred under the bright point of the lit top edge, not the wide elliptical
+   * wash every panel on the site uses.
+   */
+  radius?: string;
 }
 
 /** See `format` — the factor that pulls every stop under satori's 100% ceiling. */
@@ -127,6 +155,8 @@ export function warmGlowImage({
   peak = 32,
   format = "color-mix",
   at = "0% 0%",
+  colour = GLOW_COLOUR,
+  radius,
 }: Omit<WarmGlowOptions, "base"> = {}): string {
   const scale = format === "rgba" ? SATORI_SCALE : 1;
   const [radiusX, radiusY] = size;
@@ -135,17 +165,24 @@ export function warmGlowImage({
     // Rounded to one decimal so the generated string stays readable in
     // devtools, and so it matches the values this replaced byte for byte.
     const opacity = Math.round(peak * factor * 10) / 10;
-    const colour =
+    const stopColour =
       format === "rgba"
         ? `rgba(${GLOW_RGB}, ${opacity / 100})`
-        : `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent)`;
-    return `${colour} ${(index * 50) / scale}%`;
+        : `color-mix(in srgb, ${colour} ${opacity}%, transparent)`;
+    return `${stopColour} ${(index * 50) / scale}%`;
   });
 
   const transparent = format === "rgba" ? `rgba(${GLOW_RGB}, 0)` : "transparent";
 
+  // `circle <length>` takes one radius; the satori scale trick is a per-axis
+  // percentage rescale and has nothing to rescale here, so that path stays on
+  // the ellipse (the OG images do not use `radius` — see the option's note).
+  const shape = radius
+    ? `circle ${radius}`
+    : `ellipse ${radiusX * scale}% ${radiusY * scale}%`;
+
   return (
-    `radial-gradient(ellipse ${radiusX * scale}% ${radiusY * scale}% at ${at}, ` +
+    `radial-gradient(${shape} at ${at}, ` +
     `${stops.join(", ")}, ${transparent} ${400 / scale}%)`
   );
 }
@@ -187,4 +224,74 @@ export function warmPanel({
   ...options
 }: WarmGlowOptions = {}): string {
   return `linear-gradient(${PANEL_TINT}, ${PANEL_TINT}), ${warmGlowImage(options)}, ${base}`;
+}
+
+/**
+ * The lit top edge on the home page's service cards.
+ *
+ * A DIFFERENT SHAPE FROM THE REST OF THIS FILE, hence its own function rather
+ * than another option on `warmGlow`. Everything above models light arriving
+ * from a corner and spreading as an ellipse; the services mockup lights the
+ * cards along their top border instead, so the falloff runs left-to-right
+ * along a line and there is no ellipse to size.
+ *
+ * OWNER CALL, and a departure from the mockup it was first fitted to. Sampling
+ * that mockup gave a line lit right across its run — 0.66 at the left corner,
+ * peaking at 0.15 across, and still 0.56 at the right — a highlight that
+ * merely leaned left. What was asked for instead: dark at both ends, brightest
+ * a fifth of the way in, and faded to nothing by the right corner.
+ *
+ * EDGE_PEAK IS EXPORTED because it is a shared position, not a private tuning
+ * number — the service cards centre their fill glow on the same point, so that
+ * the card reads as lit by its own edge rather than by a second source that
+ * happens to sit nearby. Moving the peak moves both.
+ *
+ * The tail is a decay rather than a straight ramp: a linear fade to zero
+ * leaves the midpoint visibly brighter than the eye expects, so the stops drop
+ * off quickly past the peak and then flatten out into the run-off.
+ */
+export const EDGE_PEAK = 20;
+
+export function warmEdgeImage(peak = 100): string {
+  const stops: [number, number][] = [
+    [0, 0],
+    [0.35, 5],
+    [0.68, 12],
+    [0.92, 16],
+    [1.0, EDGE_PEAK],
+    [0.9, 30],
+    [0.74, 42],
+    [0.5, 57],
+    [0.3, 72],
+    [0.13, 86],
+    [0, 100],
+  ];
+  const parts = stops.map(([factor, position]) => {
+    const opacity = Math.round(peak * factor * 10) / 10;
+    return `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent) ${position}%`;
+  });
+  return `linear-gradient(90deg, ${parts.join(", ")})`;
+}
+
+/**
+ * The bloom around that lit edge, as a `box-shadow`.
+ *
+ * Lives here rather than in the component so that the edge and its bloom
+ * cannot end up different colours — which is exactly what the owner corrected
+ * when both this and the cards' fill were still on --color-accent while the
+ * closing CTA panel was on GLOW_COLOUR. Keeping the constant private and
+ * handing out finished strings is what enforces that.
+ *
+ * TWO SHADOWS, NOT ONE. A single blur that reaches as far as the mockup's does
+ * is too weak near the line, and one tight enough near the line stops short.
+ * Measured against the mockup, excess brightness above the edge at 2/3/4/5px
+ * out runs 21.8 / 10.9 / 6.9 / 4.9; the pair below tracks that to within about
+ * a tenth at every step, where a single 6px shadow came in three times too
+ * faint.
+ */
+export function warmEdgeBloom(): string {
+  return (
+    `0 0 4px color-mix(in srgb, ${GLOW_COLOUR} 90%, transparent), ` +
+    `0 0 10px color-mix(in srgb, ${GLOW_COLOUR} 40%, transparent)`
+  );
 }
