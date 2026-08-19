@@ -113,20 +113,6 @@ interface WarmGlowOptions {
    */
   at?: string;
   /**
-   * Overrides GLOW_COLOUR for this one call. Taking the note on that constant
-   * at its word: "if a single surface ever needs its own glow colour, pass it
-   * rather than forking the constant."
-   *
-   * The home page's service cards are that surface. Owner call: their fill is
-   * the same orange as the lit top edge — --color-accent — rather than the
-   * deeper #d63f00 every other glow uses, so the card reads as light spilling
-   * from its own edge instead of as a second, differently-coloured source.
-   *
-   * `format: "rgba"` ignores this: that path exists for satori, which cannot
-   * resolve a CSS custom property, so it stays on the literal channel values.
-   */
-  colour?: string;
-  /**
    * Draw a true circle of this radius instead of an ellipse, and ignore
    * `size`.
    *
@@ -155,7 +141,6 @@ export function warmGlowImage({
   peak = 32,
   format = "color-mix",
   at = "0% 0%",
-  colour = GLOW_COLOUR,
   radius,
 }: Omit<WarmGlowOptions, "base"> = {}): string {
   const scale = format === "rgba" ? SATORI_SCALE : 1;
@@ -168,11 +153,12 @@ export function warmGlowImage({
     const stopColour =
       format === "rgba"
         ? `rgba(${GLOW_RGB}, ${opacity / 100})`
-        : `color-mix(in srgb, ${colour} ${opacity}%, transparent)`;
+        : `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent)`;
     return `${stopColour} ${(index * 50) / scale}%`;
   });
 
-  const transparent = format === "rgba" ? `rgba(${GLOW_RGB}, 0)` : "transparent";
+  const transparent =
+    format === "rgba" ? `rgba(${GLOW_RGB}, 0)` : "transparent";
 
   // `circle <length>` takes one radius; the satori scale trick is a per-axis
   // percentage rescale and has nothing to rescale here, so that path stays on
@@ -252,25 +238,75 @@ export function warmPanel({
  */
 export const EDGE_PEAK = 20;
 
-export function warmEdgeImage(peak = 100): string {
-  const stops: [number, number][] = [
-    [0, 0],
-    [0.35, 5],
-    [0.68, 12],
-    [0.92, 16],
-    [1.0, EDGE_PEAK],
-    [0.9, 30],
-    [0.74, 42],
-    [0.5, 57],
-    [0.3, 72],
-    [0.13, 86],
-    [0, 100],
-  ];
+/** Renders a [relative brightness, position%] list into the gradient. */
+function edgeGradient(stops: [number, number][], peak: number): string {
   const parts = stops.map(([factor, position]) => {
     const opacity = Math.round(peak * factor * 10) / 10;
     return `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent) ${position}%`;
   });
   return `linear-gradient(90deg, ${parts.join(", ")})`;
+}
+
+export function warmEdgeImage(peak = 100): string {
+  return edgeGradient(
+    [
+      [0, 0],
+      [0.35, 5],
+      [0.68, 12],
+      [0.92, 16],
+      [1.0, EDGE_PEAK],
+      [0.9, 30],
+      [0.74, 42],
+      [0.5, 57],
+      [0.3, 72],
+      [0.13, 86],
+      [0, 100],
+    ],
+    peak,
+  );
+}
+
+/**
+ * The same lit edge, but peaking near the middle — what the PROJECTS mockup
+ * puts on its cards, as against the services mockup's left-weighted one.
+ *
+ * WHY TWO PROFILES RATHER THAN ONE SHARED CURVE. They are genuinely different
+ * shapes, not the same shape shifted: the services edge starts at full and
+ * runs off to nothing in one direction, while this rises and falls. Sampling
+ * the projects mockup's three cards along their top edges, as brightness over
+ * background relative to each card's own peak:
+ *
+ *   card 1   0 .33 .48 .74 1.0 .89 .56 .36 .28 .26 .01   (peak 44% across)
+ *   card 2   0 .46 .66 1.0 .57 .33 .23 .25 .24 .30 .02   (peak 29%)
+ *   card 3   0 .62 .74 .77 1.0 .79 .69 .59 .57 .63 .01   (peak 40%)
+ *
+ * The three disagree in detail — it is a painted mockup, not a spec — but they
+ * agree on the shape that matters: dark at both corners, brightest a little
+ * left of centre. The curve below is fitted to that consensus at 42%, not
+ * traced from any one of them.
+ *
+ * A NOTE ON COLOUR. Those peaks sample rgb(253,188,65) / (251,186,23) /
+ * (251,130,33) — hotter and markedly yellower than the services mockup's
+ * rgb(242,106,2), which would put the projects cards on a different orange
+ * from everything else. Owner call to keep one glow colour across the site, so
+ * this shares GLOW_COLOUR with the rest of the file; only the profile differs.
+ */
+export function warmEdgeCentreImage(peak = 100): string {
+  return edgeGradient(
+    [
+      [0, 0],
+      [0.42, 8],
+      [0.66, 18],
+      [0.88, 30],
+      [1.0, 42],
+      [0.88, 54],
+      [0.68, 66],
+      [0.46, 78],
+      [0.24, 90],
+      [0, 100],
+    ],
+    peak,
+  );
 }
 
 /**
