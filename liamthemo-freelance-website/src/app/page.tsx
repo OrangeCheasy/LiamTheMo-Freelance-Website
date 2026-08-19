@@ -52,6 +52,70 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+/*
+  The three About Me items, lifted out of the JSX so the section markup stays
+  readable now that it carries the divider structure.
+
+  ICONS ARE THE MOCKUP'S, redrawn from it rather than reused from the previous
+  pass, where all three were subtly wrong: "Clean Code" was a bare pair of
+  chevrons with no slash between them, "Thoughtful Design" was a plain pencil
+  where the mockup draws a pen over a square, and "Problem Solver" had a solid
+  centre dot where the mockup has a second ring. Stroke-only, 24-unit box, so
+  they sit on the same optical weight as each other.
+*/
+const virtues: {
+  title: string;
+  description: string;
+  /** Overrides the shared 1.75 where a glyph needs it — see "Clean Code". */
+  strokeWidth?: number;
+  icon: React.ReactNode;
+}[] = [
+  {
+    title: "Clean Code",
+    description: "I write maintainable, scalable, and efficient code.",
+    // < / >  — the slash spans the full height, past both chevrons.
+    //
+    // HEAVIER STROKE THAN THE OTHER TWO, and that is the fix rather than a
+    // slip. Matching bounding boxes was not enough: three open strokes cover
+    // far less area than a closed ring or a filled-corner square, so at a
+    // shared 1.75 weight this glyph rendered ~30% less ink than its
+    // neighbours and read as the small one no matter how far the box was
+    // pushed out. Measured by rasterising all three and counting inked
+    // pixels — 2768 for this against 3619 for the ring — then raising only
+    // this one's weight until they matched (3616 at 2.45).
+    strokeWidth: 2.45,
+    icon: (
+      <>
+        <path d="M8.8 5.8 4.0 12l4.8 6.2" />
+        <path d="M15.2 5.8 20.0 12l-4.8 6.2" />
+        <path d="M13.5 4.2 10.5 19.8" />
+      </>
+    ),
+  },
+  {
+    title: "Thoughtful Design",
+    description: "I design with clarity, purpose, and the user in mind.",
+    // Pen over a square, the square left open at the corner the pen crosses.
+    icon: (
+      <>
+        <path d="M12.5 3.5H5.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7" />
+        <path d="M17.6 3a1.9 1.9 0 0 1 2.7 2.7l-7.7 7.7-3.3.9.9-3.3z" />
+      </>
+    ),
+  },
+  {
+    title: "Problem Solver",
+    description: "I love solving complex problems with simple, elegant solutions.",
+    // Two concentric rings — the inner one is a ring, not a filled dot.
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="8.6" />
+        <circle cx="12" cy="12" r="3" />
+      </>
+    ),
+  },
+];
+
 export default function Home() {
   return (
     <>
@@ -88,16 +152,56 @@ export default function Home() {
                 overshoots that; text-h1 (32-44px) is the closest existing
                 scale step to the ~34px that ratio implies against text-body.
               */}
+              {/*
+                Three tiers of ink, matching the mockup (owner call): the
+                greeting in --text, the name in accent, and the two lines that
+                say what the work is in --text-secondary — dimmer than the
+                greeting, clearly brighter than the paragraph under it. The
+                whole heading used to be one flat --text, which flattened that
+                hierarchy into a single block of white.
+
+                The tier lives on the spans, not the h1, so the greeting keeps
+                full-strength ink rather than everything stepping down together.
+              */}
               <h1 className="max-w-[18ch] text-h1 text-text">
                 <span className="block">
                   Hi, I&apos;m <span className="text-accent">Liam</span>.
                 </span>
-                <span className="block">I design and build</span>
-                <span className="block">digital experiences.</span>
+                <span className="block text-text-secondary">
+                  I design and build
+                </span>
+                <span className="block text-text-secondary">
+                  digital experiences.
+                </span>
               </h1>
+              {/*
+                The mockup's literal words (owner call), same override the
+                heading above already runs on.
+
+                Worth knowing what it costs, flagged rather than swapped
+                quietly: this paragraph was the only line in the hero that
+                named what is sold and to whom, and §11 asks the hero to do
+                outcome work — it calls out "I design and build digital
+                experiences" by name as the phrasing that "tells a restaurant
+                owner nothing". The hero is now identity-first throughout, so
+                the first thing on the page that names a service is the
+                Services section, which this same pass moved to the bottom.
+
+                The metadata and OG descriptions below deliberately did NOT
+                follow. They still carry the outcome wording, because they are
+                what a search result shows and §12 wants each page targeting a
+                plain-language phrase someone would actually search. The note
+                on the metadata block saying hero and OG copy move together no
+                longer holds; that divergence is intentional.
+
+                The break after "creating" is the owner's, so <br /> rather
+                than letting it wrap — but only from sm up, since forcing it
+                on a narrow phone would leave a ragged short line.
+              */}
               <p className="mt-6 max-w-[52ch] text-body text-text-muted">
-                Custom automation, spreadsheets, websites, and technology
-                solutions for individuals and small businesses.
+                I&apos;m a designer and developer who enjoys creating
+                <br className="hidden sm:inline" /> clean, functional, and
+                user-focused solutions.
               </p>
 
               {/*
@@ -173,14 +277,6 @@ export default function Home() {
       </section>
 
       {/*
-        Owner call, 2026-08-17: the Services section §7 said was planned.
-        Lands after Featured Work and anchors `#services`, which is where the
-        header nav's old `/#services` item pointed before it was relabelled
-        "Home".
-      */}
-      <ServicesSection />
-
-      {/*
         Owner override, 2026-08-17: the three-virtue trio (§9.6's named
         anti-goal, §11's "no generic virtue blocks", §16's "owner chose to
         cut it entirely") is back, because the owner supplied a new mockup
@@ -189,72 +285,113 @@ export default function Home() {
         stop contradicting this; flagging here rather than silently drifting.
       */}
       <section className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,20rem)_1fr] lg:items-start">
-          <div>
-            <p className="text-small font-medium text-accent">About Me</p>
-            <h2 className="mt-2 max-w-[24ch] text-h2 text-text">
-              Designer. Developer. Problem Solver.
-            </h2>
-            <p className="mt-4 max-w-[60ch] text-body text-text-muted">
-              I&apos;m Liam, a designer and developer based in Canada. I enjoy
-              turning ideas into clean, functional solutions with a focus on
-              simplicity and impact. When I&apos;m not coding or designing,
-              you can find me learning something new or working on a side
-              project.
-            </p>
-          </div>
+        {/*
+          RESTRUCTURED TO THE MOCKUP (owner call): the old version stacked a
+          circled icon above each title in three free-floating columns, which
+          read as three loose cards rather than one section. The mockup is
+          built from rules instead — a hairline above the whole block, and a
+          vertical rule between the intro and each virtue — so the four
+          columns read as one row of related things. Nothing here is a card
+          any more; the structure is doing the work.
 
-          <div className="grid gap-8 sm:grid-cols-3">
-            {[
-              {
-                title: "Clean Code",
-                description:
-                  "I write maintainable, scalable, and efficient code.",
-                icon: <path d="m8 6-4 6 4 6M16 6l4 6-4 6" />,
-              },
-              {
-                title: "Thoughtful Design",
-                description:
-                  "I design with clarity, purpose, and the user in mind.",
-                icon: (
-                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                ),
-              },
-              {
-                title: "Problem Solver",
-                description:
-                  "I love solving complex problems with simple, elegant solutions.",
-                icon: (
-                  <>
-                    <circle cx="12" cy="12" r="9" />
-                    <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" />
-                  </>
-                ),
-              },
-            ].map((virtue) => (
-              <div key={virtue.title}>
-                <div className="flex h-11 w-11 items-center justify-center rounded-full border border-accent text-accent">
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-5 w-5"
-                  >
-                    {virtue.icon}
-                  </svg>
+          Dividers are --border, never accent (§9.2): a rule is not an action.
+          The icons stay accent, which is the same documented override the
+          section labels run on — the mockup sets them orange and §9 makes the
+          mockup authoritative where it and §9.2 disagree.
+        */}
+        <div className="border-t border-border pt-8">
+          {/*
+            The label sits above the whole row rather than inside the intro
+            column (owner call). That is what lets the four titles below —
+            "Designer. Developer. Problem Solver." and the three virtue names
+            — start on one line: with the label inside the column, the intro
+            heading was always pushed one line lower than the virtues it was
+            supposed to sit beside.
+          */}
+          <p className="text-small font-medium text-accent">About Me</p>
+
+          {/*
+            No `items-start`: grid children stretch by default, and that is
+            what makes the rules run the full height of the block the way the
+            mockup draws them. Pinned to the top instead, each rule stopped at
+            the bottom of its own three lines of text and left the taller
+            intro column hanging past it — which was most of why this section
+            still read as unfinished after the icons were fixed.
+          */}
+          {/* mt-2 — the same label-to-content gap the Services section uses
+              between "Services" and "What can I help you with?" (owner call),
+              so the two sections open on an identical rhythm. */}
+          <div className="mt-2 grid gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-0">
+            <div className="lg:pr-12">
+              {/*
+                Sized to match the virtue titles exactly (owner call), not
+                stepped down from text-h2 by eye — they are peers on one row
+                now, so they share one set of classes. Still an <h2>: it is
+                the section's heading and the three below it are <h3>s, and
+                that relationship is what a screen reader reads, independent
+                of how large either one is drawn.
+              */}
+              <h2 className="text-body font-semibold text-text">
+                Designer. Developer. Problem Solver.
+              </h2>
+              {/* text-small, matching the three virtue descriptions beside it
+                  (owner call) — at text-body it was the one paragraph in the
+                  row set larger than its neighbours. */}
+              <p className="mt-3 max-w-[52ch] text-small text-text-muted">
+                I&apos;m Liam, a designer and developer based in Canada. I
+                enjoy turning ideas into clean, functional solutions with a
+                focus on simplicity and impact. When I&apos;m not coding or
+                designing, you can find me learning something new or working
+                on a side project.
+              </p>
+            </div>
+
+            {/*
+              divide-x rather than a border on each child: it draws a rule
+              between columns and none on the outside edges, which is exactly
+              the mockup and is one class instead of a first:/last: pair that
+              has to be re-reasoned every time the count changes.
+
+              The rules only exist once the columns sit side by side. Stacked
+              on a phone they would be horizontal lines pretending to be
+              vertical ones, so below sm this is a plain gap.
+            */}
+            <div className="grid gap-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border lg:border-l lg:border-border">
+              {virtues.map((virtue) => (
+                // px-6, not more: the three titles have to each sit on one
+                // line for the descriptions below them to start at the same
+                // height, and "Thoughtful Design" is the one that decides how
+                // much padding the column can afford.
+                <div key={virtue.title} className="sm:px-6 lg:first:pl-9">
+                  {/*
+                    Icon beside the title on one line, not stacked above it in
+                    a ring. The ring was the single biggest reason this section
+                    read as busy: it drew a hard accent circle around every
+                    item and pushed the title down a row for no gain.
+                  */}
+                  <div className="flex items-center gap-2.5">
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={virtue.strokeWidth ?? 1.75}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-[1.35rem] w-[1.35rem] shrink-0 text-accent"
+                    >
+                      {virtue.icon}
+                    </svg>
+                    <h3 className="text-body font-semibold text-text">
+                      {virtue.title}
+                    </h3>
+                  </div>
+                  <p className="mt-3 max-w-[24ch] text-small text-text-muted">
+                    {virtue.description}
+                  </p>
                 </div>
-                <h3 className="mt-4 text-body font-semibold text-text">
-                  {virtue.title}
-                </h3>
-                <p className="mt-2 text-small text-text-muted">
-                  {virtue.description}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -265,12 +402,39 @@ export default function Home() {
         own note on why). No secondary link here either, unlike other pages'
         CTASection — the header nav's Contact button already covers a second,
         lower-commitment path to the same destination.
+
+        Sits directly under About (owner call), which is the mockup's own
+        sequence — the mockup has no Services section, so About into "Let's
+        Work Together" is how it closes.
       */}
       <CTASection
         title="Let's Work Together"
-        description={"Have a project in mind or just want to say hi?\nI'd love to hear from you."}
+        description="Have a project in mind or just want to say hi? I'd love to hear from you."
         ctaLabel="Get In Touch"
       />
+
+      {/*
+        Services last (owner call). Two things worth knowing about this order,
+        flagged rather than moved quietly:
+
+        §2's FIRST success criterion is "does a non-technical visitor find
+        their own problem within one screen of scrolling", and it names this
+        section as the thing that satisfies it. It is now the last section on
+        the page, behind the hero, the work grid, About and the CTA — several
+        screens for the small-business visitor §1 says arrives not knowing
+        what the work is called.
+
+        §2's THIRD is "does every page end with a path to the form". The home
+        page now ends on Services rather than the CTA. Not a dead end — the
+        sixth card goes straight to /contact?topic=unsure and the other five
+        reach service pages that each close with their own CTA — but the
+        direct path is one hop further than it was.
+
+        Both are reversible in one move if the page underperforms: this block
+        and the CTASection above it swap back. CLAUDE.md §7 and §15 still
+        describe the original order and need a pass either way.
+      */}
+      <ServicesSection />
     </>
   );
 }

@@ -39,17 +39,27 @@
 const FALLOFF = [1, 0.607, 0.368, 0.223, 0.135, 0.082, 0.05] as const;
 
 /**
- * The glow colour is a literal #ff3a00 rather than `--color-accent` (#FF6A1A).
+ * The glow colour is a literal hex rather than `--color-accent` (#FF6A1A).
  * This is the one deliberate exception to §9.1's "never hardcode a hex value":
  * an explicit owner colour choice for this one effect, not a design-system
  * value, so it stays local to this file instead of growing a global token that
  * nothing else would ever use.
+ *
+ * Deepened from #ff3a00 to #d63f00 (owner call). #ff3a00 is a near-neon
+ * orange-red at full channel; the new value is the same hue family carrying
+ * more pigment and less light, which is what "deeper" asks for.
+ *
+ * ONE COLOUR, EVERY GLOW. Changing it here moves the closing CTA panel and its
+ * border, the home page's service cards, the service pages' problems panel,
+ * the hero's rim light and the generated OG images together — that is the
+ * point of this file existing (§9.4), not a side effect. If a single surface
+ * ever needs its own glow colour, pass it rather than forking the constant.
  */
-const GLOW_COLOUR = "#ff3a00";
+const GLOW_COLOUR = "#d63f00";
 
 /** The same colour as channel values, for renderers that cannot parse hex in
     color-mix() — see `format` below. */
-const GLOW_RGB = "255, 58, 0";
+const GLOW_RGB = "214, 63, 0";
 
 interface WarmGlowOptions {
   /**
@@ -88,6 +98,20 @@ interface WarmGlowOptions {
    * past 100% correctly.
    */
   format?: "color-mix" | "rgba";
+  /**
+   * Where the ellipse is centred, as a CSS background-position pair.
+   *
+   * Defaults to the top-left corner, which is what every panel using this
+   * wants: the fit in the comment above was measured from a panel's own top-
+   * left fill corner, and moving the centre does not change the falloff curve,
+   * only where it starts from.
+   *
+   * Added for the hero composition (HeroArt.tsx), which needs the same warm
+   * light coming from under the panels rather than from a corner. §9.4 says
+   * not to hand-write a second radial gradient for a new element, so this is
+   * an option on the shared one instead of a copy with different numbers.
+   */
+  at?: string;
 }
 
 /** See `format` — the factor that pulls every stop under satori's 100% ceiling. */
@@ -102,6 +126,7 @@ export function warmGlowImage({
   size = [32, 52],
   peak = 32,
   format = "color-mix",
+  at = "0% 0%",
 }: Omit<WarmGlowOptions, "base"> = {}): string {
   const scale = format === "rgba" ? SATORI_SCALE : 1;
   const [radiusX, radiusY] = size;
@@ -120,7 +145,7 @@ export function warmGlowImage({
   const transparent = format === "rgba" ? `rgba(${GLOW_RGB}, 0)` : "transparent";
 
   return (
-    `radial-gradient(ellipse ${radiusX * scale}% ${radiusY * scale}% at 0% 0%, ` +
+    `radial-gradient(ellipse ${radiusX * scale}% ${radiusY * scale}% at ${at}, ` +
     `${stops.join(", ")}, ${transparent} ${400 / scale}%)`
   );
 }

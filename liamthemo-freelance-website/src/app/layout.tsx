@@ -29,9 +29,12 @@ export const metadata: Metadata = {
   title: "LiamTheMo",
   description:
     "Custom automation, spreadsheets, websites, and local tech help for individuals and small businesses.",
-  // TODO: swap public/icon.svg for the real logo once it's designed, then
-  // remove this comment (CLAUDE.md-style placeholder note).
-  icons: { icon: "/icon.svg" },
+  // No `icons` entry on purpose. The real mark now lives at src/app/icon.svg
+  // and src/app/favicon.ico, both generated from the owner's artwork (see
+  // Logo.tsx), and Next's file convention picks those up and emits the right
+  // <link> tags on its own. Declaring `icons` here would only re-point at the
+  // deleted public/icon.svg placeholder — a pink rounded square with a serif
+  // "L", which is what the browser tab was showing.
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

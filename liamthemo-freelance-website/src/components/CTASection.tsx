@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { warmGlow } from "@/lib/glow";
+import { warmGlowImage } from "@/lib/glow";
 import { CTA } from "@/lib/nav";
 import type { ServiceSlug } from "@/lib/types";
 
@@ -30,7 +30,7 @@ import type { ServiceSlug } from "@/lib/types";
 interface CTASectionProps {
   title?: string;
   description?: string;
-  /** Overrides the shared CTA.label ("Contact now") for this one instance —
+  /** Overrides the shared CTA.label ("Contact Me") for this one instance —
       only the home page needs "Get In Touch" to match the mockup. */
   ctaLabel?: string;
   /** Optional second, lower-commitment destination. */
@@ -43,6 +43,14 @@ interface CTASectionProps {
    */
   topic?: ServiceSlug;
 }
+
+/**
+ * The deep-brown overlay, at the low opacity the mockup's panel implies.
+ * Expressed with color-mix so the colour itself stays a token (§9.1) rather
+ * than being respelled as an rgba() literal here.
+ */
+const PANEL_TINT =
+  "color-mix(in srgb, var(--color-panel-brown) 16%, transparent)";
 
 export default function CTASection({
   title = "Tell me what you're trying to get done",
@@ -69,19 +77,83 @@ export default function CTASection({
           the first time either was touched. The default arguments reproduce
           what was inline here byte for byte, so this panel is unchanged.
         */}
+        {/*
+          THREE BACKGROUND LAYERS, and the order is the whole point. CSS
+          paints the first layer on top, so this reads: deep-brown overlay,
+          then the warm glow, then the page-dark base underneath.
+
+          The brown has to be ABOVE the gradient. The owner's note was that
+          this panel looked brighter and more orange than the mockup, and
+          sampling the mockup bears it out — its field is #100c09 and its
+          brightest corner only #201008, where the old build ran the glow at
+          peak 32 over --color-surface and landed several times hotter. A
+          darker base alone cannot fix that, because the glow is painted on
+          top of the base; only a layer over the glow mutes the orange.
+
+          Peak dropped 32 -> 14 for the same reason. That number was fitted
+          from the PREVIOUS mockup (the derivation is still in glow.ts and
+          still correct for the panels that use the default); this panel is
+          simply darker in the new one. Every other warmGlow() caller is
+          untouched — the change is an argument here, not a new default.
+        */}
         <div
-          className="flex flex-col gap-4 rounded-2xl px-6 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:pt-5 sm:pb-4"
-          style={{ background: warmGlow() }}
+          className="relative flex flex-col gap-4 rounded-2xl px-6 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:pt-5 sm:pb-4"
+          style={{
+            background: `linear-gradient(${PANEL_TINT}, ${PANEL_TINT}), ${warmGlowImage({ peak: 14 })}, var(--color-bg)`,
+          }}
         >
+          {/*
+            THE GLOWING BORDER (owner call). The same fitted falloff as the
+            panel fill behind it, run at a much higher peak so it reads as a
+            lit edge rather than a wash — brightest at the top-left corner the
+            glow originates from, gone by the opposite corner. That is the
+            point: a flat 1px border would contradict §9.4's "depth comes from
+            contrast and warm glow, not hard edges", whereas a border that
+            fades with the same curve is the glow's own outline.
+
+            Drawn as a masked ring rather than a `border`, because a border
+            takes a single colour and this one is a gradient: the element is
+            filled edge to edge with the gradient, then masked so only its
+            1px padding survives. `mask-composite: exclude` (and the -webkit-
+            spelling for Safari) is what subtracts the middle.
+
+            Not accent-coloured by accident — the glow colour is the one
+            documented exception in glow.ts, and this panel is a surface, not
+            a control, so §9.2 is not in play.
+          */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 rounded-2xl"
+            style={{
+              padding: "1px",
+              backgroundImage: warmGlowImage({ peak: 95 }),
+              WebkitMask:
+                "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              WebkitMaskComposite: "xor",
+              mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              maskComposite: "exclude",
+            }}
+          />
+
           <div>
             <h2 id="cta-heading" className="max-w-[26ch] text-h3 text-text">
               {title}
             </h2>
-            {/* whitespace-pre-line: lets a caller force a line break with a
-                literal \n (the home page's two-sentence version does) while
-                every other caller's plain string renders exactly as before —
-                no \n present, nothing changes. */}
-            <p className="mt-1.5 max-w-[48ch] whitespace-pre-line text-small text-text-muted">
+            {/*
+              whitespace-pre-line stays so a caller can still force a break
+              with a literal \n, though no caller does any more — the home
+              page's version used to and now runs as one line (owner call).
+
+              max-w raised 48ch -> 70ch for that: at 48ch the home page's
+              sentence wrapped no matter what the string did. 70ch is still a
+              real measure rather than "no limit", so a longer description on
+              another page cannot run the full width of the panel.
+
+              font-light is the "thinner" the owner asked for. Inter is loaded
+              as a variable font (see layout.tsx), so weight 300 is a real
+              instance here, not a browser-synthesised fake.
+            */}
+            <p className="mt-1.5 max-w-[70ch] whitespace-pre-line text-small font-light text-text-muted">
               {description}
             </p>
           </div>

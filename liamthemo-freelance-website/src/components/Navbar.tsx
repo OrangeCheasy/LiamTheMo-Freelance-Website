@@ -15,6 +15,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import Logo from "@/components/Logo";
 import { CTA, mainNav, SITE_NAME } from "@/lib/nav";
 
 const FOCUSABLE = "a[href], button:not([disabled])";
@@ -116,17 +117,21 @@ export default function Navbar() {
     <header ref={headerRef} className="sticky top-0 z-50 bg-bg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
         {/*
-          Mockup mark: "lm" set in the display face, no icon graphic — replaces
-          the old spelled-out wordmark + icon.svg placeholder. aria-label keeps
-          the accessible name as the full site name; a screen reader shouldn't
-          announce two meaningless letters.
+          The real "lm" mark (see Logo.tsx). This used to be the letters "lm"
+          typed in the display face — close, but not the logo: the actual mark
+          is a custom ligature where the l and m share a joined stroke, and it
+          is a different orange. Both are now correct and come from one source.
+
+          aria-label keeps the accessible name as the full site name; the mark
+          itself is aria-hidden, so a screen reader announces "LiamTheMo"
+          rather than two meaningless letters.
         */}
         <Link
           href="/"
           aria-label={SITE_NAME}
-          className="font-display text-2xl font-bold tracking-tight text-accent"
+          className="text-logo transition-colors hover:text-accent-hover"
         >
-          lm
+          <Logo className="h-5 w-auto" />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-6 md:flex">

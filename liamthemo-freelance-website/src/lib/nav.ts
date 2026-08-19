@@ -37,6 +37,6 @@ export const mainNav: readonly NavLink[] = [
 ];
 
 /** Where every call to action points. */
-export const CTA = { href: "/contact", label: "Contact now" } as const;
+export const CTA = { href: "/contact", label: "Contact Me" } as const;
 
 export const SITE_NAME = "LiamTheMo";
