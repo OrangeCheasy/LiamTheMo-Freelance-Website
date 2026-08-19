@@ -65,8 +65,20 @@ export default function CTASection({
 }: CTASectionProps) {
   const ctaHref = topic ? `${CTA.href}?topic=${topic}` : CTA.href;
 
+  /*
+    NO `bg-bg` ON THE SECTION, DELIBERATELY. It used to paint --color-bg across
+    its full width. That is the same colour <body> already paints, so it drew
+    nothing on any page — right up until /portfolio put a decorative field
+    behind its content, at which point this became an opaque band that cut the
+    field off dead on the section's top edge, margins included. Measured: the
+    sparks stopped at y=1478 against this section starting at 1480.
+
+    An opaque page-coloured fill that is invisible everywhere and destructive
+    in one place is worth removing rather than working around, so the panel
+    below keeps its own background and the section itself is transparent.
+  */
   return (
-    <section aria-labelledby="cta-heading" className="bg-bg">
+    <section aria-labelledby="cta-heading">
       <div
         className={`mx-auto max-w-6xl px-5 pb-6 sm:px-8 sm:pb-8 ${tight ? "pt-0" : "pt-6 sm:pt-8"}`}
       >

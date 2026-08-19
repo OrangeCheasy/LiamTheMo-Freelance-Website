@@ -1,7 +1,9 @@
 import Link from "next/link";
+import LitEdge from "@/components/LitEdge";
 import CoverArt from "@/components/CoverArt";
 import type { Project } from "@/lib/types";
 import { SERVICE_META } from "@/lib/types";
+import { warmEdgeCentreImage } from "@/lib/glow";
 
 /*
   One card per case study on /portfolio (CLAUDE.md §5, §15 step 4).
@@ -44,16 +46,36 @@ export default function ProjectCard({
         // user saw a 3px white ring (the initial values) fade into the 2px
         // accent one instead of the accent ring appearing at once. Caught by
         // tabbing the page, which is exactly why §12 asks for that rather
-        // than reading the code. These three are all the hover actually
-        // needs.
-        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_0_28px_var(--color-accent-dim)]"
+        // than reading the code. Down to transform alone now that the border
+        // and shadow no longer move on hover — see the lit edge below.
+        className="group relative flex h-full flex-col rounded-2xl border border-border bg-surface transition-transform duration-200 hover:-translate-y-0.5"
       >
+        {/*
+          The lit top edge the projects mockup puts on every card, centred
+          rather than left-weighted — see warmEdgeCentreImage for the three
+          sampled profiles it was fitted to.
+
+          THIS REPLACED hover:border-accent + an accent box-shadow. That was
+          the pre-services hover idiom, and leaving it would have given the
+          site two different ways for a card to respond to a pointer within one
+          scroll of each other. The edge brightening is now the whole hover, as
+          on the triage cards, plus the lift both already had.
+
+          NOTE `overflow-hidden` IS GONE from the card. It cropped the bloom
+          away above the line; the cover's own wrapper clips the image to the
+          rounded corners instead, which is all it was doing here.
+        */}
+        <LitEdge image={warmEdgeCentreImage()} />
+        <LitEdge
+          image={warmEdgeCentreImage()}
+          className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        />
         {/*
           3:2, matching the 1536x1024 cover sources — full image, no crop, for
           the common case. bg-surface-2 shows only where a `contain` cover
           letterboxes.
         */}
-        <div className="relative aspect-[3/2] w-full overflow-hidden border-b border-border bg-surface-2">
+        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-2xl border-b border-border bg-surface-2">
           <CoverArt
             project={project}
             priority={priority}

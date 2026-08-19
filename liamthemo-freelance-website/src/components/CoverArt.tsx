@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Project } from "@/lib/types";
-import { SERVICE_META } from "@/lib/types";
+import ServiceGlyph from "@/components/ServiceGlyph";
 
 /*
   The 3:2 card face shared by /portfolio's ProjectCard and the home page's
@@ -14,31 +14,25 @@ import { SERVICE_META } from "@/lib/types";
   one rule and it lives here.
 
   THE TILE IS A DESIGN, NOT A PLACEHOLDER.
-  It reuses the service identity tint from globals.css — the same hue the
-  chip under the card uses, and the same one the home page's triage cards use
-  — behind that service's icon. That makes a coverless project read as
-  "Roblox work" at a glance rather than as a broken image, and it ties the
-  card to the rest of the identity system instead of introducing a new
-  visual. Projects with no service line at all (portfolio-only work tagged
-  with `skills`) fall back once more, to a neutral surface and `project.icon`.
 
-  Tint, not the full-strength pastel: §9.1 — the pastels were drawn for a
-  light UI and read as stickers on this background.
+  REDRAWN TO THE PROJECTS MOCKUP (owner call). It used to carry the service
+  identity tint behind that service's emoji, tying the card to the hue system
+  the chips use. The mockup draws it as a neutral dark panel with a single
+  stroked orange glyph, and sampling it settles both halves: the panel is
+  rgb(27,29,27), which is --color-surface-2 (28,25,25) to within a level, and
+  the globe on This Website is rgb(250,125,63) — accent line-art, not the
+  multicoloured 🌐 the emoji font paints.
+
+  So the identity hue is gone from this tile. What it bought — "this is Roblox
+  work" at a glance — is still carried by the chips directly under the cover,
+  and the glyph now says the same thing in a form that holds the mockup's
+  weight. See ServiceGlyph for why an emoji could not.
 
   LOADING (§12's performance budget).
   `priority` is opt-in and defaults off, so every cover is lazy unless a
   caller explicitly says otherwise. Only the portfolio index passes it, and
   only for the cards that are actually above the fold — see the note there.
 */
-
-/** Static class strings so Tailwind's source scanner sees them verbatim. */
-const TILE_TINT: Record<string, string> = {
-  automation: "bg-service-automation-tint",
-  "excel-data": "bg-service-excel-tint",
-  websites: "bg-service-websites-tint",
-  "local-tech-help": "bg-service-local-tint",
-  roblox: "bg-service-roblox-tint",
-};
 
 interface CoverArtProps {
   project: Project;
@@ -62,8 +56,8 @@ interface CoverArtProps {
    * not: its cards are pure art with no caption, so the image must keep its
    * real alt (the link's aria-label carries the title alongside it).
    *
-   * The tile branch is always aria-hidden regardless — it is a colour and an
-   * emoji, and it conveys nothing the chips do not.
+   * The tile branch is always aria-hidden regardless — it is a panel and a
+   * glyph, and it conveys nothing the chips do not.
    */
   decorative?: boolean;
 }
@@ -78,7 +72,8 @@ export default function CoverArt({
   const { cover } = project;
 
   if (cover.kind === "image") {
-    const fitClass = cover.fit === "contain" ? "object-contain" : "object-cover";
+    const fitClass =
+      cover.fit === "contain" ? "object-contain" : "object-cover";
     return (
       <Image
         src={cover.src}
@@ -96,7 +91,6 @@ export default function CoverArt({
   }
 
   const service = project.services[0];
-  const tint = service ? TILE_TINT[service] : undefined;
 
   return (
     // aria-hidden: the card's heading and summary already name the project,
@@ -104,11 +98,12 @@ export default function CoverArt({
     // third repetition of the same fact to a screen reader.
     <div
       aria-hidden="true"
-      className={`flex h-full w-full items-center justify-center ${tint ?? "bg-surface-2"}`}
+      className="flex h-full w-full items-center justify-center bg-surface-2"
     >
-      <span className="text-5xl opacity-90">
-        {service ? SERVICE_META[service].icon : (project.icon ?? "📁")}
-      </span>
+      {/* h-14 against the emoji's text-5xl: the mockup's globe measures ~57px
+          in a 389px-wide card, and the tile is the one place on the site where
+          a glyph is the whole composition rather than a label's companion. */}
+      <ServiceGlyph service={service} className="h-14 w-14 text-accent" />
     </div>
   );
 }

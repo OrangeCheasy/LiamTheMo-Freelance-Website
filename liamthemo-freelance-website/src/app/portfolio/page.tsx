@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import CTASection from "@/components/CTASection";
+import EmberField from "@/components/EmberField";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 
@@ -65,47 +66,84 @@ export default function PortfolioPage() {
 
   return (
     <>
-      <section className="mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
-        <p className="text-small font-medium text-accent">Real work</p>
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <h1 className="max-w-[20ch] text-h1 text-text">Projects</h1>
-          <span className="rounded-full border border-border px-2.5 py-1 text-small font-medium text-text-muted">
-            WIP
-          </span>
-        </div>
-        <p className="mt-4 max-w-[52ch] text-body text-text-muted">
-          A look at finished work: what the problem was, what got built, and
-          what changed because of it.
-        </p>
-      </section>
-
-      <section
-        aria-labelledby="projects-heading"
-        className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
-      >
-        {/* The grid needs an accessible name, but the h1 above already says
-            "Projects" — a visible second heading would be redundant. */}
-        <h2 id="projects-heading" className="sr-only">
-          All projects
-        </h2>
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.slug}
-              project={project}
-              priority={index === eagerIndex}
-            />
-          ))}
-        </ul>
-      </section>
-
       {/*
-        §7: there is no /services index and none is planned — the home page's
-        Services section replaced it, and owns the `#services` anchor, so the
-        secondary link lands on the list of services rather than the top of
-        the home page.
+        THE EMBER TEXTURE, AT PAGE LEVEL.
+
+        Owner call: the mockup only decorates the top-right corner, and the ask
+        was for that treatment across the whole page, behind the cards
+        included. One field spanning the wrapper does that — it is a tiled
+        pattern rather than a placed graphic, so it covers whatever height the
+        projects data ends up producing without gaps or a cut edge. See
+        EmberField for why the earlier version, four fixed boxes placed down
+        the page, could not.
+
+        `-z-10` with `relative` on each content section keeps all of it behind
+        the cards; `pointer-events-none` inside the component keeps it from
+        intercepting a click. `overflow-hidden` is belt and braces — the field
+        is inset-0 and cannot overhang on its own, but it stops any future
+        decoration added here from widening the document on a phone.
       */}
-      <CTASection secondary={{ href: "/#services", label: "Browse services" }} />
+      <div className="relative overflow-hidden">
+        <EmberField className="-z-10" />
+
+        <section className="relative">
+          {/*
+            PADDING GOES ON THIS DIV, NOT THE SECTION — it is inside max-w-6xl,
+            not outside it, which is what puts the content on the same left edge
+            as the header logo and the card grid below. Hanging px-5/sm:px-8 off
+            the full-width section instead centres a 1152px box inside the
+            padded area and pulls everything 32px left of every other container
+            on the site. Same shape as the home page's hero section.
+          */}
+          <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
+            <p className="text-small font-medium text-accent">Real work</p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <h1 className="max-w-[20ch] text-h1 text-text">Projects</h1>
+              <span className="rounded-full border border-border px-2.5 py-1 text-small font-medium text-text-muted">
+                WIP
+              </span>
+            </div>
+            <p className="mt-4 max-w-[52ch] text-body text-text-muted">
+              A look at finished work: what the problem was, what got built, and
+              what changed because of it.
+            </p>
+          </div>
+        </section>
+
+        {/* `relative` on this and the CTA below: the drifts sit at -z-10, and
+            a positioned sibling is what keeps the cards painting over them. */}
+        <section
+          aria-labelledby="projects-heading"
+          className="relative mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
+        >
+          {/* The grid needs an accessible name, but the h1 above already says
+              "Projects" — a visible second heading would be redundant. */}
+          <h2 id="projects-heading" className="sr-only">
+            All projects
+          </h2>
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project, index) => (
+              <ProjectCard
+                key={project.slug}
+                project={project}
+                priority={index === eagerIndex}
+              />
+            ))}
+          </ul>
+        </section>
+
+        {/*
+          §7: there is no /services index and none is planned — the home page's
+          Services section replaced it, and owns the `#services` anchor, so the
+          secondary link lands on the list of services rather than the top of
+          the home page.
+        */}
+        <div className="relative">
+          <CTASection
+            secondary={{ href: "/#services", label: "Browse services" }}
+          />
+        </div>
+      </div>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { EDGE_PEAK, warmEdgeBloom, warmEdgeImage, warmGlowImage } from "@/lib/glow";
+import LitEdge from "@/components/LitEdge";
+import { EDGE_PEAK, warmEdgeImage, warmGlowImage } from "@/lib/glow";
 
 /*
   The home page "Services" section (CLAUDE.md §7) — symptom-worded triage
@@ -252,48 +253,6 @@ const chipBase =
   "justify-center self-center rounded-lg text-base";
 
 /*
-  The lit top edge itself.
-
-  ASYMMETRIC INSET — left-2, right-4. The mockup insets both ends by the 16px
-  corner radius, which is the tangent point: exactly where the top edge stops
-  being straight. Owner call to start it further left than that, so the left
-  end now runs 8px into the corner arc, where the border has curved about 2px
-  away from it. That tiny overhang is deliberate and reads as the light
-  wrapping the corner rather than stopping short of it. The right end keeps the
-  tangent inset, where it no longer matters — warmEdgeImage() has faded to
-  nothing by then.
-
-  -top-px, AND THE CARD IS NOT overflow-hidden. Both follow from the same
-  thing: an absolutely positioned child is laid out against the padding box, so
-  at top-0 this sat *below* the card's own 1px top border and left a grey
-  hairline drawn over the light (measured: rgb(42,38,38) directly above the
-  orange). Pulling it up by that 1px puts it on the border row instead, where
-  the mockup has it. Clipping had to go with it — overflow-hidden cropped the
-  bloom to the card, so nothing glowed above the line at all, against the
-  mockup's clear rise over the 5px above it. The fill still respects the
-  corners without it, since a background is clipped by border-radius anyway;
-  only the hover overlay needed its own rounded-2xl to keep square corners from
-  poking out.
-
-  The bloom is a box-shadow rather than a blurred duplicate element: the mockup
-  carries it about 5px above the line and 4px below, near enough symmetric,
-  which is what a centred shadow spread already does, and it costs one property
-  instead of a second positioned span.
-*/
-function TopEdge({ className = "" }: { className?: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`pointer-events-none absolute -top-px left-4 right-4 h-px ${className}`}
-      style={{
-        backgroundImage: warmEdgeImage(),
-        boxShadow: warmEdgeBloom(),
-      }}
-    />
-  );
-}
-
-/*
   DRAWN, NOT THE "→" GLYPH, and accent at rest rather than muted.
 
   Both come off the mockup, where this is a solid orange arrow on all six cards
@@ -358,11 +317,14 @@ function TriageCard({
   return (
     <Link href={href} className={cardBase} style={{ background: CARD_GLOW }}>
       <GlowOverlay background={CARD_GLOW_HOVER} />
-      <TopEdge />
+      <LitEdge image={warmEdgeImage()} />
       {/* The hover half of the edge, same trick as the fill overlay: a
           gradient cannot be transitioned, so a brighter copy fades in over
           the resting one. */}
-      <TopEdge className="opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+      <LitEdge
+        image={warmEdgeImage()}
+        className="opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+      />
 
       <span aria-hidden="true" className={`${chipBase} ${chipClass}`}>
         {emoji}
