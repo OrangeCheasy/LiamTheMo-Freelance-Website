@@ -56,14 +56,31 @@ canonical list.
         been built. Still no Restaurant Sales Parser metric and no Fuse Factory screenshot yet.
 - [x] **3. `services.ts`** + dynamic service page template — all five services real, no
       placeholder content
-- [~] **4. `projects.ts`** + portfolio index and case study template.
-      Restaurant Sales Parser is live with real screenshots (light/dark) and a rewritten
-      problem/solution narrative, but still no owner-confirmed `result`/metrics (§10, three TODOs
-      in the data file). Fuse Factory is now live too — cleared to be named publicly (§15), added
-      as a personal/passion project rather than a client case study (see CLAUDE.md §1, §6): no
-      `result` (no client outcome to report) and no `images` yet (still in development, no
-      screenshots exist — add them once there's something worth showing, §9). Excel Performance
-      Dashboard is still absent, no owner input yet.
+- [~] **4. `projects.ts`** + portfolio index and case study template. **R4 restyle done**; two
+      content items still outstanding, both owner-blocked.
+      - Both templates moved onto the home page's rhythm (max-w-6xl containers, accent
+        micro-label above each heading), matching what R3 did to the service pages. The case
+        study's problem block now carries the same `warmGlow()` focal panel the service pages use.
+      - `Project.cover` is now required (§6) as a union: a real image, or a designed `tile` built
+        from the project's service hue and icon. Three projects ship as tiles because they have no
+        art — **This Website**, **Computer Builds & Repairs**, **Echo Realms**. Each carries a
+        TODO(owner) in `projects.ts` naming the shot that would promote it. Of the three, the
+        Computer Builds photo is the one worth taking first: it is Local Tech Help's only proof.
+      - Cross-linking is closed in both directions off the single `Project.services` field —
+        `projectsForService()` drives related work on service pages, and each case study links
+        back. Verified symmetric across all 5 services and all 6 projects.
+      - `Service.relatedProjects` is now dead data (nothing reads it) and had already drifted — it
+        still points `excel-data` at `excel-performance-dashboard`, which has never existed.
+        Removal is a §6 shape change, so it is left for its own PR (§13).
+      - **Restaurant Sales Parser still has no owner-confirmed `result`/metrics** (§16). The case
+        study renders with no result section at all rather than an invented figure; see the
+        TODO(owner) block in `projects.ts` for the two fields to fill.
+      - Excel Performance Dashboard is still absent, no owner input yet — but §6 still lists it as
+        a portfolio entry, so the doc and the data disagree until it is added or §6 is amended.
+      - Two assets were mislabelled and are now fixed: `youtube/profile.webp` was a 206 KB PNG and
+        `youtube/channel.webp` an 804 KB JPEG, both with a `.webp` extension. Re-encoded to real
+        WebP at sane sizes (8 KB and 181 KB). `channel`'s declared dimensions were also wrong
+        (2244x1984 against a real 2732x1934), which had been visibly stretching it on the page.
 - [x] **5. About** — real photos (identity shot in the header band, a gym/food pair illustrating
       the closing line), copy rewritten twice at the owner's request to read less like a résumé
       summary and to lead with the in-person/childhood history before the remote work.

@@ -28,6 +28,52 @@ export interface Service {
   relatedProjects: string[]; // Project.slug values
 }
 
+/**
+ * The card thumbnail every project must have (CLAUDE.md §6: "`cover` is
+ * required in this redesign... a project without art breaks it").
+ *
+ * A union rather than a bare `{ src, alt }`, because three real projects have
+ * no art yet — This Website, Computer Builds & Repairs, Echo Realms — and the
+ * two other ways to satisfy a required image field are both worse: inventing
+ * a screenshot violates §11, and dropping the projects costs Local Tech Help
+ * its only proof.
+ *
+ * `tile` is not a placeholder for a missing image; it is a designed fallback
+ * built from the project's own service identity (hue + icon), the same system
+ * the chip below the card uses. It renders at full card size like any other
+ * cover, so the grid keeps its rhythm either way. Promoting one to `image`
+ * later is a one-line data change with no component edit.
+ */
+export type ProjectCover =
+  | {
+      kind: "image";
+      src: string;
+      alt: string;
+      /**
+       * Real pixel dimensions of the asset, same contract as `images` below.
+       * Both default to 1536x1024 (3:2) — the studio-standard crop the
+       * existing covers use — so this is only needed for a real, uncropped
+       * asset with a different shape.
+       */
+      width?: number;
+      height?: number;
+      /**
+       * How the image fits the 3:2 card box. Defaults to `"cover"` — fill it,
+       * cropping evenly. `"contain"` letterboxes instead, for a source whose
+       * aspect ratio is too extreme to crop into 3:2 without losing the point
+       * of the image (e.g. a wide banner would lose its logo text).
+       */
+      fit?: "cover" | "contain";
+    }
+  | {
+      /**
+       * The designed fallback: the project's first service hue as a tint wash
+       * behind that service's icon. A project with no service line at all
+       * falls back further to a neutral tile and `Project.icon`.
+       */
+      kind: "tile";
+    };
+
 export interface Project {
   slug: string;
   title: string;
@@ -45,12 +91,25 @@ export interface Project {
    * sale.
    */
   skills?: string[];
-  /** Emoji for the fallback thumbnail tile when there's no image and `services` is empty (so there's no service colour/icon to fall back to). Ignored otherwise. */
+  /** Emoji for a `kind: "tile"` cover when `services` is empty, so there is no service colour or icon to build the tile from. Ignored otherwise. */
   icon?: string;
   /** An off-site destination for the work itself (e.g. a YouTube channel) — rendered as a link on the case study page. */
   externalLink?: { href: string; label: string };
   /** A small identity image (e.g. a channel/profile picture) shown next to the title on the case study page — separate from the `images` gallery below the fold. */
   avatar?: { src: string; alt: string };
+  /**
+   * Required (§6). The card grid is the visual centrepiece of both /portfolio
+   * and the home page, and a card with no thumbnail collapses the row — so
+   * every project declares one, either a real image or the designed tile.
+   * See `ProjectCover`.
+   *
+   * Separate from `images` below on purpose: `cover` is the card face,
+   * `images` is the case study gallery. A project can have a cover and no
+   * gallery (nothing to show in detail yet), or a cover that also appears in
+   * the gallery — that duplication is intentional and cheap, since next/image
+   * serves the same asset at two sizes from one source.
+   */
+  cover: ProjectCover;
   summary: string; // one sentence, outcome-focused
   problem: string;
   solution: string;
@@ -78,15 +137,10 @@ export interface Project {
      */
     width?: number;
     height?: number;
-    /**
-     * How `images[0]` fits the 3:2 portfolio card thumbnail box (ignored for
-     * the rest of the gallery, which sizes itself from `width`/`height`
-     * instead). Defaults to `"cover"` — fill the box, cropping evenly.
-     * `"contain"` shows the whole image letterboxed instead, for a source
-     * whose aspect ratio is too extreme to crop into 3:2 without losing the
-     * point of the image (e.g. a wide banner would lose its logo text).
-     */
-    fit?: "cover" | "contain";
+    // `fit` used to live here, back when images[0] doubled as the card
+    // thumbnail. It moved to `ProjectCover` with that job — a gallery figure
+    // is never cropped to a fixed box, it sizes itself from width/height
+    // above, so there was nothing left for the option to do.
   }[];
   featured: boolean;
 }

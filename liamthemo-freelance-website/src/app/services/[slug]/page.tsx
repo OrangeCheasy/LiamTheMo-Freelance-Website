@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CTASection from "@/components/CTASection";
+import ProjectCard from "@/components/ProjectCard";
+import { projectsForService } from "@/data/projects";
 import { commonFaqs, getService, serviceSlugs } from "@/data/services";
 import { warmGlow } from "@/lib/glow";
 import { SERVICE_META } from "@/lib/types";
@@ -103,6 +105,7 @@ export default async function ServiceDetailPage({
   if (!service) notFound();
 
   const faqs = [...service.faqs, ...commonFaqs];
+  const related = projectsForService(service.slug);
 
   return (
     <>
@@ -268,10 +271,49 @@ export default async function ServiceDetailPage({
       </section>
 
       {/*
-        `service.relatedProjects` is populated and, now that projects.ts exists,
-        resolvable — but rendering it is new content rather than a restyle, so
-        it stays out of this phase and is flagged to the owner as its own pass.
+        RELATED WORK — the reverse half of the cross-linking loop, added in R4.
+        R3 deferred this as "new content rather than a restyle"; it lands now
+        because the case study side of the loop was rebuilt in the same phase
+        and shipping only one direction would leave a service page as a dead
+        end for a visitor who wants proof before they fill in the form.
+
+        Driven by `projectsForService()`, which filters on `Project.services`
+        — the same field the case studies read to link back here. Deliberately
+        NOT `service.relatedProjects`: see that function's note in
+        src/data/projects.ts for why a derived list is the one that cannot
+        drift.
+
+        Renders nothing when a service has no projects yet, rather than an
+        empty heading. Every service has at least one today, but that is a
+        property of the current data, not a guarantee.
+
+        The cards are the same ProjectCard the portfolio index uses, so a
+        visitor arriving here recognises them. All lazy — this sits below the
+        FAQ, a long way down the page.
       */}
+      {related.length > 0 ? (
+        <section
+          aria-labelledby="related-work-heading"
+          className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
+        >
+          <SectionLabel>Proof</SectionLabel>
+          <h2
+            id="related-work-heading"
+            className="mt-2 max-w-[24ch] text-h2 text-text"
+          >
+            Work like this
+          </h2>
+          <p className="mt-4 max-w-[52ch] text-body text-text-muted">
+            What this looks like when it is finished.
+          </p>
+
+          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((project) => (
+              <ProjectCard key={project.slug} project={project} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <CTASection
         title={`Tell me about your ${service.title.toLowerCase()} problem`}

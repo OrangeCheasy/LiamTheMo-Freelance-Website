@@ -1,4 +1,4 @@
-import type { Project } from "@/lib/types";
+import type { Project, ServiceSlug } from "@/lib/types";
 
 /**
  * Portfolio case studies (CLAUDE.md §6, §14 step 4). Drives /portfolio and
@@ -30,6 +30,11 @@ export const projects: Project[] = [
     title: "This Website",
     // client: omitted — this is the owner's own business site.
     services: ["websites"],
+    // TODO(owner): a real cover would be a screenshot of the home page hero.
+    // Left as a tile deliberately for now — a screenshot of the site the
+    // visitor is currently looking at is the weakest image on the grid, and
+    // it would date itself every time the home page is restyled.
+    cover: { kind: "tile" },
     summary:
       "The website for my portfolio and business — a live example of the same kind of build offered to clients: a data-driven services and portfolio system on a fast, low-cost stack.",
     problem:
@@ -55,6 +60,15 @@ export const projects: Project[] = [
     title: "Fuse Factory",
     // client: omitted — this is a personal project, not commissioned work.
     services: ["roblox"],
+    // The game's official Roblox thumbnail, not a gameplay screenshot. Used
+    // as the cover because §9 prefers a real image over the fallback tile;
+    // real gameplay screenshots are planned but not taken yet, and when they
+    // arrive they belong in `images` rather than replacing this.
+    cover: {
+      kind: "image",
+      src: "/portfolio/fuse-factory/thumbnail.webp",
+      alt: "Fuse Factory game thumbnail: the game logo above three cube-shaped Boomie characters with lit fuses, in a factory setting with colored crates.",
+    },
     summary:
       "A Roblox game in active development, inspired by a Super Mario Bros. DS mini-game where players sort bob-ombs before they go off — reworked into its own standalone, round-based game.",
     problem:
@@ -70,17 +84,11 @@ export const projects: Project[] = [
     stack: ["Luau"],
     // TODO(owner): confirm whether coins/progress persist via DataStore once
     // settled, and name any other tools/services worth calling out here.
-    // images[0] is the game's official Roblox thumbnail, not a gameplay
-    // screenshot — used as-is for the card/case-study thumbnail box (§9
-    // prefers a real image over the fallback tile). Real gameplay screenshots
-    // are planned but not added yet; append them here once they exist rather
-    // than replacing this entry.
-    images: [
-      {
-        src: "/portfolio/fuse-factory/thumbnail.webp",
-        alt: "Fuse Factory game thumbnail: the game logo above three cube-shaped Boomie characters with lit fuses, in a factory setting with colored crates.",
-      },
-    ],
+    //
+    // images: intentionally omitted. The store thumbnail is the `cover` above
+    // and nothing else exists yet — repeating it under "See it in action"
+    // would promise gameplay and deliver the same marketing art. Add real
+    // gameplay screenshots here when they're taken; the cover stays as it is.
     // featured: true — one of the mockup's three home-page picks (§15 Phase 2).
     featured: true,
   },
@@ -115,20 +123,29 @@ export const projects: Project[] = [
       src: "/portfolio/youtube/profile.webp",
       alt: "OrangeCheasy YouTube channel profile picture, a cartoon wedge of cheese.",
     },
-    // images[0] drives the portfolio card thumbnail (ProjectCard reads
-    // images[0]) — the banner goes first on purpose. It's already a 1536x1024
-    // (3:2) crop, matching the studio-standard size, so it needs no
-    // width/height override or a non-default `fit`.
+    // The channel banner. Already a 1536x1024 (3:2) crop matching the
+    // studio-standard size, so it needs no width/height override and no
+    // non-default `fit`.
+    cover: {
+      kind: "image",
+      src: "/portfolio/youtube/banner.webp",
+      alt: "OrangeCheasy YouTube channel banner artwork: pixel-art logo text over a sunset city skyline with cartoon cheese wedges scattered across it.",
+    },
+    // The gallery no longer repeats the banner — that's the cover now. What's
+    // left is the one image that shows something the cover doesn't: the real
+    // channel page and its subscriber count, which is the proof behind
+    // `result`.
+    //
+    // width/height are the asset's true dimensions. They previously read
+    // 2244x1984 against a real 2732x1934 source, which stretched the image on
+    // the page; the file has since been re-encoded to 1600x1133 (it was a
+    // JPEG misnamed .webp) and these match it.
     images: [
-      {
-        src: "/portfolio/youtube/banner.webp",
-        alt: "OrangeCheasy YouTube channel banner artwork: pixel-art logo text over a sunset city skyline with cartoon cheese wedges scattered across it.",
-      },
       {
         src: "/portfolio/youtube/channel.webp",
         alt: "The OrangeCheasy YouTube channel page, showing 2.06k subscribers and the video grid.",
-        width: 2244,
-        height: 1984,
+        width: 1600,
+        height: 1133,
       },
     ],
     // featured: true — one of the mockup's three home-page picks (§15 Phase 2).
@@ -151,23 +168,39 @@ export const projects: Project[] = [
       "A script reads the raw export and produces the finished report automatically — no manual retyping, no copy-paste between spreadsheets, no formulas to remember to update by hand.",
     // TODO(owner): name the actual report(s) it produces once confirmed.
     //
-    // result: intentionally omitted. CLAUDE.md §10 forbids inventing a number,
-    // and this is the flagship case study — it should lead with the real time
-    // saved per week and the manual step it eliminated once known. Fill in
-    // `result` (narrative) and `metrics` (before/after callouts) with the real
-    // figures; the page shows the result section only when `result` is set.
+    // TODO(owner): REAL BEFORE/AFTER METRICS — CLAUDE.md §16's open decision,
+    // still open. This is the flagship case study (§6: "lead with time saved
+    // per week"), and it is the one project on the site whose result section
+    // is missing the number that would sell it.
+    //
+    // `result` and `metrics` are both omitted rather than estimated. §11
+    // forbids inventing a result, and a plausible-sounding figure is the
+    // failure mode that rule exists to prevent: "cuts a two-hour job to five
+    // minutes" reads as fact, cannot be verified by the reader, and is the
+    // fastest way to lose a client who asks about it. An absent section
+    // costs less than a fabricated one.
+    //
+    // The page renders "The result" only when `result` is set, so filling
+    // these two fields is the whole change — no component edit. What's needed:
+    //   result:  one sentence, the outcome in the owner's words.
+    //   metrics: the before/after pair, e.g.
+    //            { label: "Time per week (before)", value: "..." }
+    //            { label: "Time per week (after)",  value: "..." }
     stack: ["Python"],
     // TODO(owner): confirm the rest of the stack (e.g. the library used to read
     // the export, the input file format — .csv vs .xlsx — and what generates
     // the final report).
-    // Dark-only site — dark.webp is the sole image; the retired light.webp
-    // variant has been deleted.
-    images: [
-      {
-        src: "/portfolio/restaurant-sales-parser/dark.webp",
-        alt: "Diagram showing the parser turning 35 pages of unstructured raw server sales data into a clean weekly summary table with totals per server, broken out by special, food, and drink sales.",
-      },
-    ],
+    // Dark-only site — dark.webp is the sole image, so it serves as both the
+    // card cover and the case study's one gallery figure. The retired
+    // light.webp variant has been deleted.
+    cover: {
+      kind: "image",
+      src: "/portfolio/restaurant-sales-parser/dark.webp",
+      alt: "Diagram showing the parser turning 35 pages of unstructured raw server sales data into a clean weekly summary table with totals per server, broken out by special, food, and drink sales.",
+    },
+    // images: intentionally omitted. The cover above is the only asset, and
+    // the case study renders the cover as its lead image — repeating it in
+    // the gallery below would show the same diagram twice on one page.
     featured: true,
   },
   {
@@ -175,6 +208,11 @@ export const projects: Project[] = [
     title: "Computer Builds & Repairs",
     // client: omitted — many different people over time, not one client.
     services: ["local-tech-help"],
+    // TODO(owner): a photo of a finished build would be the single highest-value
+    // image on the site — this is the only proof Local Tech Help has, and it's
+    // the service most likely to be found by a local search. A phone photo of
+    // one completed machine is enough; it does not need to be studio work.
+    cover: { kind: "tile" },
     summary:
       "11 custom-built desktops and a running list of hardware and software repairs for friends, family, and paying clients.",
     problem:
@@ -196,6 +234,10 @@ export const projects: Project[] = [
     title: "Echo Realms",
     // client: omitted — this is a personal project, not commissioned work.
     services: ["roblox"],
+    // TODO(owner): one screenshot of a dungeon room or a boss encounter would
+    // promote this to an image cover. The project is on hold, so this is low
+    // priority — the tile is not blocking anything.
+    cover: { kind: "tile" },
     summary:
       "A Roblox dungeon crawler built around modular, reusable systems — enemy AI with telegraphed attacks, zone-based spawning, phased bosses, and weighted loot.",
     problem:
@@ -211,3 +253,30 @@ export const projects: Project[] = [
     featured: false,
   },
 ];
+
+/**
+ * Every project that demonstrates a given service, in `projects` order.
+ *
+ * This is the reverse half of the cross-linking loop. `Project.services` is
+ * the single source of truth in both directions: a case study reads it
+ * directly to link out to the services it demonstrates, and a service page
+ * reads it through this function to list its related work. One field, so the
+ * two lists cannot disagree — add "roblox" to a project and it appears on the
+ * Roblox page with no second edit.
+ *
+ * NOT `Service.relatedProjects`, which is the field that would otherwise do
+ * this job. That field is a hand-maintained list of slugs written before
+ * projects.ts existed, and it has already drifted: `excel-data` still points
+ * at "excel-performance-dashboard", a project that has never existed, and
+ * neither "orangecheasy-youtube" nor a second automation project would appear
+ * on any service page without someone remembering to add it in two places.
+ * A derived list cannot drift.
+ *
+ * TODO(owner): `Service.relatedProjects` is now dead data — nothing reads it.
+ * Removing it is a §6 shape change touching all five service entries, so it
+ * is left for its own PR (§13: one concern per PR) rather than folded into
+ * the R4 restyle. Flagging rather than deciding (§16).
+ */
+export function projectsForService(slug: ServiceSlug): Project[] {
+  return projects.filter((project) => project.services.includes(slug));
+}
