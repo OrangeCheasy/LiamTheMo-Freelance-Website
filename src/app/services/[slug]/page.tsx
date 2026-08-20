@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import CTASection from "@/components/CTASection";
 import ProjectCard from "@/components/ProjectCard";
@@ -111,6 +112,18 @@ export default async function ServiceDetailPage({
     <>
       <section className="mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
         {/*
+          No /services index to link back to (§7 — the home page's Services
+          section replaced it), so this points at that section's anchor
+          instead — same destination the old "See other services" CTA used.
+        */}
+        <Link
+          href="/#services"
+          className="text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
+        >
+          ← Services
+        </Link>
+
+        {/*
           The service's identity hue on the same chip the home page's triage
           cards use, so arriving from that section lands on a visibly matching
           page. SERVICE_META rather than a third copy of the colour map — it
@@ -120,7 +133,7 @@ export default async function ServiceDetailPage({
         */}
         <span
           aria-hidden="true"
-          className={`flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${SERVICE_META[service.slug].chipClass}`}
+          className={`mt-5 flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${SERVICE_META[service.slug].chipClass}`}
         >
           {service.icon}
         </span>

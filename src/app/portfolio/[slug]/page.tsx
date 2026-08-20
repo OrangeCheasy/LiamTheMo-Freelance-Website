@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import CTASection from "@/components/CTASection";
 import { projects } from "@/data/projects";
 import { warmGlow } from "@/lib/glow";
 import { SERVICE_META } from "@/lib/types";
@@ -353,8 +352,6 @@ export default async function ProjectPage({
           </aside>
         </div>
       </section>
-
-      <CTASection secondary={{ href: "/portfolio", label: "See more work" }} />
     </>
   );
 }
