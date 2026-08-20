@@ -238,16 +238,34 @@ export function warmPanel({
  */
 export const EDGE_PEAK = 20;
 
-/** Renders a [relative brightness, position%] list into the gradient. */
-function edgeGradient(stops: [number, number][], peak: number): string {
+/**
+ * Renders a [relative brightness, position%] list into the gradient.
+ *
+ * `format` mirrors `warmGlowImage`'s option, for the same reason: satori (the
+ * Open Graph image renderer) implements neither `color-mix()` nor CSS custom
+ * properties, so a caller rendering through it passes `"rgba"` to get a
+ * satori-safe stop list instead of one it would silently fail to paint.
+ */
+function edgeGradient(
+  stops: [number, number][],
+  peak: number,
+  format: "color-mix" | "rgba" = "color-mix",
+): string {
   const parts = stops.map(([factor, position]) => {
     const opacity = Math.round(peak * factor * 10) / 10;
-    return `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent) ${position}%`;
+    const stopColour =
+      format === "rgba"
+        ? `rgba(${GLOW_RGB}, ${opacity / 100})`
+        : `color-mix(in srgb, ${GLOW_COLOUR} ${opacity}%, transparent)`;
+    return `${stopColour} ${position}%`;
   });
   return `linear-gradient(90deg, ${parts.join(", ")})`;
 }
 
-export function warmEdgeImage(peak = 100): string {
+export function warmEdgeImage(
+  peak = 100,
+  format: "color-mix" | "rgba" = "color-mix",
+): string {
   return edgeGradient(
     [
       [0, 0],
@@ -263,6 +281,7 @@ export function warmEdgeImage(peak = 100): string {
       [0, 100],
     ],
     peak,
+    format,
   );
 }
 
