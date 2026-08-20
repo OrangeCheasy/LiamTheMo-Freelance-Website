@@ -159,8 +159,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
           <h2 className="text-h3 text-text">Request sent</h2>
         </div>
         <p className="mx-auto mt-3 max-w-[48ch] text-body text-text-muted">
-          I&apos;ll reply within one business day with what it would take. You
-          should also see a confirmation land in your inbox shortly.
+          I&apos;ll reply within one business day with what it would take.
         </p>
       </div>
     );
