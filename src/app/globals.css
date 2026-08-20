@@ -214,3 +214,19 @@
     }
   }
 }
+
+/*
+  Hides the scrollbar on an horizontally-scrollable element while leaving it
+  scrollable by touch, trackpad, drag or keyboard — the case study
+  Screenshots carousel (ScreenshotCarousel.tsx) uses real overflow-x scroll
+  rather than a transform-driven slide, and a raw OS scrollbar under a warm
+  dark surface reads as un-styled chrome rather than part of the design.
+*/
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
