@@ -121,7 +121,17 @@ export default async function ContactPage({
       </section>
 
       <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-        <QuoteForm initialService={topic} />
+        {/*
+          Card treatment matching every other content block on the site
+          (ServiceCard, ProjectCard: rounded-2xl border-border bg-surface) —
+          the form used to render as bare fields floating directly on --bg,
+          the one place left that didn't carry the site's surface language.
+          The form itself no longer sets its own max-width; this wrapper is
+          the single place that does, so the two can't drift apart.
+        */}
+        <div className="mx-auto max-w-[46rem] rounded-2xl border border-border bg-surface p-6 sm:p-10">
+          <QuoteForm initialService={topic} />
+        </div>
       </section>
     </>
   );
