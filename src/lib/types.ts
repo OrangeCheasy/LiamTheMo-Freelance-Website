@@ -74,6 +74,18 @@ export type ProjectCover =
       kind: "tile";
     };
 
+/**
+ * One "Key Features" card on the case study page. `icon` is a closed set
+ * rather than a free string so the page can map it to a hand-drawn SVG
+ * (`FeatureIcon` in the case study template) instead of storing markup in a
+ * data file — add a key here and a matching case there together.
+ */
+export interface ProjectFeature {
+  icon: "bolt" | "layers" | "target";
+  title: string;
+  description: string;
+}
+
 export interface Project {
   slug: string;
   title: string;
@@ -113,6 +125,23 @@ export interface Project {
   summary: string; // one sentence, outcome-focused
   problem: string;
   solution: string;
+  /**
+   * The case study page's "Overview" paragraph. Optional: falls back to
+   * `problem` + `solution` (already-approved copy) rather than leaving the
+   * section empty, so a project doesn't need bespoke overview copy on day
+   * one to render the individual-project-page template correctly.
+   */
+  overview?: string;
+  /** "What I Built" checklist. Omit rather than derive-and-reword `solution` — see §11 on inventing copy. */
+  whatIBuilt?: string[];
+  /** "Key Features" cards. Omit entirely (the section hides) until real, owner-written feature copy exists. */
+  features?: ProjectFeature[];
+  /** e.g. "Design, Development, Deployment". Omit rather than guess from `stack`/`skills`. */
+  role?: string;
+  /** e.g. "2025". Omit rather than guess. */
+  year?: string;
+  /** GitHub repo (or other source) link, rendered as the "View Source" button. Omit if the source isn't public. */
+  sourceUrl?: string;
   /**
    * Quantified outcome — hours saved, errors removed, etc. Optional rather than
    * the `result: string` in CLAUDE.md §6: §10 forbids inventing a result, so a

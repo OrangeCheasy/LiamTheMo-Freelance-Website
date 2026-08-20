@@ -23,6 +23,14 @@ import type { Project, ServiceSlug } from "@/lib/types";
  * playable but light on content and currently on hold. This Website is the
  * site itself — no external client, but unlike the others it's `featured`
  * since it's a live example of the work sitting in front of the visitor.
+ *
+ * TODO(owner): the individual-project-page template (2026-08-20) added six
+ * optional fields — `overview`, `whatIBuilt`, `features`, `role`, `year`,
+ * `sourceUrl` — and only This Website has them filled in (lifted from
+ * individual-project-page-mockup.png). Every project below renders fine
+ * without them (each section hides itself when its field is unset), but the
+ * Overview/What I Built/Key Features/Project Details columns stay thin on
+ * the other five until real copy is written for them.
  */
 export const projects: Project[] = [
   {
@@ -41,11 +49,57 @@ export const projects: Project[] = [
       "The business needed a site that gets a visitor to the right service quickly, ends every page with a path to the quote form, and doubles as a portfolio for both prospective clients and potential employers — without needing a new page written by hand every time a service or project is added.",
     solution:
       "Built with Next.js (App Router) and TypeScript, deployed to Cloudflare Workers rather than a paid platform to keep hosting costs at effectively zero for a low-traffic marketing site. Services and portfolio case studies are generated from typed data files, so adding one is a data change, not a new page.",
+    // overview/whatIBuilt/features/role/year: verbatim from
+    // individual-project-page-mockup.png, which is owner-authored copy for
+    // this specific project — not template filler (see the page's file
+    // comment). Every other project below leaves these unset until the owner
+    // writes real copy for it.
+    overview:
+      "This site is my personal portfolio and business platform, built to showcase my work and the services I offer. It's fast, SEO-friendly, and designed to convert visitors into leads through a clear user journey and integrated quote form.",
+    whatIBuilt: [
+      "Fully custom Next.js site with App Router",
+      "TypeScript for type safety and scalability",
+      "Tailwind CSS for styling and responsive design",
+      "Deployed on Cloudflare Workers for low-cost, high-performance hosting",
+      "Data-driven project system from typed content files",
+    ],
+    features: [
+      {
+        icon: "bolt",
+        title: "Fast & Lightweight",
+        description:
+          "Optimized for performance with minimal bundle size and edge deployment.",
+      },
+      {
+        icon: "layers",
+        title: "Scalable Content",
+        description:
+          "Projects and services are generated from typed data files for easy updates.",
+      },
+      {
+        icon: "target",
+        title: "Lead Focused",
+        description:
+          "Built-in quote form and clear CTAs guide visitors to take action.",
+      },
+    ],
+    role: "Design, Development, Deployment",
+    year: "2025",
+    // sourceUrl: omitted — the repo is private (see the root README's
+    // license notice), so there's no public link to send "View Source" to.
+    //
+    // externalLink (doubles as the "Live Site" button on this template, and
+    // feeds the sidebar's Link row) — the real domain, owner-confirmed
+    // 2026-08-20, superseding the earlier note here about the mockup's
+    // ephemeral Codespaces preview URL.
+    externalLink: { href: "https://liamthemo.com", label: "Live Site" },
+    //
     // result: intentionally omitted (§10) — the site isn't launched with
     // real traffic yet, so there's no conversion number to report.
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
-    // images: intentionally omitted — no screenshots needed; the visitor is
-    // already looking at it.
+    // TODO(owner): before/after screenshots for the Screenshots carousel —
+    // flagged in chat 2026-08-20, not yet supplied. Add real captures here
+    // when ready; do not invent placeholder images (§11).
     //
     // featured: false — CLAUDE.md §15 Phase 2's approved mockup shows a
     // specific three: Fuse Factory, OrangeCheasy, Restaurant Sales Parser.
