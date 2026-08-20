@@ -317,11 +317,7 @@ export default async function ServiceDetailPage({
 
       <CTASection
         title={`Tell me about your ${service.title.toLowerCase()} problem`}
-        // There is still no /services index (§7 — the home page's Services
-        // section replaced it), but that section now owns the #services anchor,
-        // so this lands on the list of services rather than at the top of the
-        // home page the way it used to.
-        secondary={{ href: "/#services", label: "See other services" }}
+        description="Describe the problem in plain words."
         topic={service.slug}
       />
     </>
