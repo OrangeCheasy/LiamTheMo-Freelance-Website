@@ -1,55 +1,111 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import CTASection from "@/components/CTASection";
-import Eyebrow from "@/components/Eyebrow";
 
 /*
-  About (CLAUDE.md §14 step 6). Fully static — no data, no dynamic APIs — so it
-  prerenders and is served from the assets binding without invoking the Worker
-  (§4.1).
+  About (CLAUDE.md §15 step 6, Phase R6). Fully static — no data, no dynamic
+  APIs — so it prerenders and is served from the assets binding without
+  invoking the Worker (§4.1).
 
-  This is a trust page, not a biography. A visitor arrives with one question —
-  can I rely on this person — and the page answers it with what is verifiably
-  true: the work already done, where it happens, and how fast a message gets
-  answered. Every sentence here came from the owner. Nothing is inferred.
+  R6 RESTYLE — presentation AND a content cut, not just a rhythm match.
+  This page previously ran header band → "How this started" → "What I have
+  done" → "How I work" → photo pair → CTA, closer to a biography than the
+  "one screen plus a CTASection" a trust page needs (owner call, 2026-08-20).
+  "How this started" and "What I have done" are cut entirely, not condensed
+  — the owner picked three specific facts to carry the page (response time,
+  location, full-time study) and did not select the track-record summary, so
+  that content doesn't appear here in any form. Nothing below is new copy:
+  every sentence is reused, sentence-for-sentence or lightly trimmed, from
+  the version this replaced.
 
-  Deliberately absent, per §10 and the owner's own material:
-  - No years-of-experience figure. "Since I was 12" is a true start date, not a
-    claim of professional tenure, and is phrased so it cannot be read as one.
-  - No credentials beyond "studying computer science", which is current fact.
-  - No origin story about a love of technology.
+  HEADER BAND DROPPED, same move as R3/R4/R5 (Services, Portfolio, Contact):
+  the old full-bleed `border-b bg-surface` band and the `Eyebrow` rule are
+  gone, replaced by the plain max-w-6xl container with an accent micro-label
+  above the heading that's now the site-wide convention.
 
-  PHOTOS. Three real, owner-supplied photos (public/about) replace what used to
-  be a TODO here. fish.webp is the identity shot — a real face is what "who you
-  would be hiring" (the h1) is actually asking for, so it sits in the header
-  band beside the h1, same placement the original TODO called for. gym.webp and
-  food.webp illustrate the closing line about life away from the computer and
-  sit beside it as a pair. Same three files in both themes (§9.2 covers colour
-  tokens, not photographs — there is no "dark version" of a photo to swap to),
-  so no theme-swap wiring like the portfolio screenshots.
+  THE FACTS ROW is the home page's "About Me" layout — label, then rule
+  dividers between icon-led columns — used as a STRUCTURE, not restocked
+  with its content. The owner was explicit: that block is "a reasonable
+  starting point" for the shape, but §11's "no generic virtue blocks" rule
+  still holds for this page, so the three columns below are operating facts
+  a client can hold the owner to (response time, where in-person work
+  happens, why capacity is limited), not "Clean code / Thoughtful design /
+  Problem solver." §9.6's trio-restoration override is scoped to the home
+  page's About section specifically and doesn't extend here.
+
+  PHOTOS. All three (owner call) — fish.webp stays beside the h1 as the
+  identity shot; gym.webp and food.webp stay as the pair under the facts row,
+  now carrying the one line of copy that used to close the old "How I work"
+  section rather than a new caption invented for them.
 */
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "A computer science student in Calgary who builds automation, spreadsheets and websites, and fixes computers — what I have actually done, and how I work.",
+    "A computer science student in Calgary who builds automation, spreadsheets and websites, and fixes computers in person — how fast I reply and how I work.",
   openGraph: {
     type: "website",
     title: "About",
     description:
-      "A computer science student in Calgary who builds automation, spreadsheets and websites, and fixes computers.",
+      "A computer science student in Calgary who builds automation, spreadsheets and websites, and fixes computers in person.",
   },
 };
+
+// Three operating facts, not values — each one is something a client can
+// hold the owner to. See the file-level note on why this isn't the home
+// page's virtue trio despite sharing its layout.
+const facts: {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    title: "I answer quickly.",
+    description:
+      "Usually the same day. If a day passes with no reply, send it again rather than assuming the answer is no.",
+    // Clock.
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="8.6" />
+        <path d="M12 7.5V12l3.2 1.9" />
+      </>
+    ),
+  },
+  {
+    title: "I am in Calgary, Alberta.",
+    description:
+      "Anything needing hands on the hardware — repairs, printers, a setup in your office — happens in person around the city. Automation, spreadsheets, websites and Roblox work are remote, and for those it does not matter where you are.",
+    // Map pin.
+    icon: (
+      <>
+        <path d="M12 21s-7-6.2-7-11.2A7 7 0 0 1 19 9.8C19 14.8 12 21 12 21Z" />
+        <circle cx="12" cy="9.8" r="2.4" />
+      </>
+    ),
+  },
+  {
+    title: "I am studying full time.",
+    description:
+      "So I take on work I can finish properly rather than as much of it as possible. If a deadline is not going to work, you will hear that from me before you commit to anything, not afterwards.",
+    // Open book.
+    icon: (
+      <>
+        <path d="M12 6.5c-1.6-1.1-3.6-1.6-5.5-1.4a1 1 0 0 0-.9 1v11.4a1 1 0 0 0 1.1 1c1.8-.2 3.7.3 5.3 1.4 1.6-1.1 3.5-1.6 5.3-1.4a1 1 0 0 0 1.1-1V6.1a1 1 0 0 0-.9-1c-1.9-.2-3.9.3-5.5 1.4Z" />
+        <path d="M12 6.5v13" />
+      </>
+    ),
+  },
+];
 
 export default function AboutPage() {
   return (
     <>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+      <section className="relative">
+        <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
           <div className="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <Eyebrow>About</Eyebrow>
-              <h1 className="mt-3 max-w-[20ch] text-h1 text-text">
+              <p className="text-small font-medium text-accent">About</p>
+              <h1 className="mt-2 max-w-[20ch] text-h1 text-text">
                 Who you would be hiring
               </h1>
               <p className="mt-4 max-w-[56ch] text-body text-text-muted">
@@ -58,8 +114,7 @@ export default function AboutPage() {
                 student in Calgary getting paid to do more of the same —
                 scripts that kill repetitive work, spreadsheets that stop
                 needing to be babysat, sites, and hands-on repairs for people
-                who would rather not deal with it themselves. Here is what that
-                has actually looked like.
+                who would rather not deal with it themselves.
               </p>
             </div>
             <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl border border-border sm:w-56">
@@ -76,81 +131,46 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="max-w-[62ch]">
-          <h2 className="text-h2 text-text">How this started</h2>
-          <p className="mt-4 text-body text-text-muted">
-            The first thing I ever automated was my own job. Part of the work
-            was copying raw sales reports and pulling out the few numbers that
-            mattered — the same figures, the same way, every time. It took long
-            enough that I wrote a parser to read the raw export and pull out
-            only what was needed.
-          </p>
-          <p className="mt-4 text-body text-text-muted">
-            That is still the shape of most of what I do. Someone is spending an
-            hour a week on something a computer should be doing, usually without
-            having stopped to consider that it is optional.
-          </p>
+      <section className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
+        <div className="border-t border-border pt-8">
+          <div className="grid gap-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-border">
+            {facts.map((fact) => (
+              <div key={fact.title} className="sm:px-6 sm:first:pl-0">
+                <div className="flex items-center gap-2">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.75}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-5 w-5 shrink-0 text-accent"
+                  >
+                    {fact.icon}
+                  </svg>
+                  <h2 className="text-h3 text-text">{fact.title}</h2>
+                </div>
+                <p className="mt-3 text-small text-text-muted">
+                  {fact.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-          <h2 className="mt-12 text-h2 text-text">What I have done</h2>
-          <p className="mt-4 text-body text-text-muted">
-            I have been doing technical work since I was 12. Since then: 11
-            desktop computers built from scratch, Minecraft plugins and mods,
-            3D modelling, video editing and graphic design, spreadsheets and
-            calculators built in Excel, printer setups, DNS and domain
-            configuration, and a long run of repairs and software problems
-            solved for people who did not want to solve them themselves.
-          </p>
-          <p className="mt-4 text-body text-text-muted">
-            My first paid job was building a computer for someone else. I was
-            paid $150 for it. Everything since has been a version of the same
-            arrangement.
-          </p>
-
-          <h2 className="mt-12 text-h2 text-text">How I work</h2>
-          {/*
-            Three operating facts, not values. Each one is something a client
-            can hold me to, which is the only kind of statement that does any
-            work on a page like this.
-          */}
-          <ul className="mt-4 space-y-4">
-            <li className="text-body text-text-muted">
-              <span className="font-semibold text-text">I answer quickly.</span>{" "}
-              Usually the same day. If a day passes with no reply from me, I am
-              either genuinely tied up or your message never arrived — send it
-              again rather than assuming the answer is no.
-            </li>
-            <li className="text-body text-text-muted">
-              <span className="font-semibold text-text">
-                I am in Calgary, Alberta.
-              </span>{" "}
-              Anything needing hands on the hardware — repairs, printers, a
-              setup in your office — happens in person around the city.
-              Automation, spreadsheets, websites and Roblox work are remote, and
-              for those it does not matter where you are.
-            </li>
-            <li className="text-body text-text-muted">
-              <span className="font-semibold text-text">
-                I am studying full time.
-              </span>{" "}
-              So I take on work I can finish properly rather than as much of it
-              as possible. If a deadline is not going to work, you will hear
-              that from me before you commit to anything, not afterwards.
-            </li>
-          </ul>
-
-          <p className="mt-12 text-body text-text-muted">
+        <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <p className="max-w-[36ch] text-small text-text-muted">
             When I am away from a computer I am powerlifting, out fishing,
             hiking or camping somewhere in Alberta, or out chasing good food.
           </p>
-
-          <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="grid shrink-0 grid-cols-2 gap-3 sm:w-64">
             <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-border">
               <Image
                 src="/about/gym.webp"
                 alt="Liam at the gym on a bench press with a training partner."
                 fill
-                sizes="(min-width: 640px) 29ch, 45vw"
+                sizes="8rem"
                 className="object-cover"
               />
             </div>
@@ -159,7 +179,7 @@ export default function AboutPage() {
                 src="/about/food.webp"
                 alt="Liam adding fresh herbs to a bowl of pho at a restaurant."
                 fill
-                sizes="(min-width: 640px) 29ch, 45vw"
+                sizes="8rem"
                 className="object-cover"
               />
             </div>

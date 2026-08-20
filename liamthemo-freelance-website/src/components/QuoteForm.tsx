@@ -56,10 +56,78 @@ interface QuoteFormProps {
   initialService?: ServiceType | "";
 }
 
-const fieldClasses =
-  "mt-1.5 w-full rounded-lg border border-border bg-surface px-3 py-2 text-body text-text outline-none transition-colors focus:border-accent disabled:opacity-60";
-const invalidFieldClasses = "border-danger focus:border-danger";
+/*
+  Focus rings (CLAUDE.md §10, and the explicit ask for this pass): the global
+  :focus-visible outline in globals.css never reaches these fields, because
+  `outline-none` below cancels it — every field was tabbing to nothing more
+  than a 1px border tint change, verified by actually tabbing through the
+  live form rather than assumed from the classes.
+
+  Replaced with a three-layer box-shadow ring rather than restoring the
+  outline: (1) a surface-coloured gap the width of the border, so the ring
+  doesn't fuse with it, (2) a solid 2px accent ring — opaque colour, not the
+  translucent --accent-dim used for hover glows, because a glow alone here
+  measured too faint against --bg to read as "the thing you asked for": an
+  unmistakable ring — and (3) a soft outer glow in --accent-dim on top,
+  purely for the site's signature warmth. Layer 2 alone clears WCAG 1.4.11's
+  3:1 non-text contrast; 1 and 3 are polish on top of an already-compliant
+  ring, not load-bearing.
+
+  A function rather than a class string + conditional modifier string: the
+  two variants both carry `focus:` utilities, and concatenating
+  "border-accent focus:..." with "border-danger focus:..." left which one
+  wins down to Tailwind's generated stylesheet order rather than anything
+  visible here. Returning one complete, unambiguous class list per state
+  removes that.
+*/
+function fieldClass(hasError: boolean) {
+  // bg-surface-2, not bg-surface: the form now renders inside the contact
+  // page's surface card (§9.1: surface-2 is specifically "nested surfaces"),
+  // so a field needs to read as a step up from its container rather than
+  // disappearing into an identical background with only a border left to
+  // show for it.
+  const base =
+    "mt-1.5 w-full rounded-lg border bg-surface-2 px-3 py-2 text-body text-text outline-none transition-[border-color,box-shadow] disabled:opacity-60";
+  return hasError
+    ? `${base} border-danger focus:shadow-[0_0_0_3px_var(--color-surface),0_0_0_5px_var(--color-danger),0_0_20px_var(--color-danger-dim)]`
+    : `${base} border-border focus:border-accent focus:shadow-[0_0_0_3px_var(--color-surface),0_0_0_5px_var(--color-accent),0_0_20px_var(--color-accent-dim)]`;
+}
 const labelClasses = "block text-small font-medium text-text";
+
+function WarningIcon({ className = "h-4 w-4 mt-0.5" }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`shrink-0 text-danger ${className}`}
+    >
+      <path d="M12 9v4M12 16.5h.01" />
+      <path d="M10.29 3.86 1.82 18a1.5 1.5 0 0 0 1.29 2.25h17.78A1.5 1.5 0 0 0 22.18 18L13.71 3.86a1.5 1.5 0 0 0-2.42 0Z" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5 shrink-0 text-accent"
+    >
+      <path d="m5 12 5 5L20 7" />
+    </svg>
+  );
+}
 
 export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
   const formId = useId();
@@ -78,9 +146,18 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
   const summaryRef = useRef<HTMLDivElement>(null);
 
   if (status === "success") {
+    // No border/background of its own: this renders inside the contact
+    // page's card (contact/page.tsx), so a second nested card here would
+    // frame the frame. Just the centred content.
     return (
-      <div className="rounded-2xl border border-border bg-surface p-8 text-center sm:p-10">
-        <h2 className="text-h3 text-text">Request sent</h2>
+      <div className="py-4 text-center sm:py-6">
+        {/* Plain accent icon beside the heading, not circled — the About
+            section's virtue icons settled this exact question already (see
+            the note there): a ring around it read as busy for no gain. */}
+        <div className="flex items-center justify-center gap-2.5">
+          <CheckIcon />
+          <h2 className="text-h3 text-text">Request sent</h2>
+        </div>
         <p className="mx-auto mt-3 max-w-[48ch] text-body text-text-muted">
           I&apos;ll reply within one business day with what it would take. You
           should also see a confirmation land in your inbox shortly.
@@ -176,24 +253,28 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
   const errorCount = Object.keys(fieldErrors).length;
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="max-w-[42rem]">
+    <form onSubmit={handleSubmit} noValidate>
       {serverError ? (
         <div
           ref={summaryRef}
           role="alert"
-          className="mb-6 rounded-lg border border-danger bg-danger-dim px-4 py-3 text-small text-text"
+          className="mb-6 flex items-start gap-2.5 rounded-lg border border-danger bg-danger-dim px-4 py-3 text-small text-text"
         >
-          {serverError}
+          <WarningIcon />
+          <span>{serverError}</span>
         </div>
       ) : errorCount > 0 ? (
         <div
           ref={summaryRef}
           role="alert"
-          className="mb-6 rounded-lg border border-danger bg-danger-dim px-4 py-3 text-small text-text"
+          className="mb-6 flex items-start gap-2.5 rounded-lg border border-danger bg-danger-dim px-4 py-3 text-small text-text"
         >
-          {errorCount === 1
-            ? "One field needs a fix before this can send."
-            : `${errorCount} fields need a fix before this can send.`}
+          <WarningIcon />
+          <span>
+            {errorCount === 1
+              ? "One field needs a fix before this can send."
+              : `${errorCount} fields need a fix before this can send.`}
+          </span>
         </div>
       ) : null}
 
@@ -229,7 +310,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
             onChange={(e) =>
               setServiceCategory(e.target.value as ServiceCategory)
             }
-            className={`${fieldClasses} ${fieldErrors.serviceCategory ? invalidFieldClasses : ""}`}
+            className={fieldClass(Boolean(fieldErrors.serviceCategory))}
             aria-invalid={Boolean(fieldErrors.serviceCategory)}
             aria-describedby={describedBy(
               `${formId}-serviceCategory`,
@@ -259,7 +340,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
               required
               value={serviceType}
               onChange={(e) => setServiceType(e.target.value as ServiceType)}
-              className={`${fieldClasses} ${fieldErrors.serviceType ? invalidFieldClasses : ""}`}
+              className={fieldClass(Boolean(fieldErrors.serviceType))}
               aria-invalid={Boolean(fieldErrors.serviceType)}
               aria-describedby={describedBy(
                 `${formId}-serviceType`,
@@ -291,7 +372,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
               required
               maxLength={100}
               placeholder="A short title for what you need"
-              className={`${fieldClasses} ${fieldErrors.otherTitle ? invalidFieldClasses : ""}`}
+              className={fieldClass(Boolean(fieldErrors.otherTitle))}
               aria-invalid={Boolean(fieldErrors.otherTitle)}
               aria-describedby={describedBy(`${formId}-otherTitle`, "otherTitle")}
             />
@@ -311,7 +392,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                 required
                 value={contactMethod}
                 onChange={(e) => setContactMethod(e.target.value)}
-                className={`${fieldClasses} ${fieldErrors.contactMethod ? invalidFieldClasses : ""}`}
+                className={fieldClass(Boolean(fieldErrors.contactMethod))}
                 aria-invalid={Boolean(fieldErrors.contactMethod)}
                 aria-describedby={describedBy(
                   `${formId}-contactMethod`,
@@ -339,7 +420,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                   required
                   maxLength={30}
                   autoComplete="tel"
-                  className={`${fieldClasses} ${fieldErrors.phone ? invalidFieldClasses : ""}`}
+                  className={fieldClass(Boolean(fieldErrors.phone))}
                   aria-invalid={Boolean(fieldErrors.phone)}
                   aria-describedby={describedBy(`${formId}-phone`, "phone")}
                 />
@@ -355,7 +436,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                   required
                   maxLength={100}
                   autoComplete="name"
-                  className={`${fieldClasses} ${fieldErrors.name ? invalidFieldClasses : ""}`}
+                  className={fieldClass(Boolean(fieldErrors.name))}
                   aria-invalid={Boolean(fieldErrors.name)}
                   aria-describedby={describedBy(`${formId}-name`, "name")}
                 />
@@ -369,7 +450,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                   required
                   maxLength={254}
                   autoComplete="email"
-                  className={`${fieldClasses} ${fieldErrors.email ? invalidFieldClasses : ""}`}
+                  className={fieldClass(Boolean(fieldErrors.email))}
                   aria-invalid={Boolean(fieldErrors.email)}
                   aria-describedby={describedBy(`${formId}-email`, "email")}
                 />
@@ -387,7 +468,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                 required
                 rows={5}
                 maxLength={2000}
-                className={`${fieldClasses} ${fieldErrors.description ? invalidFieldClasses : ""}`}
+                className={fieldClass(Boolean(fieldErrors.description))}
                 aria-invalid={Boolean(fieldErrors.description)}
                 aria-describedby={describedBy(
                   `${formId}-description`,
@@ -408,7 +489,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                     id={`${formId}-budget`}
                     name="budget"
                     defaultValue=""
-                    className={`${fieldClasses} ${fieldErrors.budget ? invalidFieldClasses : ""}`}
+                    className={fieldClass(Boolean(fieldErrors.budget))}
                     aria-invalid={Boolean(fieldErrors.budget)}
                     aria-describedby={describedBy(`${formId}-budget`, "budget")}
                   >
@@ -430,7 +511,7 @@ export default function QuoteForm({ initialService = "" }: QuoteFormProps) {
                     name="timeline"
                     required
                     defaultValue=""
-                    className={`${fieldClasses} ${fieldErrors.timeline ? invalidFieldClasses : ""}`}
+                    className={fieldClass(Boolean(fieldErrors.timeline))}
                     aria-invalid={Boolean(fieldErrors.timeline)}
                     aria-describedby={describedBy(
                       `${formId}-timeline`,
@@ -488,8 +569,12 @@ function Field({
       </label>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="mt-1.5 text-small text-danger">
-          {error}
+        <p
+          id={`${id}-error`}
+          className="mt-1.5 flex items-start gap-1.5 text-small text-danger"
+        >
+          <WarningIcon />
+          <span>{error}</span>
         </p>
       ) : null}
     </div>
