@@ -31,11 +31,21 @@ export const metadata: Metadata = {
   // itself and the generated OG image in src/app/opengraph-image.tsx. The three
   // are meant to read as one thing, so a change to the hero is a change to all
   // three.
+  //
+  // description: back to matching the hero paragraph word for word (owner
+  // call, 2026-08-21), superseding the note this used to carry — that it
+  // deliberately kept outcome wording ("Custom automation, spreadsheets,
+  // websites...") while the title above followed the hero, because §12 wants
+  // a plain-language phrase someone would search. That reasoning was for
+  // search results; this field is what Discord/Slack/iMessage show under the
+  // title when the link itself is pasted, so the owner's original "all three
+  // read as one thing" intent applies here after all. The top-level
+  // `description` above (search-result snippet) is untouched.
   openGraph: {
     type: "website",
     title: "Hi, I'm Liam. I design and build digital experiences.",
     description:
-      "Custom automation, spreadsheets, websites, and technology solutions for individuals and small businesses.",
+      "I'm a designer and developer who enjoys creating clean, functional, and user-focused solutions.",
   },
   // Still noindex, but for a THIRD reason now — the previous two (placeholder
   // content, then 404ing triage destinations) are both resolved: services,
@@ -194,12 +204,13 @@ export default function Home() {
                 the first thing on the page that names a service is the
                 Services section, which this same pass moved to the bottom.
 
-                The metadata and OG descriptions below deliberately did NOT
-                follow. They still carry the outcome wording, because they are
-                what a search result shows and §12 wants each page targeting a
-                plain-language phrase someone would actually search. The note
-                on the metadata block saying hero and OG copy move together no
-                longer holds; that divergence is intentional.
+                The top-level `description` below (the search-result snippet)
+                deliberately did NOT follow — it still carries outcome wording,
+                because §12 wants that field targeting a plain-language phrase
+                someone would actually search. `openGraph.description` used to
+                diverge the same way; that reversed 2026-08-21 (owner call, see
+                the metadata block) and it's back to matching this paragraph
+                word for word, same as the OG title already did.
 
                 The break after "creating" is the owner's, so <br /> rather
                 than letting it wrap — but only from sm up, since forcing it
