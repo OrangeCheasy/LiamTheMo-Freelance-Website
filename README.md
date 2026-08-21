@@ -1,4 +1,4 @@
-# liamthemo-freelance-website
+# LiamTheMo-Website
 
 Freelance services website for Liam Mo — a lead-generation site for a solo freelance practice.
 
