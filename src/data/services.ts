@@ -24,9 +24,13 @@ import type { Service, ServiceSlug } from "@/lib/types";
   than guessed. Policies that apply to every service live in `commonFaqs` below
   rather than being copied into all five objects.
 
-  `relatedProjects` holds forward references to Phase 4 slugs. The projects do
-  not exist yet, and the pages must render fine when a lookup finds nothing.
-  Never add a placeholder project to make a page look fuller.
+  NO `relatedProjects` FIELD. It used to hold hand-maintained forward
+  references to project slugs, written before projects.ts existed. Removed
+  2026-08-21 (resolves the TODO that used to sit here): it had already drifted
+  — `excel-data` still pointed at "excel-performance-dashboard", a project
+  that has never existed — and nothing read it. `projectsForService()` in
+  projects.ts derives the real list from each project's own `services` array
+  instead, which cannot drift the same way. See that function's comment.
 */
 
 export const services: readonly Service[] = [
@@ -69,7 +73,6 @@ export const services: readonly Service[] = [
         a: "Then it is probably not worth automating yet. Tell me how long it takes and how often you do it, and I will tell you honestly whether it is worth the money.",
       },
     ],
-    relatedProjects: ["restaurant-sales-parser"],
   },
 
   {
@@ -111,7 +114,6 @@ export const services: readonly Service[] = [
         a: "No. Cleaning it is part of the work, and it is one of the most common reasons people get in touch.",
       },
     ],
-    relatedProjects: ["restaurant-sales-parser", "excel-performance-dashboard"],
   },
 
   {
@@ -153,7 +155,6 @@ export const services: readonly Service[] = [
         a: "A domain name and hosting, both of which are ongoing costs paid to whoever provides them rather than to me. I will tell you what they are before you commit to anything.",
       },
     ],
-    relatedProjects: ["this-website"],
   },
 
   {
@@ -219,7 +220,6 @@ export const services: readonly Service[] = [
         a: "I am in Calgary, Alberta, and I work anywhere in the city as well as nearby towns such as Airdrie. Further out is still possible, but the travel time is added to the quote. A lot of problems can also be solved remotely, so ask before assuming you need someone in the room.",
       },
     ],
-    relatedProjects: ["computer-builds-and-repairs"],
   },
 
   {
@@ -271,7 +271,6 @@ export const services: readonly Service[] = [
         a: "Either. I am comfortable with both, so it comes down to what your team already uses.",
       },
     ],
-    relatedProjects: ["fuse-factory", "echo-realms"],
   },
 ];
 

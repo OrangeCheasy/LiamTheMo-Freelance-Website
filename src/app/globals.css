@@ -36,7 +36,7 @@
 
   /*
     The brand mark's own orange, sampled from the owner-supplied artwork at
-    public/tab/lm-icon.png. Deliberately NOT --color-accent: the two are
+    public/tab/lm-icon.webp. Deliberately NOT --color-accent: the two are
     different oranges, and the header/footer logo was rendering in the accent,
     which is why it did not match the supplied logo file. Accent stays the UI
     action colour (§9.2); this is used by the "lm" mark alone.
@@ -143,11 +143,6 @@
 
   --text-small: 0.875rem;
   --text-small--line-height: 1.5;
-
-  --text-eyebrow: 0.8125rem;
-  --text-eyebrow--line-height: 1.4;
-  --text-eyebrow--letter-spacing: 0.08em;
-  --text-eyebrow--font-weight: 600;
 }
 
 @layer base {

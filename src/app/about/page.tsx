@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import CTASection from "@/components/CTASection";
+import SectionLabel from "@/components/SectionLabel";
 
 /*
   About (CLAUDE.md §15 step 6, Phase R6). Fully static — no data, no dynamic
@@ -104,7 +105,7 @@ export default function AboutPage() {
         <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
           <div className="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-small font-medium text-accent">About</p>
+              <SectionLabel>About</SectionLabel>
               <h1 className="mt-2 max-w-[20ch] text-h1 text-text">
                 Who you would be hiring
               </h1>

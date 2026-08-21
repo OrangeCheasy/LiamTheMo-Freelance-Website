@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import QuoteForm from "@/components/QuoteForm";
+import SectionLabel from "@/components/SectionLabel";
 import { SERVICE_META, type ServiceSlug } from "@/lib/types";
 
 /*
@@ -81,7 +82,7 @@ export default async function ContactPage({
       */}
       <section className="relative">
         <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
-          <p className="text-small font-medium text-accent">Contact</p>
+          <SectionLabel>Contact</SectionLabel>
           <h1 className="mt-2 max-w-[24ch] text-h1 text-text">{heading}</h1>
           <p className="mt-4 max-w-[56ch] text-body text-text-muted">
             {description}

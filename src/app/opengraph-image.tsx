@@ -11,6 +11,10 @@ export const alt =
   differently from the page it opens is the drift worth avoiding. If the hero
   changes, change this with it — src/app/page.tsx is the source.
 
+  `description` briefly diverged from the hero paragraph (kept outcome
+  wording for search-result purposes) before rejoining it 2026-08-21 — see
+  the note on page.tsx's `openGraph.description`, which this matches.
+
   2026-08-20: the TITLE now also copies the hero's own three-tier styling
   (page.tsx's h1), not just its words — "Liam" in accent, the two lines under
   it in --color-text-secondary (#c3beba), everything else in --color-text
@@ -53,6 +57,6 @@ export default async function Image() {
       </div>
     ),
     description:
-      "Custom automation, spreadsheets, websites, and technology solutions for individuals and small businesses.",
+      "I'm a designer and developer who enjoys creating clean, functional, and user-focused solutions.",
   });
 }

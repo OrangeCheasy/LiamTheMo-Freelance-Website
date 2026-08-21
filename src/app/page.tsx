@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ArrowUpRightIcon from "@/components/ArrowUpRightIcon";
 import CTASection from "@/components/CTASection";
 import FeaturedWork from "@/components/FeaturedWork";
 import HeroArt from "@/components/HeroArt";
+import SectionLabel from "@/components/SectionLabel";
 import ServicesSection from "@/components/ServicesSection";
 import { projects } from "@/data/projects";
 
@@ -31,11 +33,21 @@ export const metadata: Metadata = {
   // itself and the generated OG image in src/app/opengraph-image.tsx. The three
   // are meant to read as one thing, so a change to the hero is a change to all
   // three.
+  //
+  // description: back to matching the hero paragraph word for word (owner
+  // call, 2026-08-21), superseding the note this used to carry — that it
+  // deliberately kept outcome wording ("Custom automation, spreadsheets,
+  // websites...") while the title above followed the hero, because §12 wants
+  // a plain-language phrase someone would search. That reasoning was for
+  // search results; this field is what Discord/Slack/iMessage show under the
+  // title when the link itself is pasted, so the owner's original "all three
+  // read as one thing" intent applies here after all. The top-level
+  // `description` above (search-result snippet) is untouched.
   openGraph: {
     type: "website",
     title: "Hi, I'm Liam. I design and build digital experiences.",
     description:
-      "Custom automation, spreadsheets, websites, and technology solutions for individuals and small businesses.",
+      "I'm a designer and developer who enjoys creating clean, functional, and user-focused solutions.",
   },
   // Still noindex, but for a THIRD reason now — the previous two (placeholder
   // content, then 404ing triage destinations) are both resolved: services,
@@ -194,12 +206,13 @@ export default function Home() {
                 the first thing on the page that names a service is the
                 Services section, which this same pass moved to the bottom.
 
-                The metadata and OG descriptions below deliberately did NOT
-                follow. They still carry the outcome wording, because they are
-                what a search result shows and §12 wants each page targeting a
-                plain-language phrase someone would actually search. The note
-                on the metadata block saying hero and OG copy move together no
-                longer holds; that divergence is intentional.
+                The top-level `description` below (the search-result snippet)
+                deliberately did NOT follow — it still carries outcome wording,
+                because §12 wants that field targeting a plain-language phrase
+                someone would actually search. `openGraph.description` used to
+                diverge the same way; that reversed 2026-08-21 (owner call, see
+                the metadata block) and it's back to matching this paragraph
+                word for word, same as the OG title already did.
 
                 The break after "creating" is the owner's, so <br /> rather
                 than letting it wrap — but only from sm up, since forcing it
@@ -223,18 +236,7 @@ export default function Home() {
                   className="group inline-flex items-center gap-2 rounded-full border border-accent px-6 py-2 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
                 >
                   View My Work
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  >
-                    <path d="M7 17 17 7M9 7h8v8" />
-                  </svg>
+                  <ArrowUpRightIcon className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>
             </div>
@@ -320,7 +322,7 @@ export default function Home() {
             heading was always pushed one line lower than the virtues it was
             supposed to sit beside.
           */}
-          <p className="text-small font-medium text-accent">About Me</p>
+          <SectionLabel>About Me</SectionLabel>
 
           {/*
             No `items-start`: grid children stretch by default, and that is

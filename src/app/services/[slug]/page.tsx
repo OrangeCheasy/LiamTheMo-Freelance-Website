@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CTASection from "@/components/CTASection";
 import ProjectCard from "@/components/ProjectCard";
+import SectionLabel from "@/components/SectionLabel";
 import { projectsForService } from "@/data/projects";
 import { commonFaqs, getService, serviceSlugs } from "@/data/services";
 import { warmGlow } from "@/lib/glow";
@@ -87,12 +88,6 @@ function StepNumber({ n }: { n: number }) {
       {n}
     </span>
   );
-}
-
-// The label above each section heading — the home page's "About Me" / "Services"
-// pairing. See the accent note at the top of this file.
-function SectionLabel({ children }: { children: string }) {
-  return <p className="text-small font-medium text-accent">{children}</p>;
 }
 
 export default async function ServiceDetailPage({
@@ -291,10 +286,10 @@ export default async function ServiceDetailPage({
         end for a visitor who wants proof before they fill in the form.
 
         Driven by `projectsForService()`, which filters on `Project.services`
-        — the same field the case studies read to link back here. Deliberately
-        NOT `service.relatedProjects`: see that function's note in
-        src/data/projects.ts for why a derived list is the one that cannot
-        drift.
+        — the same field the case studies read to link back here. There used
+        to be a hand-maintained `service.relatedProjects` field that did this
+        job instead; see that function's note in src/data/projects.ts for why
+        it was removed and a derived list is the one that cannot drift.
 
         Renders nothing when a service has no projects yet, rather than an
         empty heading. Every service has at least one today, but that is a

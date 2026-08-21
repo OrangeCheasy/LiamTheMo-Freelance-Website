@@ -25,18 +25,17 @@ export interface Service {
   startingPrice?: string; // "from $X" — omit entirely rather than guess
   turnaround?: string; // "typically 3–7 days"
   faqs: { q: string; a: string }[];
-  relatedProjects: string[]; // Project.slug values
 }
 
 /**
  * The card thumbnail every project must have (CLAUDE.md §6: "`cover` is
  * required in this redesign... a project without art breaks it").
  *
- * A union rather than a bare `{ src, alt }`, because three real projects have
- * no art yet — This Website, Computer Builds & Repairs, Echo Realms — and the
- * two other ways to satisfy a required image field are both worse: inventing
- * a screenshot violates §11, and dropping the projects costs Local Tech Help
- * its only proof.
+ * A union rather than a bare `{ src, alt }`, because some real projects have
+ * no art yet — Computer Builds & Repairs, Echo Realms, as of 2026-08-21 — and
+ * the two other ways to satisfy a required image field are both worse:
+ * inventing a screenshot violates §11, and dropping the projects costs Local
+ * Tech Help its only proof.
  *
  * `tile` is not a placeholder for a missing image; it is a designed fallback
  * built from the project's own service identity (hue + icon), the same system
@@ -170,6 +169,20 @@ export interface Project {
     // thumbnail. It moved to `ProjectCover` with that job — a gallery figure
     // is never cropped to a fixed box, it sizes itself from width/height
     // above, so there was nothing left for the option to do.
+  }[];
+  /**
+   * Paired redesign screenshots (e.g. old homepage vs new homepage), rendered
+   * by `BeforeAfterCompare` as its own "Before / After" section — separate
+   * from `images`/`ScreenshotCarousel` because a flat filmstrip has no way to
+   * keep a before next to its matching after once there are more than a
+   * handful of images (three-per-row wraps a pair across scroll pages). Full,
+   * uncropped screenshots, so both carry their real pixel dimensions rather
+   * than defaulting to the 3:2 `images` crop.
+   */
+  beforeAfter?: {
+    label: string;
+    before: { src: string; alt: string; width: number; height: number };
+    after: { src: string; alt: string; width: number; height: number };
   }[];
   featured: boolean;
 }

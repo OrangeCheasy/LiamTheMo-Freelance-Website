@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import CTASection from "@/components/CTASection";
 import EmberField from "@/components/EmberField";
 import ProjectCard from "@/components/ProjectCard";
+import SectionLabel from "@/components/SectionLabel";
 import { projects } from "@/data/projects";
 
 /*
@@ -96,7 +97,7 @@ export default function PortfolioPage() {
             on the site. Same shape as the home page's hero section.
           */}
           <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
-            <p className="text-small font-medium text-accent">Real work</p>
+            <SectionLabel>Real work</SectionLabel>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <h1 className="max-w-[20ch] text-h1 text-text">Projects</h1>
               <span className="rounded-full border border-border px-2.5 py-1 text-small font-medium text-text-muted">

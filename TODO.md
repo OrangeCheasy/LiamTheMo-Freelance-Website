@@ -62,16 +62,18 @@ canonical list.
         micro-label above each heading), matching what R3 did to the service pages. The case
         study's problem block now carries the same `warmGlow()` focal panel the service pages use.
       - `Project.cover` is now required (§6) as a union: a real image, or a designed `tile` built
-        from the project's service hue and icon. Three projects ship as tiles because they have no
-        art — **This Website**, **Computer Builds & Repairs**, **Echo Realms**. Each carries a
-        TODO(owner) in `projects.ts` naming the shot that would promote it. Of the three, the
-        Computer Builds photo is the one worth taking first: it is Local Tech Help's only proof.
+        from the project's service hue and icon. Two projects still ship as tiles because they have
+        no art — **Computer Builds & Repairs**, **Echo Realms**. Each carries a TODO(owner) in
+        `projects.ts` naming the shot that would promote it. Of the two, the Computer Builds photo
+        is the one worth taking first: it is Local Tech Help's only proof. **This Website** shipped
+        real cover art 2026-08-21 (owner-supplied `cover.png`, converted to WebP) and is out of this
+        list now.
       - Cross-linking is closed in both directions off the single `Project.services` field —
         `projectsForService()` drives related work on service pages, and each case study links
         back. Verified symmetric across all 5 services and all 6 projects.
-      - `Service.relatedProjects` is now dead data (nothing reads it) and had already drifted — it
-        still points `excel-data` at `excel-performance-dashboard`, which has never existed.
-        Removal is a §6 shape change, so it is left for its own PR (§13).
+      - [x] ~~`Service.relatedProjects` is dead data~~ — removed 2026-08-21. It had already drifted
+        (still pointed `excel-data` at `excel-performance-dashboard`, which has never existed) and
+        nothing read it; `projectsForService()` fully replaced it.
       - **Restaurant Sales Parser still has no owner-confirmed `result`/metrics** (§16). The case
         study renders with no result section at all rather than an invented figure; see the
         TODO(owner) block in `projects.ts` for the two fields to fill.

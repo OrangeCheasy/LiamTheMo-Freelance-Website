@@ -4,16 +4,19 @@
   is what both used to render).
 
   WHERE THE PATH COMES FROM. It is a trace of the owner-supplied artwork at
-  public/tab/lm-icon.png, not a hand-drawn approximation: the orange mark was
-  masked out of that PNG, its outline walked as a single closed contour, and
-  the result simplified until adding more points stopped changing the render.
-  The trace differs from the source artwork by 0.34% of pixels — edge
-  antialiasing — and is 1.2 KB of path data.
+  public/tab/lm-icon.webp (originally delivered as a 630 KB PNG; converted
+  2026-08-21 — same reasoning as CLAUDE.md §9.3/§12, see the projects.ts
+  covers), not a hand-drawn approximation: the orange mark was masked out of
+  that source, its outline walked as a single closed contour, and the result
+  simplified until adding more points stopped changing the render. The trace
+  differs from the source artwork by 0.34% of pixels — edge antialiasing —
+  and is 1.2 KB of path data.
 
-  WHY A PATH AND NOT THE PNG. Inline SVG costs no request, stays crisp at any
-  size, and takes its colour from `currentColor`, so the header, the footer
-  and the favicon are all one shape rather than three assets that can drift.
-  The source PNG is 630 KB and has the background baked in.
+  WHY A PATH AND NOT THE IMAGE FILE. Inline SVG costs no request, stays crisp
+  at any size, and takes its colour from `currentColor`, so the header, the
+  footer and the favicon are all one shape rather than three assets that can
+  drift. The source file has the background baked in and, unlike this path,
+  isn't referenced by anything the site actually renders.
 
   COLOUR. `--color-logo` (#F75701), not `--color-accent` (#FF6A1A). Those are
   two different oranges and the site was using the wrong one: accent is the UI
