@@ -171,6 +171,20 @@ export interface Project {
     // is never cropped to a fixed box, it sizes itself from width/height
     // above, so there was nothing left for the option to do.
   }[];
+  /**
+   * Paired redesign screenshots (e.g. old homepage vs new homepage), rendered
+   * by `BeforeAfterCompare` as its own "Before / After" section — separate
+   * from `images`/`ScreenshotCarousel` because a flat filmstrip has no way to
+   * keep a before next to its matching after once there are more than a
+   * handful of images (three-per-row wraps a pair across scroll pages). Full,
+   * uncropped screenshots, so both carry their real pixel dimensions rather
+   * than defaulting to the 3:2 `images` crop.
+   */
+  beforeAfter?: {
+    label: string;
+    before: { src: string; alt: string; width: number; height: number };
+    after: { src: string; alt: string; width: number; height: number };
+  }[];
   featured: boolean;
 }
 

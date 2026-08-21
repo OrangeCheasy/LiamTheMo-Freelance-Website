@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import BeforeAfterCompare from "@/components/BeforeAfterCompare";
 import ScreenshotCarousel from "@/components/ScreenshotCarousel";
 import { projects } from "@/data/projects";
 import { SERVICE_META, type ProjectFeature } from "@/lib/types";
@@ -49,6 +50,12 @@ import { SERVICE_META, type ProjectFeature } from "@/lib/types";
   card-grid-only now — nothing on this page reads it. `images` feeds the
   Screenshots carousel directly; every figure in it is lazy, there being no
   above-the-fold image left to prioritize.
+
+  BEFORE / AFTER (2026-08-21, owner-supplied redesign screenshots for This
+  Website). Separate optional section, separate field (`Project.beforeAfter`)
+  — see the type's own comment for why this isn't just more `images` entries
+  fed through ScreenshotCarousel. Renders below Screenshots, hidden entirely
+  when a project has no pairs.
 */
 
 export function generateStaticParams() {
@@ -428,6 +435,13 @@ export default async function ProjectPage({
         <section className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
           <SectionLabel>Screenshots</SectionLabel>
           <ScreenshotCarousel images={project.images} className="mt-6" />
+        </section>
+      ) : null}
+
+      {project.beforeAfter && project.beforeAfter.length > 0 ? (
+        <section className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8">
+          <SectionLabel>Before / After</SectionLabel>
+          <BeforeAfterCompare pairs={project.beforeAfter} className="mt-6" />
         </section>
       ) : null}
     </>

@@ -38,11 +38,16 @@ export const projects: Project[] = [
     title: "This Website",
     // client: omitted — this is the owner's own business site.
     services: ["websites"],
-    // TODO(owner): a real cover would be a screenshot of the home page hero.
-    // Left as a tile deliberately for now — a screenshot of the site the
-    // visitor is currently looking at is the weakest image on the grid, and
-    // it would date itself every time the home page is restyled.
-    cover: { kind: "tile" },
+    // Owner-supplied 2026-08-21, resolving the TODO that used to sit here.
+    // Delivered as cover.png (1.6 MB); converted to WebP (§9.3/§12 — every
+    // other cover on the site is already .webp) at quality 85, which held up
+    // visually on inspection and cut it to ~130 KB. Source PNG deleted rather
+    // than kept alongside — no other project keeps an unconverted original.
+    cover: {
+      kind: "image",
+      src: "/portfolio/this-website/cover.webp",
+      alt: "Composite showing the liamthemo.com homepage, featured work cards, and about section on the dark/orange redesign, next to the page title 'My Portfolio & Business Site'.",
+    },
     summary:
       "The website for my portfolio and business — a live example of the same kind of build offered to clients: a data-driven services and portfolio system on a fast, low-cost stack.",
     problem:
@@ -97,17 +102,67 @@ export const projects: Project[] = [
     // result: intentionally omitted (§10) — the site isn't launched with
     // real traffic yet, so there's no conversion number to report.
     stack: ["Next.js", "TypeScript", "Tailwind CSS", "Cloudflare Workers"],
-    // TODO(owner): before/after screenshots for the Screenshots carousel —
-    // flagged in chat 2026-08-20, not yet supplied. Add real captures here
-    // when ready; do not invent placeholder images (§11).
+    // Real captures, supplied 2026-08-21 as JPEG — resolves the TODO that
+    // used to sit here. `beforeAfter`, not `images`: see the field's own
+    // comment on why a flat carousel isn't the right fit for paired
+    // before/after shots. Converted to WebP the same day (§9.3/§12 — see the
+    // `cover` note above); pixel dimensions are each file's real size
+    // (Pillow), not guessed, and don't change across the JPEG->WebP swap.
+    beforeAfter: [
+      {
+        label: "Homepage",
+        before: {
+          src: "/portfolio/this-website/homepage_before.webp",
+          alt: "The liamthemo.com homepage before the dark/orange redesign.",
+          width: 2732,
+          height: 1980,
+        },
+        after: {
+          src: "/portfolio/this-website/homepage_after.webp",
+          alt: "The liamthemo.com homepage after the dark/orange redesign.",
+          width: 2732,
+          height: 1984,
+        },
+      },
+      {
+        label: "About",
+        before: {
+          src: "/portfolio/this-website/about_before.webp",
+          alt: "The liamthemo.com About page before the dark/orange redesign.",
+          width: 2732,
+          height: 1977,
+        },
+        after: {
+          src: "/portfolio/this-website/about_after.webp",
+          alt: "The liamthemo.com About page after the dark/orange redesign.",
+          width: 2732,
+          height: 1958,
+        },
+      },
+      {
+        label: "Portfolio",
+        before: {
+          src: "/portfolio/this-website/portfolio_before.webp",
+          alt: "The liamthemo.com Portfolio page before the dark/orange redesign.",
+          width: 2729,
+          height: 1985,
+        },
+        after: {
+          src: "/portfolio/this-website/portfolio_after.webp",
+          alt: "The liamthemo.com Portfolio page after the dark/orange redesign.",
+          width: 2732,
+          height: 1968,
+        },
+      },
+    ],
     //
-    // featured: false — CLAUDE.md §15 Phase 2's approved mockup shows a
-    // specific three: Fuse Factory, OrangeCheasy, Restaurant Sales Parser.
-    // This site is real work, but it isn't image-led the way the mockup's
-    // grid needs (no `images`, and a screenshot of the site the visitor is
-    // already on doesn't demonstrate anything). Flipped in favour of the
-    // mockup's picks rather than adding a fourth featured card.
-    featured: false,
+    // featured: true — owner call, 2026-08-21, swapped in for Restaurant
+    // Sales Parser (see that entry below). Supersedes the note this used to
+    // carry, that the Phase 2 mockup's three picks (Fuse Factory, OrangeCheasy,
+    // Restaurant Sales Parser) left no room for a fourth without a real
+    // screenshot — same override pattern the rest of this file already uses
+    // for a direct, later owner instruction beating an earlier mockup pick.
+    featured: true,
   },
   {
     slug: "fuse-factory",
@@ -255,7 +310,13 @@ export const projects: Project[] = [
     // images: intentionally omitted. The cover above is the only asset, and
     // the case study renders the cover as its lead image — repeating it in
     // the gallery below would show the same diagram twice on one page.
-    featured: true,
+    //
+    // featured: false — owner call, 2026-08-21, swapped out of the home
+    // page's three-card grid in favour of This Website (see that entry
+    // above). Still the flagship case study on /portfolio (CLAUDE.md §6) and
+    // still `services: ["automation", "excel-data"]`'s proof project — this
+    // only changes which three cards the home page shows.
+    featured: false,
   },
   {
     slug: "computer-builds-and-repairs",
