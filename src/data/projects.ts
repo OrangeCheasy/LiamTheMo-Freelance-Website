@@ -379,18 +379,14 @@ export const projects: Project[] = [
  * two lists cannot disagree — add "roblox" to a project and it appears on the
  * Roblox page with no second edit.
  *
- * NOT `Service.relatedProjects`, which is the field that would otherwise do
- * this job. That field is a hand-maintained list of slugs written before
- * projects.ts existed, and it has already drifted: `excel-data` still points
- * at "excel-performance-dashboard", a project that has never existed, and
- * neither "orangecheasy-youtube" nor a second automation project would appear
- * on any service page without someone remembering to add it in two places.
- * A derived list cannot drift.
- *
- * TODO(owner): `Service.relatedProjects` is now dead data — nothing reads it.
- * Removing it is a §6 shape change touching all five service entries, so it
- * is left for its own PR (§13: one concern per PR) rather than folded into
- * the R4 restyle. Flagging rather than deciding (§16).
+ * NOT `Service.relatedProjects` — there is no such field any more. It used to
+ * do this job as a hand-maintained list of slugs written before projects.ts
+ * existed, and it had already drifted: `excel-data` still pointed at
+ * "excel-performance-dashboard", a project that has never existed, and
+ * neither "orangecheasy-youtube" nor a second automation project would have
+ * appeared on any service page without someone remembering to add it in two
+ * places. Removed 2026-08-21 (resolves the TODO that used to sit here) now
+ * that this function had fully replaced it — a derived list cannot drift.
  */
 export function projectsForService(slug: ServiceSlug): Project[] {
   return projects.filter((project) => project.services.includes(slug));

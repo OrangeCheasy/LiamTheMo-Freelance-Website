@@ -1,5 +1,6 @@
 import Link from "next/link";
 import LitEdge from "@/components/LitEdge";
+import SectionLabel from "@/components/SectionLabel";
 import { EDGE_PEAK, warmEdgeImage, warmGlowImage } from "@/lib/glow";
 
 /*
@@ -349,7 +350,7 @@ export default function ServicesSection() {
       className="mx-auto max-w-6xl scroll-mt-16 px-5 py-6 sm:px-8 sm:py-8"
     >
       {/* Same label-then-heading rhythm as the About Me section below. */}
-      <p className="text-small font-medium text-accent">Services</p>
+      <SectionLabel>Services</SectionLabel>
       {/*
         Same type sizes as the About Me section (owner call): the heading at
         text-body/semibold rather than text-h2, and the standfirst below it at

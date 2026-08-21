@@ -15,6 +15,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import ArrowUpRightIcon from "@/components/ArrowUpRightIcon";
 import Logo from "@/components/Logo";
 import { CTA, mainNav, SITE_NAME } from "@/lib/nav";
 
@@ -30,20 +31,12 @@ const ctaClasses =
   "text-small font-medium text-text transition-all duration-200 hover:border-accent-hover " +
   "hover:shadow-[0_0_24px_var(--color-accent-dim)]";
 
+// Thin wrapper kept for its two call sites below (desktop + mobile Contact
+// button) — same shared ArrowUpRightIcon every other forward link on the
+// site uses, just with the one className this component always passes it.
 function CTAArrow() {
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-3.5 w-3.5 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-    >
-      <path d="M7 17 17 7M9 7h8v8" />
-    </svg>
+    <ArrowUpRightIcon className="h-3.5 w-3.5 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
   );
 }
 

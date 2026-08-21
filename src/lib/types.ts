@@ -25,18 +25,17 @@ export interface Service {
   startingPrice?: string; // "from $X" — omit entirely rather than guess
   turnaround?: string; // "typically 3–7 days"
   faqs: { q: string; a: string }[];
-  relatedProjects: string[]; // Project.slug values
 }
 
 /**
  * The card thumbnail every project must have (CLAUDE.md §6: "`cover` is
  * required in this redesign... a project without art breaks it").
  *
- * A union rather than a bare `{ src, alt }`, because three real projects have
- * no art yet — This Website, Computer Builds & Repairs, Echo Realms — and the
- * two other ways to satisfy a required image field are both worse: inventing
- * a screenshot violates §11, and dropping the projects costs Local Tech Help
- * its only proof.
+ * A union rather than a bare `{ src, alt }`, because some real projects have
+ * no art yet — Computer Builds & Repairs, Echo Realms, as of 2026-08-21 — and
+ * the two other ways to satisfy a required image field are both worse:
+ * inventing a screenshot violates §11, and dropping the projects costs Local
+ * Tech Help its only proof.
  *
  * `tile` is not a placeholder for a missing image; it is a designed fallback
  * built from the project's own service identity (hue + icon), the same system

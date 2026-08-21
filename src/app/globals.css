@@ -143,11 +143,6 @@
 
   --text-small: 0.875rem;
   --text-small--line-height: 1.5;
-
-  --text-eyebrow: 0.8125rem;
-  --text-eyebrow--line-height: 1.4;
-  --text-eyebrow--letter-spacing: 0.08em;
-  --text-eyebrow--font-weight: 600;
 }
 
 @layer base {

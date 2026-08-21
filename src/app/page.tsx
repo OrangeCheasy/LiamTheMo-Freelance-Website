@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ArrowUpRightIcon from "@/components/ArrowUpRightIcon";
 import CTASection from "@/components/CTASection";
 import FeaturedWork from "@/components/FeaturedWork";
 import HeroArt from "@/components/HeroArt";
+import SectionLabel from "@/components/SectionLabel";
 import ServicesSection from "@/components/ServicesSection";
 import { projects } from "@/data/projects";
 
@@ -234,18 +236,7 @@ export default function Home() {
                   className="group inline-flex items-center gap-2 rounded-full border border-accent px-6 py-2 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
                 >
                   View My Work
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  >
-                    <path d="M7 17 17 7M9 7h8v8" />
-                  </svg>
+                  <ArrowUpRightIcon className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>
             </div>
@@ -331,7 +322,7 @@ export default function Home() {
             heading was always pushed one line lower than the virtues it was
             supposed to sit beside.
           */}
-          <p className="text-small font-medium text-accent">About Me</p>
+          <SectionLabel>About Me</SectionLabel>
 
           {/*
             No `items-start`: grid children stretch by default, and that is

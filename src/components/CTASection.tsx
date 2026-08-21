@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ArrowUpRightIcon from "@/components/ArrowUpRightIcon";
 import GlowBorder from "@/components/GlowBorder";
 import { warmPanel } from "@/lib/glow";
 import { CTA } from "@/lib/nav";
@@ -159,18 +160,7 @@ export default function CTASection({
               className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-2 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)] sm:min-w-[240px]"
             >
               {ctaLabel ?? CTA.label}
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              >
-                <path d="M7 17 17 7M9 7h8v8" />
-              </svg>
+              <ArrowUpRightIcon className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
             {secondary ? (
               <Link
