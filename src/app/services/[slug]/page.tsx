@@ -198,7 +198,7 @@ export default async function ServiceDetailPage({
       {/* ---------------------------------------------------------------- */}
       <section className="mx-auto max-w-6xl px-5 pt-6 pb-6 sm:px-8 sm:pt-8 sm:pb-6">
         {/*
-          35rem, MEASURED RATHER THAN PROPORTIONAL. The mockup gives its copy
+          28rem, MEASURED RATHER THAN PROPORTIONAL. The mockup gives its copy
           column 38% of the content width, and setting 38% here put "that works
           for you." onto three lines: the mockup is drawn at 1536px wide, this
           site's container caps at max-w-6xl, and Bricolage Bold at the top of
@@ -210,7 +210,7 @@ export default async function ServiceDetailPage({
         <div
           className={`grid items-center gap-10 ${
             HeroArtwork
-              ? "lg:grid-cols-[minmax(0,35rem)_minmax(0,1fr)] lg:gap-8 min-[1280px]:-mr-16 min-[1440px]:-mr-32 min-[1536px]:-mr-48"
+              ? "lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:gap-8 min-[1280px]:-mr-16 min-[1440px]:-mr-32 min-[1536px]:-mr-48"
               : ""
           }`}
         >
@@ -249,7 +249,7 @@ export default async function ServiceDetailPage({
               real Bold, so this is a true instance rather than a synthesised
               one.
             */}
-            <h1 className="mt-5 max-w-[16ch] text-display font-bold text-text">
+            <h1 className="mt-5 max-w-[20ch] text-h1 text-text">
               {page.headline.map((line, i) => (
                 <span key={i} className="block">
                   {line.map((segment, j) => (
@@ -264,7 +264,7 @@ export default async function ServiceDetailPage({
               ))}
             </h1>
 
-            <p className="mt-5 max-w-[46ch] text-body text-text-secondary">
+            <p className="mt-5 max-w-[46ch] text-body text-text-muted">
               {page.blurb}
             </p>
 
@@ -325,7 +325,7 @@ export default async function ServiceDetailPage({
             <SectionLabel>{page.offer.label}</SectionLabel>
             <h2
               id="offer-heading"
-              className="mt-2 max-w-[18ch] text-h2 font-bold text-text"
+              className="mt-2 max-w-[22ch] text-balance text-h3 text-text"
             >
               {page.offer.heading}
             </h2>
@@ -383,7 +383,7 @@ export default async function ServiceDetailPage({
             <SectionLabel>{page.process.label}</SectionLabel>
             <h2
               id="process-heading"
-              className="mt-2 text-h2 font-bold text-text"
+              className="mt-2 text-h3 text-text"
             >
               {page.process.heading}
             </h2>
