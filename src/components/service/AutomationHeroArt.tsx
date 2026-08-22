@@ -236,7 +236,7 @@ export default function AutomationHeroArt({
         />
 
         {/* ---- The screen, centre ---- */}
-        <div className="absolute inset-y-[4%] left-[29%] right-[26%]">
+        <div className="absolute inset-y-[2%] left-[33%] right-[26%]">
           <div className="relative h-full w-full">
             {/*
             SCREEN. A floating window, square-on — no laptop (owner call).
@@ -314,7 +314,10 @@ export default function AutomationHeroArt({
         </div>
 
         {/* ---- Stage cards, left ---- */}
-        <ul className="absolute inset-y-[10%] left-0 flex w-[29%] flex-col justify-between">
+        {/* Wider and taller than the first pass: the connector bracket used to
+          occupy the 5% strip to their right and the cards were held clear of
+          it. With it gone there is nothing to leave room for. */}
+      <ul className="absolute inset-y-0 left-0 flex w-[31%] flex-col justify-center gap-[5.5%]">
           {STAGES.map((stage) => (
             <li
               key={stage.label}
@@ -337,30 +340,11 @@ export default function AutomationHeroArt({
           ))}
         </ul>
 
-        {/*
-        THE CONNECTOR. Three stubs from the stage cards merging into one line
-        that runs into the machine — the mockup's clearest statement that the
-        steps and the script are the same thing.
-
-        DRAWN AS ONE OPEN-SIDED ROUNDED BOX, not as five lines. The bracket's
-        top edge IS the first card's stub, its bottom edge is the third card's,
-        and its right edge is the spine they merge into; `border-l-0` opens the
-        side facing the cards. Five absolutely-positioned hairlines would have
-        needed square corners, and the mockup's are visibly radiused.
-
-        Inset to the first and last card's vertical centres: the cards are
-        distributed between 10% and 90% of the box and are ~17% tall, so their
-        centres sit at 18.5% and 81.5%.
-      */}
-        <span className="pointer-events-none absolute top-[18.5%] bottom-[18.5%] left-[29%] w-[5%] rounded-r-[1em] border border-l-0 border-accent/70" />
-        {/* The middle card's stub and the run into the laptop are one line, since
-          the second card's centre and the exit point are both mid-height. */}
-        <span className="pointer-events-none absolute top-1/2 left-[29%] h-px w-[7.5%] bg-accent/70" />
-
+  
         {/* ---- Tasks + Time Saved, right ---- */}
-        <div className="absolute inset-y-[2%] right-0 flex w-[27%] flex-col gap-[4%]">
+        <div className="absolute inset-y-0 right-0 flex w-[25%] flex-col justify-center gap-[5.5%]">
           <div
-            className={`flex-1 px-[1.4em] py-[1.2em] ${cardBase}`}
+            className={`px-[1.4em] py-[1.2em] ${cardBase}`}
             style={{ background: CARD_FILL }}
           >
             <p className="text-[1.4em] font-semibold leading-tight text-text">

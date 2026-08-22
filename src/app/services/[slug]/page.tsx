@@ -210,7 +210,7 @@ export default async function ServiceDetailPage({
         <div
           className={`grid items-center gap-10 ${
             HeroArtwork
-              ? "lg:grid-cols-[minmax(0,35rem)_minmax(0,1fr)] lg:gap-8"
+              ? "lg:grid-cols-[minmax(0,35rem)_minmax(0,1fr)] lg:gap-8 min-[1280px]:-mr-16 min-[1440px]:-mr-32 min-[1536px]:-mr-48"
               : ""
           }`}
         >
@@ -268,7 +268,7 @@ export default async function ServiceDetailPage({
               {page.blurb}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               {/*
                 PRIMARY: filled orange pill with DARK ink. The mockup sets this
                 label in white, which measures 2.9:1 on --color-accent and
@@ -280,7 +280,7 @@ export default async function ServiceDetailPage({
               */}
               <Link
                 href={`/contact?topic=${service.slug}`}
-                className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-bg transition-all duration-200 hover:bg-accent-hover hover:shadow-[0_0_28px_var(--color-accent-dim)]"
+                className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-2 font-medium text-bg transition-all duration-200 hover:bg-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
               >
                 Get Started
                 <ArrowUpRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -289,7 +289,7 @@ export default async function ServiceDetailPage({
               {page.secondaryCta ? (
                 <Link
                   href={page.secondaryCta.href}
-                  className="inline-flex items-center gap-2.5 rounded-full border border-text-muted/50 px-6 py-3 font-semibold text-text transition-colors duration-200 hover:border-text hover:bg-surface"
+                  className="inline-flex items-center gap-2 rounded-full border border-text-muted/50 px-6 py-2 font-medium text-text transition-colors duration-200 hover:border-text hover:bg-surface"
                 >
                   {page.secondaryCta.label}
                   <LineIcon
@@ -307,7 +307,9 @@ export default async function ServiceDetailPage({
             content that converts, and the CSS 3D inside it never runs on the
             devices least able to afford it.
           */}
-          {HeroArtwork ? <HeroArtwork className="hidden lg:block" /> : null}
+          {HeroArtwork ? (
+            <HeroArtwork className="hidden lg:block" />
+          ) : null}
         </div>
       </section>
 
