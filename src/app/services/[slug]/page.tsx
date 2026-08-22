@@ -1,54 +1,90 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ArrowUpRightIcon from "@/components/ArrowUpRightIcon";
 import CTASection from "@/components/CTASection";
-import ProjectCard from "@/components/ProjectCard";
+import LineIcon from "@/components/LineIcon";
 import SectionLabel from "@/components/SectionLabel";
-import { projectsForService } from "@/data/projects";
-import { commonFaqs, getService, serviceSlugs } from "@/data/services";
-import { warmGlow } from "@/lib/glow";
-import { SERVICE_META } from "@/lib/types";
+import AutomationHeroArt from "@/components/service/AutomationHeroArt";
+import AutomationProcessArt from "@/components/service/AutomationProcessArt";
+import { getService, servicePage, serviceSlugs } from "@/data/services";
+import { warmGlowImage } from "@/lib/glow";
+import type { ServiceSlug } from "@/lib/types";
 
 /*
   The detail template. Every one of the five pages is this file — there is no
-  per-service JSX anywhere, and there must not be. Everything that differs
-  between services is a field on the Service object.
+  per-service JSX anywhere below, and there must not be. Everything that
+  differs between services is a field on the Service object, or an entry in the
+  two artwork maps directly under this comment.
 
   RENDERING COST (§4.1).
   generateStaticParams prerenders all five at build time, so they are served
   from the assets binding and cost nothing.
 
-  `dynamicParams = false` is the other half of that, and it matters more than it
-  looks. Left at its default of true, a request to /services/anything-at-all
+  `dynamicParams = false` is the other half of that, and it matters more than
+  it looks. Left at its default of true, a request to /services/anything-at-all
   would be rendered on demand — meaning any crawler or scanner hitting made-up
   URLs could invoke the Worker and burn request quota against the daily cap.
   With it false, anything not in generateStaticParams is a static 404.
 
-  PHASE R3 RESTYLE — presentation only.
-  Data, routing, generateStaticParams and dynamicParams are untouched. What
-  changed is the rhythm: these pages were built before the home page was
-  rebuilt, so they still used full-bleed `border-t bg-surface` bands at
-  py-16/py-20 and the Eyebrow rule, while the home page moved to plain
-  max-w-6xl containers, an accent micro-label above each heading, and the card
-  treatment the triage cards use. Two rhythms on one site reads as two sites,
-  so this file now follows the home page.
+  ─────────────────────────────────────────────────────────────────────────
+  2026-08-21 REBUILD, to the owner's Automation mockup.
 
-  ACCENT ON SECTION LABELS.
-  §9.2 says section labels are not accent. The home page ships them in accent
-  anyway ("About Me", "Services"), because the mockup does and §9 makes the
-  mockup authoritative where the two disagree. Matching the home page is the
-  point of this phase, so the labels here are accent too — noted rather than
-  done quietly, since it is §9.2 being overridden by §9's own precedence rule.
+  This replaced the R3 restyle wholesale rather than adjusting it. The shape is
+  now the mockup's: a split-colour hero with artwork, a "What I build" card
+  row, a process row, a closing bar. Four things about it are worth knowing
+  before editing.
 
-  ROBLOX.
-  §11 allows technical language on that page only, and it is already there, in
-  the data (DataStore, session locking, Luau, Rojo). This template renders it
-  verbatim, and every heading below is register-neutral so the same framing
-  works for a restaurant owner and for a studio. Roblox-specific framing copy
-  would need a new field on Service, not a per-slug branch in this file.
+  1. THREE SECTIONS WERE DROPPED (owner call, mockup 1:1): the FAQ accordion,
+     the "Work like this" related-projects grid, and the `problems` panel that
+     R3 had made the page's focal block. The first two were an explicit
+     decision; `problems` went with them because the mockup has nowhere to put
+     it. That leaves `Service.problems` rendered nowhere on the site — it is
+     still the field §6 calls the most important one, and putting it back as a
+     band between the hero and "What I build" is a small change if the owner
+     wants it. The data stays where it is either way.
+
+     The hero's secondary button is what stops the page being a dead end now
+     that the related grid is gone: it points at /portfolio.
+
+  2. ONE LAYOUT, FIVE SERVICES. Only Automation has a mockup and owner-written
+     copy. `servicePage()` in src/data/services.ts derives the same structure
+     for the other four out of the content they already have, so nothing here
+     branches on a slug except the artwork maps below. See that function for
+     what the fallback is built from and why nothing in it is invented.
+
+  3. ARTWORK IS OPTIONAL AND PER-SERVICE. A service with no entry in the maps
+     renders the same page without it — the hero goes full width, the process
+     row loses a column. That is the graceful half of (2).
+
+  4. ACCENT ON HEADINGS. The hero's first line is orange and so is every
+     section micro-label. §9.2 reserves orange for actions; §9 makes the
+     mockup authoritative where the two disagree, and the home page hero
+     already ships the same override on the word "Liam". Noted rather than
+     done quietly.
 */
 
 export const dynamicParams = false;
+
+/*
+  Per-service artwork. Two maps rather than one component with a slug prop:
+  these are unrelated drawings that happen to be commissioned per service, and
+  a single component switching on slug internally is the per-service JSX this
+  file exists to avoid.
+
+  Partial on purpose — see note 3 above.
+*/
+const HERO_ART: Partial<
+  Record<ServiceSlug, React.ComponentType<{ className?: string }>>
+> = {
+  automation: AutomationHeroArt,
+};
+
+const PROCESS_ART: Partial<
+  Record<ServiceSlug, React.ComponentType<{ className?: string }>>
+> = {
+  automation: AutomationProcessArt,
+};
 
 export function generateStaticParams() {
   return serviceSlugs.map((slug) => ({ slug }));
@@ -76,17 +112,40 @@ export async function generateMetadata({
   };
 }
 
-// Numbered markers are correct here and only here: the process genuinely is a
-// sequence, which §9 calls out as the exception to its "no 01 / 02 / 03" rule.
-// Neutral, not accent (§9.2) — it's an informational marker, not a control.
-function StepNumber({ n }: { n: number }) {
+/*
+  The card surface shared by the "What I build" cards and the process panel.
+
+  Measured off the mockup rather than reused from the home page's triage cards,
+  which are a different treatment: those carry a lit top edge and a round pool
+  of light under it, and these have neither. Sampling a card here gives a fill
+  of rgb(11,11,12) against a section background of rgb(7,7,9) — barely lifted,
+  with a faint warmth pooling at the bottom-left corner rather than the top.
+
+  Hence a low-peak warmGlowImage() anchored at "0% 100%", over --color-surface
+  at half strength. Same shared gradient as every other panel on the site; only
+  the origin and the peak differ, which is what §9.4 asks for instead of a
+  second hand-written radial.
+*/
+const CARD_FILL = `${warmGlowImage({ size: [45, 45], peak: 7, at: "0% 100%" })}, color-mix(in srgb, var(--color-surface) 55%, transparent)`;
+
+/** The arrow between process steps. Drawn rather than the "→" glyph, for the
+    reason ServicesSection's Arrow gives: the character renders at the body
+    font's hairline weight and reads as a faint tick beside a lit icon. */
+function StepArrow() {
   return (
-    <span
+    <svg
       aria-hidden="true"
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface-2 text-small font-semibold text-text"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="absolute -left-5 top-1.5 hidden h-4 w-4 text-accent xl:block"
     >
-      {n}
-    </span>
+      <path d="M4.5 12h14" />
+      <path d="M12.5 6l6 6-6 6" />
+    </svg>
   );
 }
 
@@ -100,232 +159,331 @@ export default async function ServiceDetailPage({
   // narrow and it keeps the page correct if that config ever changes.
   if (!service) notFound();
 
-  const faqs = [...service.faqs, ...commonFaqs];
-  const related = projectsForService(service.slug);
+  const page = servicePage(service);
+  const HeroArtwork = HERO_ART[service.slug];
+  const ProcessArtwork = PROCESS_ART[service.slug];
+
+  /*
+    Whether each row can run at full mockup density.
+
+    A card or step written for the mockup is a two-word title over a short
+    caption and packs five or four to a row. A DERIVED one (see `servicePage()`)
+    puts a whole sentence in the title and has no caption, so the same grid
+    would give it a 110px column to hold twelve words. Keying off the presence
+    of descriptions rather than off `service.page` keeps this a property of the
+    content — a future service that writes long titles by hand gets the roomy
+    grid too, without anyone remembering to set a flag.
+  */
+  const denseCards = page.offer.cards.every((card) => card.description);
+  const denseSteps = page.process.steps.every((step) => step.description);
+
+  /*
+    The process row is three columns only when it has three things to put in
+    them. A service with no artwork and no panel (every service but Automation,
+    today) would otherwise render its steps inside a 19rem column with two empty
+    tracks beside it — which is exactly what the first pass did.
+  */
+  const processBlocks = 1 + (ProcessArtwork ? 1 : 0) + (page.panel ? 1 : 0);
+  const processColumns =
+    processBlocks === 3
+      ? "lg:grid-cols-2 xl:grid-cols-[minmax(0,19rem)_minmax(0,1fr)_14rem]"
+      : processBlocks === 2
+        ? "lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]"
+        : "";
 
   return (
     <>
-      <section className="mx-auto max-w-6xl px-5 pt-8 pb-6 sm:px-8 sm:pt-10 sm:pb-8">
+      {/* ---------------------------------------------------------------- */}
+      {/* HERO                                                             */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="mx-auto max-w-6xl px-5 pt-6 pb-6 sm:px-8 sm:pt-8 sm:pb-6">
         {/*
-          No /services index to link back to (§7 — the home page's Services
-          section replaced it), so this points at that section's anchor
-          instead — same destination the old "See other services" CTA used.
+          35rem, MEASURED RATHER THAN PROPORTIONAL. The mockup gives its copy
+          column 38% of the content width, and setting 38% here put "that works
+          for you." onto three lines: the mockup is drawn at 1536px wide, this
+          site's container caps at max-w-6xl, and Bricolage Bold at the top of
+          the display clamp needs ~537px for that line whatever share of the
+          row it is given. The column is sized to the heading instead, and the
+          artwork takes what is left — which is the right way round, since the
+          heading is content and the artwork is decoration.
         */}
-        <Link
-          href="/#services"
-          className="text-small font-medium text-accent underline underline-offset-4 hover:text-accent-hover"
-        >
-          ← Services
-        </Link>
-
-        {/*
-          The service's identity hue on the same chip the home page's triage
-          cards use, so arriving from that section lands on a visibly matching
-          page. SERVICE_META rather than a third copy of the colour map — it
-          already feeds the OG images and the project cards. The glyph still
-          comes from the data, so `icon` stays the single source of truth for
-          which emoji a service uses.
-        */}
-        <span
-          aria-hidden="true"
-          className={`mt-5 flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${SERVICE_META[service.slug].chipClass}`}
-        >
-          {service.icon}
-        </span>
-        <h1 className="mt-5 max-w-[20ch] text-h1 text-text">{service.title}</h1>
-        <p className="mt-4 max-w-[52ch] text-body text-text-muted">
-          {service.tagline}
-        </p>
-      </section>
-
-      {/*
-        Problems, immediately under the heading and carrying the most visual
-        weight on the page. §6 calls this the field that makes a non-technical
-        visitor recognise themselves; deliverables and process only matter once
-        they believe the page is about them, so those follow and share a row.
-
-        The prominence is built from a glow panel, a step up the type scale and
-        card contrast — deliberately not from accent, because none of this is
-        clickable (§9.2). §9.4 names this exact treatment: a soft radial glow
-        behind a focal element.
-
-        The glow is `warmGlow()` at its panel defaults — the same call the
-        closing CTA makes, so the two panels are the same treatment at two
-        sizes rather than two gradients that merely resemble each other (owner
-        request, 2026-08-18). It replaced a simpler two-stop accent-dim radial,
-        which read as a flat wash next to the CTA's fitted falloff. No hover
-        layer here: nothing in this panel is clickable.
-      */}
-      <section
-        aria-labelledby="problems-heading"
-        className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
-      >
         <div
-          className="overflow-hidden rounded-2xl p-6 sm:p-10"
-          style={{ background: warmGlow() }}
+          className={`grid items-center gap-10 ${
+            HeroArtwork
+              ? "lg:grid-cols-[minmax(0,35rem)_minmax(0,1fr)] lg:gap-8"
+              : ""
+          }`}
         >
           <div>
-            <SectionLabel>Sound familiar?</SectionLabel>
-            <h2
-              id="problems-heading"
-              className="mt-2 max-w-[24ch] text-h2 text-text"
+            {/*
+              No /services index to go back to (§7 — the home page's Services
+              section replaced it), so "Back to Services" points at that
+              section's anchor. The label is the mockup's; the destination is
+              the only one that exists.
+            */}
+            <Link
+              href="/#services"
+              className="group inline-flex items-center gap-2 text-small font-semibold text-accent transition-colors hover:text-accent-hover"
             >
-              If any of these are you, this is the right page
-            </h2>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+              >
+                <path d="M19.5 12h-14" />
+                <path d="M11.5 6l-6 6 6 6" />
+              </svg>
+              Back to Services
+            </Link>
 
             {/*
-              text-h3 rather than text-body: one step up the scale is what makes
-              this the focal block without reaching for colour. Quoted, because
-              these are the visitor's own words rather than a feature list.
+              text-display and font-bold, both measured: the mockup's heading
+              runs about 62px at its native 1536px width, which is the top of
+              text-display's clamp, and its strokes are visibly heavier than
+              the weight-600 the base layer gives every h1. Bricolage ships a
+              real Bold, so this is a true instance rather than a synthesised
+              one.
             */}
-            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-              {service.problems.map((problem) => (
-                <li
-                  key={problem}
-                  className="rounded-xl border border-border bg-surface-2 p-5 text-h3 text-text"
+            <h1 className="mt-5 max-w-[16ch] text-display font-bold text-text">
+              {page.headline.map((line, i) => (
+                <span key={i} className="block">
+                  {line.map((segment, j) => (
+                    <span
+                      key={j}
+                      className={segment.accent ? "text-accent" : ""}
+                    >
+                      {segment.text}
+                    </span>
+                  ))}
+                </span>
+              ))}
+            </h1>
+
+            <p className="mt-5 max-w-[46ch] text-body text-text-secondary">
+              {page.blurb}
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              {/*
+                PRIMARY: filled orange pill with DARK ink. The mockup sets this
+                label in white, which measures 2.9:1 on --color-accent and
+                fails the 4.5:1 §10 requires of a button label; --color-bg on
+                the same fill measures 6.9:1. Fill, radius and proportions are
+                the mockup's — only the ink changed, and only because the
+                alternative was an inaccessible button. Same call as
+                CTASection's `filled` variant, which this page also uses.
+              */}
+              <Link
+                href={`/contact?topic=${service.slug}`}
+                className="group inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-bg transition-all duration-200 hover:bg-accent-hover hover:shadow-[0_0_28px_var(--color-accent-dim)]"
+              >
+                Get Started
+                <ArrowUpRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+
+              {page.secondaryCta ? (
+                <Link
+                  href={page.secondaryCta.href}
+                  className="inline-flex items-center gap-2.5 rounded-full border border-text-muted/50 px-6 py-3 font-semibold text-text transition-colors duration-200 hover:border-text hover:bg-surface"
                 >
-                  &ldquo;{problem}&rdquo;
+                  {page.secondaryCta.label}
+                  <LineIcon
+                    name={page.secondaryCta.icon}
+                    className="h-4 w-4 shrink-0"
+                  />
+                </Link>
+              ) : null}
+            </div>
+          </div>
+
+          {/*
+            hidden lg:block, the same call the home page's hero art has: on a
+            phone this is decorative weight between the headline and the
+            content that converts, and the CSS 3D inside it never runs on the
+            devices least able to afford it.
+          */}
+          {HeroArtwork ? <HeroArtwork className="hidden lg:block" /> : null}
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* WHAT I BUILD                                                     */}
+      {/* ---------------------------------------------------------------- */}
+      <section
+        aria-labelledby="offer-heading"
+        className="mx-auto max-w-6xl px-5 pt-4 pb-4 sm:px-8 sm:pt-5 sm:pb-4"
+      >
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-8">
+          <div>
+            <SectionLabel>{page.offer.label}</SectionLabel>
+            <h2
+              id="offer-heading"
+              className="mt-2 max-w-[18ch] text-h2 font-bold text-text"
+            >
+              {page.offer.heading}
+            </h2>
+            {page.offer.body ? (
+              <p className="mt-4 max-w-[38ch] text-small leading-[1.5] text-text-muted">
+                {page.offer.body}
+              </p>
+            ) : null}
+          </div>
+
+          <ul
+            className={`grid gap-4 lg:self-start sm:grid-cols-2 ${
+              denseCards ? "lg:grid-cols-3 xl:grid-cols-5" : "lg:grid-cols-2"
+            }`}
+          >
+            {page.offer.cards.map((card) => (
+              <li
+                key={card.title}
+                className="rounded-2xl border border-border p-4"
+                style={{ background: CARD_FILL }}
+              >
+                <LineIcon name={card.icon} className="h-6 w-6 text-accent" />
+                <p className="mt-4 text-small font-semibold leading-snug text-text">
+                  {card.title}
+                </p>
+                {card.description ? (
+                  <p className="mt-2.5 text-[0.8rem] leading-[1.45] text-text-muted">
+                    {card.description}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* MY PROCESS                                                       */}
+      {/* ---------------------------------------------------------------- */}
+      <section
+        aria-labelledby="process-heading"
+        className="mx-auto max-w-6xl px-5 pt-4 pb-2 sm:px-8 sm:pt-4 sm:pb-2"
+      >
+        {/*
+          Three columns at xl — artwork, steps, panel — collapsing to two at
+          lg (the panel drops full width underneath) and to one stack below
+          that. The mockup's own proportions are roughly 36/41/18; the fixed
+          rem values here hold that while leaving the step row the widest
+          share, since it is the column that runs out of room first.
+        */}
+        <div className={`grid gap-8 lg:gap-10 ${processColumns}`}>
+          {ProcessArtwork ? <ProcessArtwork className="self-start" /> : null}
+
+          <div>
+            <SectionLabel>{page.process.label}</SectionLabel>
+            <h2
+              id="process-heading"
+              className="mt-2 text-h2 font-bold text-text"
+            >
+              {page.process.heading}
+            </h2>
+            {page.process.body ? (
+              <p className="mt-1.5 max-w-[52ch] text-small leading-[1.5] text-text-muted">
+                {page.process.body}
+              </p>
+            ) : null}
+
+            <ol
+              className={`mt-5 grid gap-x-6 gap-y-6 sm:grid-cols-2 ${
+                denseSteps ? "xl:grid-cols-4" : ""
+              }`}
+            >
+              {page.process.steps.map((step, index) => (
+                <li key={step.title} className="relative">
+                  {/* Sits in the grid gap to the left, so it reads as the
+                      join between two steps rather than as part of either.
+                      Never before the first, and only where the row is
+                      actually a row (xl). */}
+                  {denseSteps && index > 0 ? <StepArrow /> : null}
+                  <LineIcon name={step.icon} className="h-7 w-7 text-accent" />
+                  <p className="mt-3 font-semibold text-text">
+                    {index + 1}. {step.title}
+                  </p>
+                  {step.description ? (
+                    <p className="mt-1 text-small leading-[1.45] text-text-muted">
+                      {step.description}
+                    </p>
+                  ) : null}
                 </li>
               ))}
-            </ul>
+            </ol>
           </div>
-        </div>
-      </section>
 
-      {/*
-        Deliverables and process share one row on desktop. Stacked, they read as
-        two more full-weight sections competing with the problems block above;
-        side by side they read as the supporting detail they are, and the page
-        loses about a screen of scrolling.
-      */}
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-6 sm:px-8 sm:py-8 lg:grid-cols-2 lg:gap-14">
-        <section aria-labelledby="deliverables-heading">
-          <SectionLabel>What you get</SectionLabel>
-          <h2
-            id="deliverables-heading"
-            className="mt-2 max-w-[24ch] text-h2 text-text"
-          >
-            What you actually receive
-          </h2>
-          <ul className="mt-6 flex flex-col gap-4">
-            {service.deliverables.map((item) => (
-              <li key={item} className="flex gap-3">
-                {/* Decorative bullet, not clickable — neutral, not accent (§9.2). */}
-                <span
-                  aria-hidden="true"
-                  className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-text-muted"
-                />
-                <span className="text-body text-text">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section aria-labelledby="process-heading">
-          <SectionLabel>How it works</SectionLabel>
-          <h2
-            id="process-heading"
-            className="mt-2 max-w-[24ch] text-h2 text-text"
-          >
-            From first message to finished
-          </h2>
-          <ol className="mt-6 flex flex-col gap-5">
-            {service.process.map((step, index) => (
-              <li key={step} className="flex items-start gap-4">
-                <StepNumber n={index + 1} />
-                <span className="pt-1 text-body text-text">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </div>
-
-      {/*
-        Service-specific questions first, then the policies shared by every
-        service. Rendered as real <details> elements: no JavaScript, keyboard
-        accessible and open-by-default for search engines and printing.
-      */}
-      <section
-        aria-labelledby="faq-heading"
-        className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
-      >
-        <SectionLabel>Questions</SectionLabel>
-        <h2 id="faq-heading" className="mt-2 max-w-[24ch] text-h2 text-text">
-          Before you get in touch
-        </h2>
-        <div className="mt-6 flex max-w-[70ch] flex-col">
-          {faqs.map((faq) => (
-            <details
-              key={faq.q}
-              className="group border-b border-border py-4 first:border-t"
+          {/*
+            The promise panel. Present only where the owner has written its
+            three points — see `ServicePage.panel`; §11 forbids inventing them
+            for the services that have not been art-directed yet.
+          */}
+          {page.panel ? (
+            <div
+              className="flex flex-col rounded-2xl border border-border p-4 lg:col-span-2 xl:col-span-1"
+              style={{ background: CARD_FILL }}
             >
-              <summary className="cursor-pointer list-none font-medium text-text marker:content-none">
-                <span className="flex items-start justify-between gap-4">
-                  {faq.q}
-                  <span
-                    aria-hidden="true"
-                    className="mt-0.5 shrink-0 text-text-muted transition-transform group-open:rotate-45"
-                  >
-                    +
-                  </span>
-                </span>
-              </summary>
-              <p className="mt-3 max-w-[60ch] text-body text-text-muted">
-                {faq.a}
-              </p>
-            </details>
-          ))}
+              {/*
+                Icon beside the heading, as the mockup draws it. It was stacked
+                for one pass because at the 12rem this column then had, sharing
+                the line left the heading 128px and broke it over four lines.
+                The column is 14rem now and the heading is set at text-small,
+                which is what buys the two lines the mockup gets — the mockup's
+                own panel is ~250px against this 224px, so the type had to give
+                somewhere for the arrangement to survive.
+              */}
+              <div className="flex items-start gap-2.5">
+                <LineIcon
+                  name={page.panel.icon}
+                  className="h-6 w-6 shrink-0 text-accent"
+                />
+                <p className="text-small font-semibold leading-snug text-text">
+                  {page.panel.heading}
+                </p>
+              </div>
+
+              <Link
+                href={`/contact?topic=${service.slug}`}
+                className="group mt-3.5 inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-small font-semibold text-bg transition-all duration-200 hover:bg-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)]"
+              >
+                Contact Me
+                <ArrowUpRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+
+              {/* Every point on one line, which is what sets this column's
+                  width: "Clear communication" is the longest at ~133px, so the
+                  text needs 162px clear of the tick and its gap. */}
+              <ul className="mt-4 flex flex-col gap-2">
+                {page.panel.points.map((point) => (
+                  <li key={point} className="flex items-center gap-2">
+                    <LineIcon
+                      name="check"
+                      className="h-4 w-4 shrink-0 text-accent"
+                    />
+                    <span className="text-small leading-tight text-text">
+                      {point}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       </section>
 
-      {/*
-        RELATED WORK — the reverse half of the cross-linking loop, added in R4.
-        R3 deferred this as "new content rather than a restyle"; it lands now
-        because the case study side of the loop was rebuilt in the same phase
-        and shipping only one direction would leave a service page as a dead
-        end for a visitor who wants proof before they fill in the form.
-
-        Driven by `projectsForService()`, which filters on `Project.services`
-        — the same field the case studies read to link back here. There used
-        to be a hand-maintained `service.relatedProjects` field that did this
-        job instead; see that function's note in src/data/projects.ts for why
-        it was removed and a derived list is the one that cannot drift.
-
-        Renders nothing when a service has no projects yet, rather than an
-        empty heading. Every service has at least one today, but that is a
-        property of the current data, not a guarantee.
-
-        The cards are the same ProjectCard the portfolio index uses, so a
-        visitor arriving here recognises them. All lazy — this sits below the
-        FAQ, a long way down the page.
-      */}
-      {related.length > 0 ? (
-        <section
-          aria-labelledby="related-work-heading"
-          className="mx-auto max-w-6xl px-5 py-6 sm:px-8 sm:py-8"
-        >
-          <SectionLabel>Proof</SectionLabel>
-          <h2
-            id="related-work-heading"
-            className="mt-2 max-w-[24ch] text-h2 text-text"
-          >
-            Work like this
-          </h2>
-          <p className="mt-4 max-w-[52ch] text-body text-text-muted">
-            What this looks like when it is finished.
-          </p>
-
-          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((project) => (
-              <ProjectCard key={project.slug} project={project} />
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
+      {/* ---------------------------------------------------------------- */}
+      {/* CLOSING BAR                                                      */}
+      {/* ---------------------------------------------------------------- */}
       <CTASection
-        title={`Tell me about your ${service.title.toLowerCase()} problem`}
-        description="Describe the problem in plain words."
+        title={page.closing.title}
+        description={page.closing.description}
+        ctaLabel="Get Started"
+        filled
+        secondary={{ href: "/#services", label: "View Other Services" }}
         topic={service.slug}
       />
     </>

@@ -1,4 +1,9 @@
-import type { Service, ServiceSlug } from "@/lib/types";
+import type {
+  LineIconKey,
+  Service,
+  ServicePage,
+  ServiceSlug,
+} from "@/lib/types";
 
 /*
   The five service lines (CLAUDE.md §1). This file is the whole services system:
@@ -73,6 +78,126 @@ export const services: readonly Service[] = [
         a: "Then it is probably not worth automating yet. Tell me how long it takes and how often you do it, and I will tell you honestly whether it is worth the money.",
       },
     ],
+
+    /*
+      THE ART-DIRECTED PAGE (owner mockup, 2026-08-21). Automation is the only
+      service with one so far, so it is the only one carrying this field — see
+      `servicePage()` below for what the other four render instead.
+
+      REGISTER. This page is louder than the rest of the site on purpose: the
+      mockup's heading is a claim ("Automation that works for you"), where §11
+      normally asks for the outcome in the visitor's own words. The `problems`
+      array above still holds that voice, and it is what the quote form and the
+      home page's triage cards run on. This copy is the shopfront; that copy is
+      the diagnosis.
+
+      NOTHING HERE IS A RESULT CLAIM. No hours saved, no client count, no
+      turnaround promise — §11's hard rule, and the reason the panel's three
+      points are commitments about how I work rather than numbers.
+    */
+    page: {
+      headline: [
+        [{ text: "Automation", accent: true }],
+        [{ text: "that works for you." }],
+      ],
+      blurb:
+        "Custom scripts, tools, and systems to automate repetitive work, streamline your workflow, and turn manual tasks into simple, one-click solutions.",
+      /*
+        "View Examples" points at the portfolio index rather than an on-page
+        section: the mockup ends this page at the closing bar, so the related-
+        work grid that used to live here is gone (owner call) and this button
+        is now the only route from a service page to the proof. Losing that
+        link entirely would have made the page a dead end.
+      */
+      secondaryCta: {
+        href: "/portfolio",
+        label: "View Examples",
+        icon: "window",
+      },
+      offer: {
+        label: "What I Build",
+        heading: "Automation for Real-World Use",
+        body: "From simple scripts to full systems, I build automation tools that are reliable, easy to use, and tailored to your specific needs.",
+        cards: [
+          {
+            icon: "file",
+            title: "Data Processing",
+            description: "Clean, organize, and transform your data automatically.",
+          },
+          {
+            icon: "gear",
+            title: "Workflow Automation",
+            description: "Automate repetitive tasks and save hours every week.",
+          },
+          {
+            icon: "code",
+            title: "Custom Scripts",
+            description: "Python, JavaScript, Excel VBA, and more.",
+          },
+          {
+            icon: "cloud",
+            title: "Integrations",
+            description: "Connect your tools and services together.",
+          },
+          {
+            icon: "chart",
+            title: "Scalable Solutions",
+            description: "Built to grow with your needs.",
+          },
+        ],
+      },
+      /*
+        Four steps, and they are the same four as `process` above told in the
+        second person — Discuss/Plan/Build/Deliver against "You show me the
+        task" / "I confirm what I would build" / "I build it and test it" / "I
+        hand it over". Deliberately not a fifth stage invented for the mockup:
+        a visitor who reads both should find one process described twice, not
+        two processes.
+      */
+      process: {
+        label: "My Process",
+        heading: "Simple. Clear. Effective.",
+        body: "A straightforward process from idea to a working solution.",
+        steps: [
+          {
+            icon: "chat",
+            title: "Discuss",
+            description: "We go over your goals and pain points.",
+          },
+          {
+            icon: "file",
+            title: "Plan",
+            description: "I design the right approach for your needs.",
+          },
+          {
+            icon: "code",
+            title: "Build",
+            description: "I develop and test the solution.",
+          },
+          {
+            icon: "plane",
+            title: "Deliver",
+            description: "You get a polished, documented system.",
+          },
+        ],
+      },
+      /*
+        "Fast turnaround" is the one point here that edges toward a promise.
+        It stays because it is a description of how I work rather than a
+        number — §11 blocks "typically 3-7 days", which is why `turnaround` is
+        still absent from this service, not a claim to be quick.
+      */
+      panel: {
+        icon: "bolt",
+        heading: "Ready to automate your workflow?",
+        points: ["Fast turnaround", "Clear communication", "Ongoing support"],
+      },
+      closing: {
+        title: "Have an idea in mind?",
+        description:
+          "Tell me what you're trying to automate. I'll get back to you within one business day.",
+      },
+    },
   },
 
   {
@@ -327,3 +452,85 @@ export function getService(slug: string): Service | undefined {
 export const serviceSlugs: ServiceSlug[] = services.map(
   (service) => service.slug,
 );
+
+/**
+ * The glyph each service's fallback cards are drawn with. Only reached by
+ * services that have no `page` of their own — Automation's cards each name
+ * their own icon.
+ */
+const FALLBACK_ICON: Record<ServiceSlug, LineIconKey> = {
+  automation: "gear",
+  "excel-data": "bars",
+  websites: "window",
+  "local-tech-help": "monitor",
+  roblox: "gamepad",
+};
+
+/**
+ * The four process icons, in order. The same sequence fits every service's
+ * `process` array because all five describe the same shape of job: you show me
+ * the problem, I confirm the work, I build it, I hand it over.
+ */
+const FALLBACK_STEP_ICONS: LineIconKey[] = ["chat", "file", "gear", "plane"];
+
+/**
+ * What the page template renders for a service, whether or not it has been
+ * art-directed yet.
+ *
+ * WHY THIS EXISTS. The 2026-08-21 rebuild moved /services/[slug] to the
+ * owner's mockup: a split-colour hero with artwork, a card row, a step row,
+ * and a closing bar. Only Automation has a mockup and owner-written copy for
+ * those. The other four still have to render — §15 is explicit that no phase
+ * may leave the site half-styled in production — and there are only three ways
+ * to do that:
+ *
+ *   1. keep the old template alive behind a flag, so two layouts ship at once;
+ *   2. write new hero copy for four services nobody has approved (§11);
+ *   3. build the same layout out of the content those services already have.
+ *
+ * This is (3). Every string below is either the service's own approved data or
+ * a heading already shipping on the previous template — nothing here is
+ * invented. The result is visibly plainer than Automation's page, which is
+ * accurate: it is plainer, until its own mockup lands.
+ *
+ * WHAT IS DELIBERATELY MISSING FROM THE FALLBACK. No `panel` — its three
+ * points are promises about how the work goes, and there is no approved list
+ * of those for the other services. An empty panel or a guessed one are both
+ * worse than the template simply not drawing it.
+ */
+export function servicePage(service: Service): ServicePage {
+  if (service.page) return service.page;
+
+  const icon = FALLBACK_ICON[service.slug];
+
+  return {
+    headline: [[{ text: service.title }]],
+    blurb: service.tagline,
+    secondaryCta: { href: "/portfolio", label: "View Examples", icon: "window" },
+    offer: {
+      label: "What I build",
+      // Both headings below are the previous template's, verbatim — approved
+      // copy that already described exactly these two lists.
+      heading: "What you actually receive",
+      cards: service.deliverables.map((deliverable) => ({
+        icon,
+        title: deliverable,
+      })),
+    },
+    process: {
+      label: "My process",
+      heading: "From first message to finished",
+      steps: service.process.map((step, index) => ({
+        icon: FALLBACK_STEP_ICONS[index % FALLBACK_STEP_ICONS.length],
+        title: step,
+      })),
+    },
+    // CTASection's own defaults, spelled out here so the closing bar has one
+    // source of copy rather than half of it coming from a component default.
+    closing: {
+      title: "Tell me what you're trying to get done",
+      description:
+        "Describe the problem in plain words. I'll reply within one business day with what it would take.",
+    },
+  };
+}

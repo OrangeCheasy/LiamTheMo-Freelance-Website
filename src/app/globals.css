@@ -67,6 +67,28 @@
   --color-danger-dim: rgb(255 107 107 / 14%);
 
   /*
+    The "done" green, added for the service pages' hero and process artwork
+    (AutomationHeroArt, ProcessArt), where the mockup marks every completed
+    step with a filled green tick.
+
+    A STATUS COLOUR, NOT A BRAND ONE, and the same category as --color-danger
+    above: it says "this finished", the way danger says "this is wrong".
+    Orange cannot do that job, because §9.2 has already spent orange on
+    actions — a tick rendered in accent would read as something to click.
+
+    Sampled from the mockup at rgb(78,182,58) in the hero card and
+    rgb(90,197,64) in the process window; #56c240 sits between the two. It is
+    the one hue on the site outside the warm axis, which is deliberate: a
+    warm-tinted green next to this much orange stops reading as green at all.
+
+    SCOPE: decorative artwork only. Nothing interactive may use it (§9.2), and
+    the ticks it fills are aria-hidden — the written label beside each one
+    carries the meaning, so the glyph's contrast against the fill is not an
+    accessibility bar.
+  */
+  --color-success: #56c240;
+
+  /*
     Syntax colours for the hero's editor panel (HeroArt.tsx), which renders a
     real code sample as DOM rather than shipping a picture of one. They are
     here rather than inline in the component because §9.1 allows no hardcoded

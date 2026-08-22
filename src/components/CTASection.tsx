@@ -54,6 +54,18 @@ interface CTASectionProps {
    * what precedes it.
    */
   tight?: boolean;
+  /**
+   * Fill the primary button with accent instead of outlining it.
+   *
+   * The service pages ask for this: their mockup draws the closing bar's
+   * button as a solid orange pill, matching the "Get Started" pill in their
+   * own hero, so an outline here would be the one button on the page that
+   * looked different from the one at the top of it. Every other caller keeps
+   * the outline, which is what the home page mockup shows.
+   *
+   * THE LABEL GOES DARK, NOT WHITE, when this is set — see the button below.
+   */
+  filled?: boolean;
 }
 
 export default function CTASection({
@@ -63,6 +75,7 @@ export default function CTASection({
   secondary,
   topic,
   tight = false,
+  filled = false,
 }: CTASectionProps) {
   const ctaHref = topic ? `${CTA.href}?topic=${topic}` : CTA.href;
 
@@ -155,12 +168,27 @@ export default function CTASection({
               "View My Work" pill despite similar-length text — a deliberate
               long-pill shape, not accidental sizing.
             */}
+            {/*
+              THE FILLED VARIANT PUTS DARK INK ON THE ORANGE, not the white
+              the mockup draws. §10 makes contrast non-negotiable and the
+              mockup's own pairing fails it: white on --color-accent measures
+              2.9:1 against the 4.5:1 a button label needs, where --color-bg on
+              the same fill measures 6.9:1. The fill, the radius and the size
+              are the mockup's; only the ink moved, and it moved because the
+              alternative was an inaccessible button.
+            */}
             <Link
               href={ctaHref}
-              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-accent px-6 py-2 font-medium text-text transition-all duration-200 hover:border-accent-hover hover:shadow-[0_0_24px_var(--color-accent-dim)] sm:min-w-[240px]"
+              className={`group inline-flex shrink-0 items-center justify-center gap-2 rounded-full px-6 py-2 font-medium transition-all duration-200 hover:shadow-[0_0_24px_var(--color-accent-dim)] sm:min-w-[240px] ${
+                filled
+                  ? "bg-accent text-bg hover:bg-accent-hover"
+                  : "border border-accent text-text hover:border-accent-hover"
+              }`}
             >
               {ctaLabel ?? CTA.label}
-              <ArrowUpRightIcon className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRightIcon
+                className={`h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${filled ? "" : "text-accent"}`}
+              />
             </Link>
             {secondary ? (
               <Link

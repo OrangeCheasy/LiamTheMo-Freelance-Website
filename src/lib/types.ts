@@ -14,6 +14,119 @@ export type ServiceSlug =
   | "local-tech-help"
   | "roblox";
 
+/**
+ * Every glyph `LineIcon` can draw. A closed set rather than a free string, for
+ * the same reason `ProjectFeature.icon` is one: it keeps SVG markup out of the
+ * data files while making an unknown key a compile error rather than a blank
+ * square in production. Add a key here and a path in `LineIcon` together.
+ */
+export type LineIconKey =
+  | "file"
+  | "gear"
+  | "code"
+  | "cloud"
+  | "chart"
+  | "chat"
+  | "plane"
+  | "bolt"
+  | "clock"
+  | "check"
+  | "tick"
+  | "bars"
+  | "window"
+  | "monitor"
+  | "rocket"
+  | "cube"
+  | "gamepad"
+  | "users"
+  | "trophy";
+
+/**
+ * One run of hero-heading text. `accent: true` paints it `--color-accent`.
+ *
+ * A SEGMENT ARRAY RATHER THAN A STRING WITH MARKUP, because the two mockups
+ * put the accent in different places: Automation colours its whole first line,
+ * Roblox colours one word in the middle of its first ("Roblox **Development**
+ * & Game Solutions"). Anything expressible as "the first line" or "the first
+ * word" would have needed rewriting the moment the second mockup landed, and
+ * parsing a marker out of a string puts a tiny template language in a data
+ * file.
+ *
+ * Accent on a heading is non-interactive orange, which §9.2 otherwise forbids.
+ * It is the same override the home page hero already ships ("Hi, I'm
+ * <accent>Liam</accent>.") on §9's rule that the mockup wins where the two
+ * disagree — noted rather than done quietly.
+ */
+export interface HeadlineSegment {
+  text: string;
+  accent?: boolean;
+}
+
+/** One "What I build" card. `description` is optional so the fallback content
+    (see `servicePage()`) can build cards from `deliverables`, which are single
+    sentences with nothing to put underneath them. */
+export interface ServiceCard {
+  icon: LineIconKey;
+  title: string;
+  description?: string;
+}
+
+/** One numbered process step. `description` is optional for the same reason
+    `ServiceCard.description` is: the derived fallback puts each existing
+    `process` sentence in `title`, where it reads as the step rather than as a
+    caption under an empty one. */
+export interface ServiceStep {
+  icon: LineIconKey;
+  title: string;
+  description?: string;
+}
+
+/**
+ * The art-directed half of a service page (CLAUDE.md §15 step 3, rebuilt
+ * 2026-08-21 to the owner's mockups).
+ *
+ * OPTIONAL ON PURPOSE. Only Automation has an approved mockup and owner-
+ * written copy today; the other four render the same layout from the content
+ * they already have (`servicePage()` in src/data/services.ts derives it). That
+ * is what lets one template serve all five without either inventing copy for
+ * four services or leaving the site half-styled in production (§15).
+ *
+ * Everything here is presentation copy. The load-bearing content — `problems`,
+ * `deliverables`, `process`, `faqs` — stays on `Service` itself, so a service
+ * without this field is still complete.
+ */
+export interface ServicePage {
+  /** The H1, one array per rendered line. */
+  headline: HeadlineSegment[][];
+  /** The paragraph under it. Longer than `tagline`, which still does meta. */
+  blurb: string;
+  /** The hero's second, lower-commitment pill. The first is always the form. */
+  secondaryCta?: { href: string; label: string; icon: LineIconKey };
+  /** "What I build" — left copy block, then the card row. */
+  offer: {
+    label: string;
+    heading: string;
+    body?: string;
+    cards: ServiceCard[];
+  };
+  /** "My process" — the numbered step row and its heading. */
+  process: {
+    label: string;
+    heading: string;
+    body?: string;
+    steps: ServiceStep[];
+  };
+  /** The small panel beside the steps. Omitted when there is no owner-written
+      list of promises to put in it — §11 forbids inventing them. */
+  panel?: {
+    icon: LineIconKey;
+    heading: string;
+    points: string[];
+  };
+  /** Closing bar copy, passed straight to CTASection. */
+  closing: { title: string; description: string };
+}
+
 export interface Service {
   slug: ServiceSlug;
   title: string; // "Automation & Python"
@@ -25,6 +138,8 @@ export interface Service {
   startingPrice?: string; // "from $X" — omit entirely rather than guess
   turnaround?: string; // "typically 3–7 days"
   faqs: { q: string; a: string }[];
+  /** Art-directed page copy, where a mockup and owner copy exist. See `ServicePage`. */
+  page?: ServicePage;
 }
 
 /**
