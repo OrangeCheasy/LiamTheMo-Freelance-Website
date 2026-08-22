@@ -141,7 +141,7 @@ function StepArrow() {
       strokeWidth={2.2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="absolute -left-5 top-1.5 hidden h-4 w-4 text-accent xl:block"
+      className="absolute -left-[0.9375rem] top-2 hidden h-3.5 w-3.5 text-accent xl:block"
     >
       <path d="M4.5 12h14" />
       <path d="M12.5 6l6 6-6 6" />
@@ -186,7 +186,7 @@ export default async function ServiceDetailPage({
   const processBlocks = 1 + (ProcessArtwork ? 1 : 0) + (page.panel ? 1 : 0);
   const processColumns =
     processBlocks === 3
-      ? "lg:grid-cols-2 xl:grid-cols-[minmax(0,19rem)_minmax(0,1fr)_14rem]"
+      ? "lg:grid-cols-2 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)_13rem]"
       : processBlocks === 2
         ? "lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]"
         : "";
@@ -374,7 +374,7 @@ export default async function ServiceDetailPage({
           rem values here hold that while leaving the step row the widest
           share, since it is the column that runs out of room first.
         */}
-        <div className={`grid gap-8 lg:gap-10 ${processColumns}`}>
+        <div className={`grid gap-8 ${processColumns}`}>
           {ProcessArtwork ? <ProcessArtwork className="self-start" /> : null}
 
           <div>
@@ -392,7 +392,7 @@ export default async function ServiceDetailPage({
             ) : null}
 
             <ol
-              className={`mt-5 grid gap-x-6 gap-y-6 sm:grid-cols-2 ${
+              className={`mt-5 grid gap-x-4 gap-y-6 sm:grid-cols-2 ${
                 denseSteps ? "xl:grid-cols-4" : ""
               }`}
             >
@@ -408,7 +408,7 @@ export default async function ServiceDetailPage({
                     {index + 1}. {step.title}
                   </p>
                   {step.description ? (
-                    <p className="mt-1 text-small leading-[1.45] text-text-muted">
+                    <p className="mt-1 text-[0.69rem] leading-[1.55] text-text-muted">
                       {step.description}
                     </p>
                   ) : null}
@@ -424,7 +424,7 @@ export default async function ServiceDetailPage({
           */}
           {page.panel ? (
             <div
-              className="flex flex-col rounded-2xl border border-border p-4 lg:col-span-2 xl:col-span-1"
+              className="flex flex-col self-start rounded-2xl border border-border p-4 lg:col-span-2 xl:col-span-1"
               style={{ background: CARD_FILL }}
             >
               {/*

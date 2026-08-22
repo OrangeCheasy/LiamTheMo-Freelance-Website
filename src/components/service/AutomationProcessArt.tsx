@@ -92,7 +92,7 @@ export default function AutomationProcessArt({
                 <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-success text-bg">
                   <LineIcon name="tick" className="h-2 w-2" />
                 </span>
-                <span className="text-[0.74rem] leading-tight text-text-secondary">
+                <span className="text-[0.7rem] leading-tight text-text-secondary">
                   {line}
                 </span>
               </li>
@@ -101,7 +101,7 @@ export default function AutomationProcessArt({
         </div>
 
         {/* The summary tiles. */}
-        <ul className="flex shrink-0 flex-row gap-2.5 @[15rem]:w-[34%] @[15rem]:flex-col">
+        <ul className="flex shrink-0 flex-row gap-2.5 @[15rem]:w-[32%] @[15rem]:flex-col">
           {STATS.map((stat) => (
             <li
               key={stat.label}
