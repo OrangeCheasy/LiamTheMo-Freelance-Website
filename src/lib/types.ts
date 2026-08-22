@@ -85,11 +85,11 @@ export interface ServiceStep {
  * The art-directed half of a service page (CLAUDE.md §15 step 3, rebuilt
  * 2026-08-21 to the owner's mockups).
  *
- * OPTIONAL ON PURPOSE. Only Automation has an approved mockup and owner-
- * written copy today; the other four render the same layout from the content
- * they already have (`servicePage()` in src/data/services.ts derives it). That
- * is what lets one template serve all five without either inventing copy for
- * four services or leaving the site half-styled in production (§15).
+ * OPTIONAL ON PURPOSE. Only Automation and Roblox have an approved mockup and
+ * owner-written copy today; the other three render the same layout from the
+ * content they already have (`servicePage()` in src/data/services.ts derives
+ * it). That is what lets one template serve all five without either inventing
+ * copy for three services or leaving the site half-styled in production (§15).
  *
  * Everything here is presentation copy. The load-bearing content — `problems`,
  * `deliverables`, `process`, `faqs` — stays on `Service` itself, so a service

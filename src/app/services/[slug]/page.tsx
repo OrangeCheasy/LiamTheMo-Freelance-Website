@@ -7,6 +7,8 @@ import LineIcon from "@/components/LineIcon";
 import SectionLabel from "@/components/SectionLabel";
 import AutomationHeroArt from "@/components/service/AutomationHeroArt";
 import AutomationProcessArt from "@/components/service/AutomationProcessArt";
+import RobloxHeroArt from "@/components/service/RobloxHeroArt";
+import RobloxProcessArt from "@/components/service/RobloxProcessArt";
 import { getService, servicePage, serviceSlugs } from "@/data/services";
 import { warmGlowImage } from "@/lib/glow";
 import type { ServiceSlug } from "@/lib/types";
@@ -47,11 +49,12 @@ import type { ServiceSlug } from "@/lib/types";
      The hero's secondary button is what stops the page being a dead end now
      that the related grid is gone: it points at /portfolio.
 
-  2. ONE LAYOUT, FIVE SERVICES. Only Automation has a mockup and owner-written
-     copy. `servicePage()` in src/data/services.ts derives the same structure
-     for the other four out of the content they already have, so nothing here
-     branches on a slug except the artwork maps below. See that function for
-     what the fallback is built from and why nothing in it is invented.
+  2. ONE LAYOUT, FIVE SERVICES. Automation and, as of 2026-08-22, Roblox have
+     a mockup and owner-written copy. `servicePage()` in src/data/services.ts
+     derives the same structure for the other three out of the content they
+     already have, so nothing here branches on a slug except the artwork maps
+     below. See that function for what the fallback is built from and why
+     nothing in it is invented.
 
   3. ARTWORK IS OPTIONAL AND PER-SERVICE. A service with no entry in the maps
      renders the same page without it — the hero goes full width, the process
@@ -78,12 +81,14 @@ const HERO_ART: Partial<
   Record<ServiceSlug, React.ComponentType<{ className?: string }>>
 > = {
   automation: AutomationHeroArt,
+  roblox: RobloxHeroArt,
 };
 
 const PROCESS_ART: Partial<
   Record<ServiceSlug, React.ComponentType<{ className?: string }>>
 > = {
   automation: AutomationProcessArt,
+  roblox: RobloxProcessArt,
 };
 
 export function generateStaticParams() {
@@ -178,9 +183,30 @@ export default async function ServiceDetailPage({
   const denseSteps = page.process.steps.every((step) => step.description);
 
   /*
+    How many columns a dense row gets at its widest breakpoint — keyed by how
+    many cards or steps there actually are, not hardcoded to Automation's five
+    cards and four steps. Roblox's four cards and three steps are what exposed
+    this: with the old fixed `xl:grid-cols-5` / `xl:grid-cols-4`, a shorter row
+    still reserved Automation's column count and sat short of the full width
+    with an empty track at the end, which is a real gap for any future
+    service whose mockup doesn't happen to match Automation's counts, not a
+    Roblox special case. Falls back to Automation's own counts for any length
+    not listed, so an unanticipated count still renders rather than breaking.
+  */
+  const cardColumns: Record<number, string> = {
+    3: "lg:grid-cols-3",
+    4: "lg:grid-cols-2 xl:grid-cols-4",
+    5: "lg:grid-cols-3 xl:grid-cols-5",
+  };
+  const stepColumns: Record<number, string> = {
+    3: "xl:grid-cols-3",
+    4: "xl:grid-cols-4",
+  };
+
+  /*
     The process row is three columns only when it has three things to put in
-    them. A service with no artwork and no panel (every service but Automation,
-    today) would otherwise render its steps inside a 19rem column with two empty
+    them. A service with no artwork and no panel (three of the five, today)
+    would otherwise render its steps inside a 19rem column with two empty
     tracks beside it — which is exactly what the first pass did.
   */
   const processBlocks = 1 + (ProcessArtwork ? 1 : 0) + (page.panel ? 1 : 0);
@@ -338,7 +364,10 @@ export default async function ServiceDetailPage({
 
           <ul
             className={`grid gap-4 lg:self-start sm:grid-cols-2 ${
-              denseCards ? "lg:grid-cols-3 xl:grid-cols-5" : "lg:grid-cols-2"
+              denseCards
+                ? (cardColumns[page.offer.cards.length] ??
+                  "lg:grid-cols-3 xl:grid-cols-5")
+                : "lg:grid-cols-2"
             }`}
           >
             {page.offer.cards.map((card) => (
@@ -395,7 +424,10 @@ export default async function ServiceDetailPage({
 
             <ol
               className={`mt-5 grid gap-x-4 gap-y-6 sm:grid-cols-2 ${
-                denseSteps ? "xl:grid-cols-4" : ""
+                denseSteps
+                  ? (stepColumns[page.process.steps.length] ??
+                    "xl:grid-cols-4")
+                  : ""
               }`}
             >
               {page.process.steps.map((step, index) => (

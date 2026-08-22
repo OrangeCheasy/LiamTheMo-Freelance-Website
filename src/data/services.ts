@@ -80,9 +80,10 @@ export const services: readonly Service[] = [
     ],
 
     /*
-      THE ART-DIRECTED PAGE (owner mockup, 2026-08-21). Automation is the only
-      service with one so far, so it is the only one carrying this field — see
-      `servicePage()` below for what the other four render instead.
+      THE ART-DIRECTED PAGE (owner mockup, 2026-08-21). Roblox got its own
+      mockup and `page` object on 2026-08-22 (see that object, further down
+      this file); the other three still fall through to `servicePage()`
+      below, which is what renders when a service has no `page` of its own.
 
       REGISTER. This page is louder than the rest of the site on purpose: the
       mockup's heading is a claim ("Automation that works for you"), where §11
@@ -396,6 +397,102 @@ export const services: readonly Service[] = [
         a: "Either. I am comfortable with both, so it comes down to what your team already uses.",
       },
     ],
+
+    /*
+      THE SECOND ART-DIRECTED PAGE (owner mockup, 2026-08-22). Automation's
+      `page` comment above explains the shape and the rules this follows; this
+      note only records what is Roblox-specific.
+
+      REGISTER STAYS TECHNICAL, same call as `problems` above and for the same
+      reason (§1): this audience reads "Luau" and "DataStore" as credibility,
+      not jargon to translate.
+
+      "Get Started" is the template's own hardcoded primary-button label
+      (ServiceDetailPage), shared by every service page and left alone here.
+      The mockup's second button reads "View My Work" rather than Automation's
+      "View Examples" — same destination, `/portfolio`, worded to the mockup.
+
+      THE PROMISE PANEL HAS NO CHECKLIST. The mockup's panel is icon, heading,
+      and the Contact Me button — no bullet list under it, unlike Automation's
+      three-point one. `points: []` renders the list as empty rather than
+      inventing promises the owner never wrote (§11).
+
+      CLOSING BAR COPY ISN'T IN THE MOCKUP (it ends at the process row), so
+      this is written to match the register of Automation's own closing copy
+      rather than traced from anything — the one piece of this object that is.
+    */
+    page: {
+      headline: [
+        [{ text: "Roblox " }, { text: "Development", accent: true }],
+        [{ text: "& Game Solutions" }],
+      ],
+      blurb:
+        "Custom Roblox experiences, systems, and assets built with clean code and creative design.",
+      secondaryCta: {
+        href: "/portfolio",
+        label: "View My Work",
+        icon: "window",
+      },
+      offer: {
+        label: "What I Offer",
+        heading: "End-to-End Roblox Development",
+        body: "From game design and systems to custom assets and optimization, I build polished, engaging, and replayable Roblox experiences.",
+        cards: [
+          {
+            icon: "gamepad",
+            title: "Game Development",
+            description: "Full game creation, systems, and mechanics.",
+          },
+          {
+            icon: "cube",
+            title: "Custom Assets",
+            description: "Models, animations, and more.",
+          },
+          {
+            icon: "gear",
+            title: "Systems & Scripting",
+            description: "Clean, scalable Lua code.",
+          },
+          {
+            icon: "users",
+            title: "Player Experience",
+            description: "Fun, balanced, and polished gameplay.",
+          },
+        ],
+      },
+      process: {
+        label: "My Process",
+        heading: "Build → Test → Deliver",
+        body: "I work closely with you to turn ideas into high-quality Roblox experiences, with clear communication and reliable delivery.",
+        steps: [
+          {
+            icon: "chat",
+            title: "Plan",
+            description: "Discuss ideas, scope and goals.",
+          },
+          {
+            icon: "monitor",
+            title: "Develop",
+            description: "Build and test with clean code.",
+          },
+          {
+            icon: "rocket",
+            title: "Launch",
+            description: "Deliver a polished, playable game.",
+          },
+        ],
+      },
+      panel: {
+        icon: "trophy",
+        heading: "Let's build something great together.",
+        points: [],
+      },
+      closing: {
+        title: "Have a project in mind?",
+        description:
+          "Tell me about the system or feature you need. I'll reply within one business day with what it would take.",
+      },
+    },
   },
 ];
 
@@ -479,19 +576,19 @@ const FALLBACK_STEP_ICONS: LineIconKey[] = ["chat", "file", "gear", "plane"];
  *
  * WHY THIS EXISTS. The 2026-08-21 rebuild moved /services/[slug] to the
  * owner's mockup: a split-colour hero with artwork, a card row, a step row,
- * and a closing bar. Only Automation has a mockup and owner-written copy for
- * those. The other four still have to render — §15 is explicit that no phase
- * may leave the site half-styled in production — and there are only three ways
- * to do that:
+ * and a closing bar. Automation and, as of 2026-08-22, Roblox have a mockup
+ * and owner-written copy for those. The other three still have to render —
+ * §15 is explicit that no phase may leave the site half-styled in
+ * production — and there are only three ways to do that:
  *
  *   1. keep the old template alive behind a flag, so two layouts ship at once;
- *   2. write new hero copy for four services nobody has approved (§11);
+ *   2. write new hero copy for three services nobody has approved (§11);
  *   3. build the same layout out of the content those services already have.
  *
  * This is (3). Every string below is either the service's own approved data or
  * a heading already shipping on the previous template — nothing here is
- * invented. The result is visibly plainer than Automation's page, which is
- * accurate: it is plainer, until its own mockup lands.
+ * invented. The result is visibly plainer than the two art-directed pages,
+ * which is accurate: it is plainer, until its own mockup lands.
  *
  * WHAT IS DELIBERATELY MISSING FROM THE FALLBACK. No `panel` — its three
  * points are promises about how the work goes, and there is no approved list
